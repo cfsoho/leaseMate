@@ -1,11 +1,12 @@
-from sqlalchemy import (
-    Column, String, Integer, ForeignKey,
-    Numeric, DateTime, func, Index
-)
+# app/models/role.py
+
+from sqlalchemy import Column, String, DateTime, func
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+import uuid
 
 from app.db.database import Base
-import uuid
+
 
 class Role(Base):
     __tablename__ = "roles"

@@ -1,0 +1,30 @@
+name: Deploy leaseMate
+
+on:
+  push:
+    branches: [ develop ]  # Triggers deployment when you push to the develop branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to AWS EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: jonathan  # Or 'ubuntu' / 'ec2-user' depending on your EC2 setup
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # 1. Navigate to your project directory on the AWS server
+          cd ~/Git/leaseMate
+          
+          # 2. Pull the latest changes from GitHub
+          git checkout develop
+          git pull origin develop
+          
+          # 3. Rebuild and restart the Docker containers in the background
+          docker compose up -d --build

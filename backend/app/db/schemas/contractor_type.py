@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 
 class ContractorTypeCreate(BaseModel):
+    id: Optional[UUID] = None
+    locale: str
     code: str
     name: str
     description: Optional[str] = None
@@ -21,6 +23,7 @@ class ContractorTypeUpdate(BaseModel):
 
 class ContractorTypeRead(BaseModel):
     id: UUID
+    locale: str
     code: str
     name: str
     description: Optional[str]

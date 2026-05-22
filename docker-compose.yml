@@ -7,8 +7,7 @@ services:
     env_file: .env
     depends_on:
       db:
-        condition: service_healthy   # 👈 ensures DB is ready
-
+        condition: service_healthy
     volumes:
       - ./backend:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -20,14 +19,14 @@ services:
       - "3000:80"
     depends_on:
       - backend
+
   db:
     image: postgres:15
     container_name: leasemate-db
     restart: always
     env_file: .env
     ports:
-      - "9854:5432"   # ✅ external 9854 (host) → internal 5432 (container)
-
+      - "9854:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -36,5 +35,21 @@ services:
       timeout: 3s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: leasemate-pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@leasemate.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json
+
 volumes:
   pgdata:
+  pgadmin_data:

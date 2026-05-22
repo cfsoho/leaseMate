@@ -1,7 +1,14 @@
 import uuid
-from sqlalchemy import Column, String, Boolean, DateTime, func
+
+from sqlalchemy import (
+    Column,
+    String,
+    Boolean,
+    DateTime,
+    func,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 
 from app.db.database import Base
 
@@ -11,7 +18,9 @@ class ContractorType(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
-    code = Column(String(50), nullable=False, unique=True, index=True)
+    locale = Column(String(10), primary_key=True)
+
+    code = Column(String(50), nullable=False, index=True)
     name = Column(String(100), nullable=False)
     description = Column(String(255), nullable=True)
 
@@ -24,7 +33,6 @@ class ContractorType(Base):
         onupdate=func.now()
     )
 
-    contractors = relationship(
-        "Contractor",
-        back_populates="contractor_type"
+    __table_args__ = (
+        UniqueConstraint("code", "locale", name="uq_contractor_type_code_locale"),
     )

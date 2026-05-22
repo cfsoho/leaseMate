@@ -4,8 +4,6 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
-from app.db.schemas.contractor_type import ContractorTypeRead
-
 
 class ContractorCreate(BaseModel):
     name: str
@@ -32,7 +30,6 @@ class ContractorRead(BaseModel):
     phone: Optional[str]
     email: Optional[str]
     contractor_type_id: Optional[UUID]
-    contractor_type: Optional[ContractorTypeRead]
     address: Optional[str]
     created_at: datetime
     updated_at: Optional[datetime]

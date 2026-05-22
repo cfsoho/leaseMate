@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "LeaseMate PostgreSQL",
+      "Group": "Servers",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "leasemate_db",
+      "Username": "leasemate",
+      "SSLMode": "prefer"
+    }
+  }
+}

@@ -18,11 +18,20 @@ def create_contractor(db: Session, payload: ContractorCreate) -> Contractor:
 
 
 def get_contractor(db: Session, contractor_id: UUID) -> Optional[Contractor]:
-    return db.query(Contractor).filter(Contractor.id == contractor_id).first()
+    return (
+        db.query(Contractor)
+        .filter(Contractor.id == contractor_id)
+        .first()
+    )
 
 
 def get_contractors(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Contractor).offset(skip).limit(limit).all()
+    return (
+        db.query(Contractor)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def update_contractor(

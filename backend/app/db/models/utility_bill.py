@@ -1,10 +1,17 @@
-# app/models/utility_bill.py
+import uuid
+
 from sqlalchemy import (
-    Column, String, Date, Numeric, DateTime, ForeignKey, func
+    Column,
+    String,
+    Integer,
+    Date,
+    Numeric,
+    DateTime,
+    ForeignKey,
+    func,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import uuid
 
 from app.db.database import Base
 
@@ -12,8 +19,14 @@ from app.db.database import Base
 class UtilityBill(Base):
     __tablename__ = "utility_bills"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    # Internal utility bill UUID.
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4
+    )
 
+    # Property this utility bill belongs to.
     property_id = Column(
         UUID(as_uuid=True),
         ForeignKey("properties.id"),
@@ -21,24 +34,114 @@ class UtilityBill(Base):
         index=True
     )
 
-    bill_type = Column(String(50), nullable=False)
-    # "electricity", "water", "gas", "internet", "common_fee"
+    # Shared multilingual utility type id.
+    #
+    # Display language is resolved by frontend/user locale.
+    #
+    # Example:
+    # utility_type_id -> Electricity / 電費 / ค่าไฟฟ้า
+    utility_type_id = Column(
+        UUID(as_uuid=True),
+        nullable=False,
+        index=True
+    )
 
-    billing_month = Column(String(7), nullable=False)
-    # "2025-01", "2025-02"
+    # Billing year.
+    #
+    # Example:
+    # 2026
+    billing_year = Column(
+        Integer,
+        nullable=False,
+        index=True
+    )
 
-    amount = Column(Numeric(10, 2), nullable=False)
+    # Billing month.
+    #
+    # Values:
+    # 1 ~ 12
+    billing_month = Column(
+        Integer,
+        nullable=False,
+        index=True
+    )
 
-    due_date = Column(Date, nullable=True)
-    paid_date = Column(Date, nullable=True)
+    # Amount billed.
+    amount = Column(
+        Numeric(10, 2),
+        nullable=False
+    )
 
-    # 記錄儀表數值（選填）
-    meter_start = Column(Numeric(10, 2), nullable=True)
-    meter_end = Column(Numeric(10, 2), nullable=True)
+    # Currency of billed amount.
+    #
+    # Examples:
+    # THB
+    # JPY
+    # USD
+    currency_code = Column(
+        String(3),
+        nullable=False,
+        default="THB"
+    )
 
-    notes = Column(String(255), nullable=True)
+    # Payment due date.
+    due_date = Column(
+        Date,
+        nullable=True
+    )
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # Actual paid date.
+    paid_date = Column(
+        Date,
+        nullable=True
+    )
 
-    property = relationship("Property", back_populates="utility_bills")
+    # Meter reading at the start of billing period.
+    #
+    # Optional because not every utility has a meter.
+    meter_start = Column(
+        Numeric(10, 2),
+        nullable=True
+    )
+
+    # Meter reading at the end of billing period.
+    meter_end = Column(
+        Numeric(10, 2),
+        nullable=True
+    )
+
+    # Utility bill lifecycle status.
+    #
+    # Examples:
+    # pending
+    # paid
+    # overdue
+    # cancelled
+    status = Column(
+        String(20),
+        nullable=False,
+        default="pending",
+        index=True
+    )
+
+    # Freeform notes.
+    notes = Column(
+        String(255),
+        nullable=True
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
+    property = relationship(
+        "Property",
+        back_populates="utility_bills"
+    )

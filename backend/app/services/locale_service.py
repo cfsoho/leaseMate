@@ -65,3 +65,25 @@ def delete_locale(db: Session, code: str) -> bool:
     db.commit()
 
     return True
+
+def upsert_locales_from_list(
+    db,
+    locales: list[dict]
+) -> None:
+    for item in locales:
+        locale = (
+            db.query(Locale)
+            .filter(Locale.code == item["code"])
+            .first()
+        )
+
+        if locale:
+            locale.name = item["name"]
+            locale.native_name = item.get("native_name")
+            locale.is_active = item.get("is_active", True)
+            locale.sort_order = item.get("sort_order", 0)
+            locale.is_default = item.get("is_default", False)
+        else:
+            db.add(Locale(**item))
+
+    db.commit()

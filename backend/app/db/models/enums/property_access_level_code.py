@@ -11,7 +11,7 @@ class PropertyAccessLevelCode(str, Enum):
 
     # Real estate agent or broker associated
     # with the property or lease
-    REALESTATE_AGENT = "REALESTATE_AGENT"
+    REAL_ESTATE_AGENT = "REAL_ESTATE_AGENT"
 
     # Accountant or tax-related access role
     ACCOUNTANT = "ACCOUNTANT"

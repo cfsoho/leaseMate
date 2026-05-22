@@ -1,0 +1,127 @@
+[
+  {
+    "code": "ELECTRICITY",
+    "translations": {
+      "en": {
+        "name": "Electricity",
+        "description": "Electricity utility bill"
+      },
+      "zh-TW": {
+        "name": "電費",
+        "description": "電力相關費用"
+      },
+      "zh-HK": {
+        "name": "電費",
+        "description": "電力相關費用"
+      },
+      "ja": {
+        "name": "電気代",
+        "description": "電力関連費用"
+      },
+      "th": {
+        "name": "ค่าไฟฟ้า",
+        "description": "ค่าใช้จ่ายเกี่ยวกับไฟฟ้า"
+      }
+    }
+  },
+  {
+    "code": "WATER",
+    "translations": {
+      "en": {
+        "name": "Water",
+        "description": "Water utility bill"
+      },
+      "zh-TW": {
+        "name": "水費",
+        "description": "用水相關費用"
+      },
+      "zh-HK": {
+        "name": "水費",
+        "description": "用水相關費用"
+      },
+      "ja": {
+        "name": "水道代",
+        "description": "水道関連費用"
+      },
+      "th": {
+        "name": "ค่าน้ำ",
+        "description": "ค่าใช้จ่ายเกี่ยวกับน้ำ"
+      }
+    }
+  },
+  {
+    "code": "GAS",
+    "translations": {
+      "en": {
+        "name": "Gas",
+        "description": "Gas utility bill"
+      },
+      "zh-TW": {
+        "name": "瓦斯費",
+        "description": "瓦斯相關費用"
+      },
+      "zh-HK": {
+        "name": "煤氣費",
+        "description": "煤氣相關費用"
+      },
+      "ja": {
+        "name": "ガス代",
+        "description": "ガス関連費用"
+      },
+      "th": {
+        "name": "ค่าแก๊ส",
+        "description": "ค่าใช้จ่ายเกี่ยวกับแก๊ส"
+      }
+    }
+  },
+  {
+    "code": "INTERNET",
+    "translations": {
+      "en": {
+        "name": "Internet",
+        "description": "Internet service fee"
+      },
+      "zh-TW": {
+        "name": "網路費",
+        "description": "網路服務費用"
+      },
+      "zh-HK": {
+        "name": "網絡費",
+        "description": "網絡服務費用"
+      },
+      "ja": {
+        "name": "インターネット",
+        "description": "インターネットサービス料金"
+      },
+      "th": {
+        "name": "ค่าอินเทอร์เน็ต",
+        "description": "ค่าบริการอินเทอร์เน็ต"
+      }
+    }
+  },
+  {
+    "code": "COMMON_FEE",
+    "translations": {
+      "en": {
+        "name": "Common Fee",
+        "description": "Building maintenance or common area fee"
+      },
+      "zh-TW": {
+        "name": "管理費",
+        "description": "大樓管理或公共區域維護費"
+      },
+      "zh-HK": {
+        "name": "管理費",
+        "description": "大廈管理或公共區域維護費"
+      },
+      "ja": {
+        "name": "管理費",
+        "description": "建物管理費または共用部分維持費"
+      },
+      "th": {
+        "name": "ค่าส่วนกลาง",
+        "description": "ค่าบำรุงรักษาอาคารหรือพื้นที่ส่วนกลาง"
+      }
+    }
+  }
+]

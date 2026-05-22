@@ -1,0 +1,127 @@
+[
+  {
+    "code": "OWNER",
+    "translations": {
+      "en": {
+        "name": "Owner",
+        "description": "Legal or actual property owner"
+      },
+      "zh-TW": {
+        "name": "所有人",
+        "description": "房產的法律或實際所有人"
+      },
+      "zh-HK": {
+        "name": "業主",
+        "description": "物業的法律或實際擁有人"
+      },
+      "ja": {
+        "name": "所有者",
+        "description": "物件的または実質的な所有者"
+      },
+      "th": {
+        "name": "เจ้าของ",
+        "description": "เจ้าของทรัพย์สินตามกฎหมายหรือเจ้าของที่แท้จริง"
+      }
+    }
+  },
+  {
+    "code": "MANAGER",
+    "translations": {
+      "en": {
+        "name": "Manager",
+        "description": "User responsible for managing the property"
+      },
+      "zh-TW": {
+        "name": "管理人",
+        "description": "負責管理該房產的使用者"
+      },
+      "zh-HK": {
+        "name": "管理人",
+        "description": "負責管理該物業的使用者"
+      },
+      "ja": {
+        "name": "管理者",
+        "description": "物件管理を担当するユーザー"
+      },
+      "th": {
+        "name": "ผู้จัดการ",
+        "description": "ผู้ใช้ที่รับผิดชอบในการจัดการทรัพย์สิน"
+      }
+    }
+  },
+  {
+    "code": "REAL_ESTATE_AGENT",
+    "translations": {
+      "en": {
+        "name": "Real Estate Agent",
+        "description": "Real estate agent or broker associated with the property or lease"
+      },
+      "zh-TW": {
+        "name": "房仲",
+        "description": "與房產或租約相關的房地產仲介或經紀人"
+      },
+      "zh-HK": {
+        "name": "地產代理",
+        "description": "與物業或租約相關的地產代理或經紀人"
+      },
+      "ja": {
+        "name": "不動産仲介",
+        "description": "物件または契約に関連する不動産仲介業者"
+      },
+      "th": {
+        "name": "นายหน้าอสังหาริมทรัพย์",
+        "description": "นายหน้าหรือตัวแทนอสังหาริมทรัพย์ที่เกี่ยวข้องกับทรัพย์สินหรือสัญญาเช่า"
+      }
+    }
+  },
+  {
+    "code": "ACCOUNTANT",
+    "translations": {
+      "en": {
+        "name": "Accountant",
+        "description": "Accountant or tax-related access role"
+      },
+      "zh-TW": {
+        "name": "會計",
+        "description": "會計或稅務相關的存取角色"
+      },
+      "zh-HK": {
+        "name": "會計",
+        "description": "會計或稅務相關的存取角色"
+      },
+      "ja": {
+        "name": "会計",
+        "description": "会計または税務関連のアクセス権"
+      },
+      "th": {
+        "name": "นักบัญชี",
+        "description": "บทบาทการเข้าถึงสำหรับนักบัญชีหรือภาษี"
+      }
+    }
+  },
+  {
+    "code": "VIEWER",
+    "translations": {
+      "en": {
+        "name": "Viewer",
+        "description": "Read-only access"
+      },
+      "zh-TW": {
+        "name": "檢視者",
+        "description": "僅可檢視的存取權限"
+      },
+      "zh-HK": {
+        "name": "檢視者",
+        "description": "僅可檢視的存取權限"
+      },
+      "ja": {
+        "name": "閲覧者",
+        "description": "閲覧専用アクセス"
+      },
+      "th": {
+        "name": "ผู้ดู",
+        "description": "สิทธิ์เข้าถึงแบบอ่านอย่างเดียว"
+      }
+    }
+  }
+]

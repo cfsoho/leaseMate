@@ -40,6 +40,24 @@ class Property(Base):
         index=True
     )
 
+    # Official/legal ownership name used for this property.
+    #
+    # Examples:
+    # Name on land title
+    # Name on chanote
+    # Registered owner name
+    #
+    # This may differ from:
+    # - login/display name
+    # - bank account name
+    # - other country legal names
+    legal_name_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("user_legal_names.id"),
+        nullable=True,
+        index=True
+    )
+
     # Purchase information
     purchase_price = Column(Numeric(12, 2), nullable=True)
     purchase_currency = Column(String(3), nullable=True)
@@ -64,6 +82,7 @@ class Property(Base):
 
     country = relationship("Country", back_populates="properties")
     owner_user = relationship("User", back_populates="properties_owned")
+    legal_name = relationship("UserLegalName")
 
     leases = relationship("Lease", back_populates="property", cascade="all, delete-orphan")
     access_list = relationship("PropertyAccess", back_populates="property", cascade="all, delete-orphan")

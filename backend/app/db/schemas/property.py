@@ -18,6 +18,7 @@ class PropertyCreate(BaseModel):
     country_id: Optional[UUID] = None
 
     user_id: UUID
+    legal_name_id: Optional[UUID] = None
 
     purchase_price: Optional[Decimal] = None
     purchase_currency: Optional[str] = None
@@ -42,6 +43,7 @@ class PropertyUpdate(BaseModel):
     country_id: Optional[UUID] = None
 
     user_id: Optional[UUID] = None
+    legal_name_id: Optional[UUID] = None
 
     purchase_price: Optional[Decimal] = None
     purchase_currency: Optional[str] = None
@@ -68,6 +70,7 @@ class PropertyRead(BaseModel):
     country_id: Optional[UUID]
 
     user_id: UUID
+    legal_name_id: Optional[UUID]
 
     purchase_price: Optional[Decimal]
     purchase_currency: Optional[str]

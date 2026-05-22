@@ -95,3 +95,45 @@ def delete_contractor_type(
     db.commit()
 
     return True
+
+
+def upsert_contractor_types_from_list(
+    db,
+    items: list[dict]
+) -> None:
+    for item in items:
+        existing_any_locale = (
+            db.query(ContractorType)
+            .filter(ContractorType.code == item["code"])
+            .first()
+        )
+
+        shared_id = existing_any_locale.id if existing_any_locale else uuid.uuid4()
+
+        for locale, translation in item["translations"].items():
+            row = (
+                db.query(ContractorType)
+                .filter(
+                    ContractorType.code == item["code"],
+                    ContractorType.locale == locale
+                )
+                .first()
+            )
+
+            if row:
+                row.name = translation["name"]
+                row.description = translation.get("description")
+                row.is_active = item.get("is_active", True)
+            else:
+                db.add(
+                    ContractorType(
+                        id=shared_id,
+                        locale=locale,
+                        code=item["code"],
+                        name=translation["name"],
+                        description=translation.get("description"),
+                        is_active=item.get("is_active", True)
+                    )
+                )
+
+    db.commit()

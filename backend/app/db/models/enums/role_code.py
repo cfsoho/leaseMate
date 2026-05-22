@@ -5,5 +5,4 @@ from enum import Enum
 
 class RoleCode(str, Enum):
     ADMIN = "ADMIN"
-    OWNER = "OWNER"
     USER = "USER"

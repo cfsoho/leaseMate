@@ -65,3 +65,49 @@ def delete_expense(db: Session, expense_id: UUID) -> bool:
     db.commit()
 
     return True
+
+
+def upsert_expense_types_from_list(
+    db,
+    items: list[dict]
+) -> None:
+    for item in items:
+        existing_any_locale = (
+            db.query(ExpenseType)
+            .filter(ExpenseType.code == item["code"])
+            .first()
+        )
+
+        shared_id = (
+            existing_any_locale.id
+            if existing_any_locale
+            else uuid.uuid4()
+        )
+
+        for locale, translation in item["translations"].items():
+            row = (
+                db.query(ExpenseType)
+                .filter(
+                    ExpenseType.code == item["code"],
+                    ExpenseType.locale == locale
+                )
+                .first()
+            )
+
+            if row:
+                row.name = translation["name"]
+                row.description = translation.get("description")
+                row.is_active = item.get("is_active", True)
+            else:
+                db.add(
+                    ExpenseType(
+                        id=shared_id,
+                        locale=locale,
+                        code=item["code"],
+                        name=translation["name"],
+                        description=translation.get("description"),
+                        is_active=item.get("is_active", True)
+                    )
+                )
+
+    db.commit()

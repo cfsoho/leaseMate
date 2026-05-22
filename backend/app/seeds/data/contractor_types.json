@@ -1,0 +1,82 @@
+[
+  {
+    "code": "GENERAL_CONTRACTOR",
+    "translations": {
+      "en": { "name": "General Contractor", "description": "General repair or construction contractor" },
+      "zh-TW": { "name": "一般承包商", "description": "一般修繕或施工承包商" },
+      "zh-HK": { "name": "一般承辦商", "description": "一般維修或工程承辦商" },
+      "ja": { "name": "一般業者", "description": "一般修繕または工事業者" },
+      "th": { "name": "ผู้รับเหมาทั่วไป", "description": "ผู้รับเหมาซ่อมแซมหรือก่อสร้างทั่วไป" }
+    }
+  },
+  {
+    "code": "ELECTRICIAN",
+    "translations": {
+      "en": { "name": "Electrician", "description": "Electrical repair or installation contractor" },
+      "zh-TW": { "name": "水電工", "description": "電力維修或安裝相關承包商" },
+      "zh-HK": { "name": "電工", "description": "電力維修或安裝相關承辦商" },
+      "ja": { "name": "電気工事業者", "description": "電気修理または設置工事業者" },
+      "th": { "name": "ช่างไฟฟ้า", "description": "ผู้รับเหมาซ่อมหรือติดตั้งระบบไฟฟ้า" }
+    }
+  },
+  {
+    "code": "PLUMBER",
+    "translations": {
+      "en": { "name": "Plumber", "description": "Water pipe or plumbing contractor" },
+      "zh-TW": { "name": "水管工", "description": "水管或給排水相關承包商" },
+      "zh-HK": { "name": "水喉工", "description": "水喉或給排水相關承辦商" },
+      "ja": { "name": "水道業者", "description": "配管または給排水関連業者" },
+      "th": { "name": "ช่างประปา", "description": "ผู้รับเหมาระบบท่อหรืองานประปา" }
+    }
+  },
+  {
+    "code": "AIR_CONDITIONING",
+    "translations": {
+      "en": { "name": "Air Conditioning", "description": "Air conditioning repair or installation contractor" },
+      "zh-TW": { "name": "冷氣空調", "description": "冷氣或空調維修安裝相關承包商" },
+      "zh-HK": { "name": "冷氣空調", "description": "冷氣或空調維修安裝相關承辦商" },
+      "ja": { "name": "空調業者", "description": "エアコンまたは空調設備の修理・設置業者" },
+      "th": { "name": "ช่างแอร์", "description": "ผู้รับเหมาซ่อมหรือติดตั้งเครื่องปรับอากาศ" }
+    }
+  },
+  {
+    "code": "CLEANING",
+    "translations": {
+      "en": { "name": "Cleaning", "description": "Cleaning service contractor" },
+      "zh-TW": { "name": "清潔業者", "description": "清潔服務相關承包商" },
+      "zh-HK": { "name": "清潔公司", "description": "清潔服務相關承辦商" },
+      "ja": { "name": "清掃業者", "description": "清掃サービス業者" },
+      "th": { "name": "บริการทำความสะอาด", "description": "ผู้ให้บริการทำความสะอาด" }
+    }
+  },
+  {
+    "code": "PEST_CONTROL",
+    "translations": {
+      "en": { "name": "Pest Control", "description": "Pest control or extermination service contractor" },
+      "zh-TW": { "name": "除蟲業者", "description": "除蟲或害蟲防治相關承包商" },
+      "zh-HK": { "name": "滅蟲公司", "description": "滅蟲或害蟲防治相關承辦商" },
+      "ja": { "name": "害虫駆除業者", "description": "害虫駆除サービス業者" },
+      "th": { "name": "กำจัดแมลง", "description": "ผู้ให้บริการกำจัดแมลงหรือศัตรูพืช" }
+    }
+  },
+  {
+    "code": "RENOVATION",
+    "translations": {
+      "en": { "name": "Renovation", "description": "Renovation or remodeling contractor" },
+      "zh-TW": { "name": "裝修業者", "description": "裝修或改裝相關承包商" },
+      "zh-HK": { "name": "裝修公司", "description": "裝修或改裝相關承辦商" },
+      "ja": { "name": "リフォーム業者", "description": "リフォームまたは改装業者" },
+      "th": { "name": "ผู้รับเหมาตกแต่ง", "description": "ผู้รับเหมาต่อเติมหรือปรับปรุงภายใน" }
+    }
+  },
+  {
+    "code": "OTHER",
+    "translations": {
+      "en": { "name": "Other", "description": "Other contractor type" },
+      "zh-TW": { "name": "其他", "description": "其他承包商類型" },
+      "zh-HK": { "name": "其他", "description": "其他承辦商類型" },
+      "ja": { "name": "その他", "description": "その他の業者種別" },
+      "th": { "name": "อื่น ๆ", "description": "ประเภทผู้รับเหมาอื่น ๆ" }
+    }
+  }
+]

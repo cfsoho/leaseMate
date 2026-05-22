@@ -1,0 +1,132 @@
+[
+  {
+    "code": "LEASE_CONTRACT",
+    "translations": {
+      "en": { "name": "Lease Contract", "description": "Lease agreement document" },
+      "zh-TW": { "name": "租賃契約", "description": "租賃合約文件" },
+      "zh-HK": { "name": "租賃合約", "description": "租賃合約文件" },
+      "ja": { "name": "賃貸契約書", "description": "賃貸契約に関する書類" },
+      "th": { "name": "สัญญาเช่า", "description": "เอกสารสัญญาเช่า" }
+    }
+  },
+  {
+    "code": "SIGNED_LEASE",
+    "translations": {
+      "en": { "name": "Signed Lease", "description": "Signed lease contract document" },
+      "zh-TW": { "name": "已簽署租約", "description": "已完成簽署的租賃契約文件" },
+      "zh-HK": { "name": "已簽署租約", "description": "已完成簽署的租賃合約文件" },
+      "ja": { "name": "署名済み賃貸契約書", "description": "署名済みの賃貸契約書" },
+      "th": { "name": "สัญญาเช่าที่ลงนามแล้ว", "description": "เอกสารสัญญาเช่าที่ลงนามแล้ว" }
+    }
+  },
+  {
+    "code": "LEASE_ADDENDUM",
+    "translations": {
+      "en": { "name": "Lease Addendum", "description": "Additional agreement attached to a lease" },
+      "zh-TW": { "name": "租約補充協議", "description": "附加於租約的補充協議文件" },
+      "zh-HK": { "name": "租約補充協議", "description": "附加於租約的補充協議文件" },
+      "ja": { "name": "賃貸契約補遺", "description": "賃貸契約に付随する追加合意書" },
+      "th": { "name": "เอกสารแนบท้ายสัญญาเช่า", "description": "ข้อตกลงเพิ่มเติมที่แนบกับสัญญาเช่า" }
+    }
+  },
+  {
+    "code": "PROPERTY_CERTIFICATE",
+    "translations": {
+      "en": { "name": "Property Certificate", "description": "Property ownership or registration document" },
+      "zh-TW": { "name": "房產證明", "description": "房產所有權或登記相關文件" },
+      "zh-HK": { "name": "物業證明", "description": "物業擁有權或登記相關文件" },
+      "ja": { "name": "不動産証明書", "description": "不動産所有権または登記関連書類" },
+      "th": { "name": "เอกสารสิทธิ์ทรัพย์สิน", "description": "เอกสารกรรมสิทธิ์หรือการจดทะเบียนทรัพย์สิน" }
+    }
+  },
+  {
+    "code": "TENANT_ID",
+    "translations": {
+      "en": { "name": "Tenant ID", "description": "Tenant identification document" },
+      "zh-TW": { "name": "租客身分證明", "description": "租客身分識別文件" },
+      "zh-HK": { "name": "租客身份證明", "description": "租客身份識別文件" },
+      "ja": { "name": "入居者本人確認書類", "description": "入居者の本人確認書類" },
+      "th": { "name": "เอกสารประจำตัวผู้เช่า", "description": "เอกสารยืนยันตัวตนของผู้เช่า" }
+    }
+  },
+  {
+    "code": "PASSPORT",
+    "translations": {
+      "en": { "name": "Passport", "description": "Passport document" },
+      "zh-TW": { "name": "護照", "description": "護照文件" },
+      "zh-HK": { "name": "護照", "description": "護照文件" },
+      "ja": { "name": "パスポート", "description": "パスポート書類" },
+      "th": { "name": "หนังสือเดินทาง", "description": "เอกสารหนังสือเดินทาง" }
+    }
+  },
+  {
+    "code": "BANK_BOOK",
+    "translations": {
+      "en": { "name": "Bank Book", "description": "Bank account book or account proof document" },
+      "zh-TW": { "name": "存摺", "description": "銀行存摺或帳戶證明文件" },
+      "zh-HK": { "name": "銀行存摺", "description": "銀行存摺或帳戶證明文件" },
+      "ja": { "name": "通帳", "description": "銀行通帳または口座証明書類" },
+      "th": { "name": "สมุดบัญชีธนาคาร", "description": "สมุดบัญชีธนาคารหรือเอกสารยืนยันบัญชี" }
+    }
+  },
+  {
+    "code": "UTILITY_BILL",
+    "translations": {
+      "en": { "name": "Utility Bill", "description": "Utility bill document" },
+      "zh-TW": { "name": "水電帳單", "description": "水電瓦斯等公用事業帳單文件" },
+      "zh-HK": { "name": "公用事業賬單", "description": "水電煤等公用事業賬單文件" },
+      "ja": { "name": "公共料金請求書", "description": "電気・水道・ガスなどの請求書" },
+      "th": { "name": "บิลค่าสาธารณูปโภค", "description": "เอกสารบิลค่าสาธารณูปโภค" }
+    }
+  },
+  {
+    "code": "RECEIPT",
+    "translations": {
+      "en": { "name": "Receipt", "description": "Payment receipt" },
+      "zh-TW": { "name": "收據", "description": "付款收據" },
+      "zh-HK": { "name": "收據", "description": "付款收據" },
+      "ja": { "name": "領収書", "description": "支払い領収書" },
+      "th": { "name": "ใบเสร็จ", "description": "ใบเสร็จรับเงิน" }
+    }
+  },
+  {
+    "code": "INVOICE",
+    "translations": {
+      "en": { "name": "Invoice", "description": "Invoice or billing document" },
+      "zh-TW": { "name": "發票", "description": "發票或請款文件" },
+      "zh-HK": { "name": "發票", "description": "發票或請款文件" },
+      "ja": { "name": "請求書", "description": "請求書または支払い請求書類" },
+      "th": { "name": "ใบแจ้งหนี้", "description": "ใบแจ้งหนี้หรือเอกสารเรียกเก็บเงิน" }
+    }
+  },
+  {
+    "code": "QUOTATION",
+    "translations": {
+      "en": { "name": "Quotation", "description": "Contractor quotation or estimate" },
+      "zh-TW": { "name": "報價單", "description": "承包商報價或估價文件" },
+      "zh-HK": { "name": "報價單", "description": "承包商報價或估價文件" },
+      "ja": { "name": "見積書", "description": "業者の見積書" },
+      "th": { "name": "ใบเสนอราคา", "description": "ใบเสนอราคาหรือเอกสารประเมินราคาจากผู้รับเหมา" }
+    }
+  },
+  {
+    "code": "TAX_DOCUMENT",
+    "translations": {
+      "en": { "name": "Tax Document", "description": "Tax-related document" },
+      "zh-TW": { "name": "稅務文件", "description": "稅務相關文件" },
+      "zh-HK": { "name": "稅務文件", "description": "稅務相關文件" },
+      "ja": { "name": "税務書類", "description": "税務関連書類" },
+      "th": { "name": "เอกสารภาษี", "description": "เอกสารที่เกี่ยวข้องกับภาษี" }
+    }
+  },
+  {
+    "code": "OTHER",
+    "translations": {
+      "en": { "name": "Other", "description": "Other document type" },
+      "zh-TW": { "name": "其他", "description": "其他文件類型" },
+      "zh-HK": { "name": "其他", "description": "其他文件類型" },
+      "ja": { "name": "その他", "description": "その他の書類種別" },
+      "th": { "name": "อื่น ๆ", "description": "ประเภทเอกสารอื่น ๆ" }
+    }
+  }
+]

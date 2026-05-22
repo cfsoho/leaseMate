@@ -4,6 +4,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from app.db.models.role import Role
+from app.db.models.enums.role_code import RoleCode
 from app.db.schemas.role import RoleCreate, RoleUpdate
 
 
@@ -15,7 +16,6 @@ def create_role(db: Session, payload: RoleCreate) -> Role:
     db.refresh(role)
 
     return role
-
 
 def get_role(db: Session, role_id: UUID) -> Optional[Role]:
     return db.query(Role).filter(Role.id == role_id).first()
@@ -56,3 +56,24 @@ def delete_role(db: Session, role_id: UUID) -> bool:
     db.commit()
 
     return True
+
+def seed_roles_from_enum(
+    db: Session
+) -> None:
+    for role_code in RoleCode:
+        existing = (
+            db.query(Role)
+            .filter(Role.code == role_code)
+            .first()
+        )
+
+        if existing:
+            continue
+
+        db.add(
+            Role(
+                code=role_code
+            )
+        )
+
+    db.commit()

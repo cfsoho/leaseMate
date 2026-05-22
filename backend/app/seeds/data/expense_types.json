@@ -1,0 +1,127 @@
+[
+  {
+    "code": "REPAIR",
+    "translations": {
+      "en": {
+        "name": "Repair",
+        "description": "Repair-related expense"
+      },
+      "zh-TW": {
+        "name": "修繕",
+        "description": "修理或修繕相關費用"
+      },
+      "zh-HK": {
+        "name": "維修",
+        "description": "維修或修繕相關費用"
+      },
+      "ja": {
+        "name": "修繕",
+        "description": "修理または修繕関連費用"
+      },
+      "th": {
+        "name": "ค่าซ่อมแซม",
+        "description": "ค่าใช้จ่ายเกี่ยวกับการซ่อมแซม"
+      }
+    }
+  },
+  {
+    "code": "MAINTENANCE",
+    "translations": {
+      "en": {
+        "name": "Maintenance",
+        "description": "Regular maintenance expense"
+      },
+      "zh-TW": {
+        "name": "維護",
+        "description": "定期維護相關費用"
+      },
+      "zh-HK": {
+        "name": "保養",
+        "description": "定期保養相關費用"
+      },
+      "ja": {
+        "name": "メンテナンス",
+        "description": "定期保守関連費用"
+      },
+      "th": {
+        "name": "ค่าบำรุงรักษา",
+        "description": "ค่าใช้จ่ายในการบำรุงรักษา"
+      }
+    }
+  },
+  {
+    "code": "CLEANING",
+    "translations": {
+      "en": {
+        "name": "Cleaning",
+        "description": "Cleaning-related expense"
+      },
+      "zh-TW": {
+        "name": "清潔",
+        "description": "清潔相關費用"
+      },
+      "zh-HK": {
+        "name": "清潔",
+        "description": "清潔相關費用"
+      },
+      "ja": {
+        "name": "清掃",
+        "description": "清掃関連費用"
+      },
+      "th": {
+        "name": "ค่าทำความสะอาด",
+        "description": "ค่าใช้จ่ายเกี่ยวกับการทำความสะอาด"
+      }
+    }
+  },
+  {
+    "code": "TAX",
+    "translations": {
+      "en": {
+        "name": "Tax",
+        "description": "Tax-related expense"
+      },
+      "zh-TW": {
+        "name": "稅金",
+        "description": "稅務相關費用"
+      },
+      "zh-HK": {
+        "name": "稅項",
+        "description": "稅務相關費用"
+      },
+      "ja": {
+        "name": "税金",
+        "description": "税務関連費用"
+      },
+      "th": {
+        "name": "ภาษี",
+        "description": "ค่าใช้จ่ายเกี่ยวกับภาษี"
+      }
+    }
+  },
+  {
+    "code": "INSURANCE",
+    "translations": {
+      "en": {
+        "name": "Insurance",
+        "description": "Insurance-related expense"
+      },
+      "zh-TW": {
+        "name": "保險",
+        "description": "保險相關費用"
+      },
+      "zh-HK": {
+        "name": "保險",
+        "description": "保險相關費用"
+      },
+      "ja": {
+        "name": "保険",
+        "description": "保険関連費用"
+      },
+      "th": {
+        "name": "ประกัน",
+        "description": "ค่าใช้จ่ายเกี่ยวกับประกัน"
+      }
+    }
+  }
+]

@@ -18,3 +18,4 @@ dist/
 *.pid
 *.sock
 .DS_Store
+.venv/

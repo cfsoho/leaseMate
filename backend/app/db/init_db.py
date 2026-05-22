@@ -4,8 +4,9 @@ from app.db.database import engine, Base
 import pkgutil, importlib, app.db.models
 
 def import_all_models():
-    """Auto-import every Python module inside app/db/models"""
-    for _, module_name, _ in pkgutil.iter_modules(app.db.models.__path__):
+    for _, module_name, is_pkg in pkgutil.iter_modules(app.db.models.__path__):
+        if is_pkg:
+            continue
         importlib.import_module(f"app.db.models.{module_name}")
 
 def init_db():

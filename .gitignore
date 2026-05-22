@@ -1,21 +1,89 @@
-# --- Environment files ---
-.env
-*.env
-!*.env.example
-
-# --- Python ---
+# =========================
+# Python
+# =========================
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
 
-# --- Node/React ---
-node_modules/
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python packaging
 build/
 dist/
+*.egg-info/
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Type checker / linter
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs
 *.log
 
-# --- Docker ---
-*.pid
-*.sock
-.DS_Store
-.venv/
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# =========================
+# React / Node
+# =========================
+node_modules/
+
+# React build output
+frontend/build/
+frontend/dist/
+
+# npm/yarn/pnpm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Docker
+# =========================
+docker-data/
+postgres-data/
+pgdata/
+
+# Docker overrides
+docker-compose.override.yml
+
+# =========================
+# Database / local files
+# =========================
+*.sqlite3
+*.db
+
+# Uploads / generated PDFs
+uploads/
+storage/
+generated/
+media/
+
+# =========================
+# Testing
+# =========================
+coverage/
+
+# =========================
+# GitHub Actions
+# =========================
+*.pem
+*.key
+secrets.*

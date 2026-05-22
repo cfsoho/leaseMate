@@ -3,7 +3,6 @@ import uuid
 from sqlalchemy import (
     Column,
     String,
-    Text,
     Boolean,
     DateTime,
     func,
@@ -14,16 +13,16 @@ from sqlalchemy.dialects.postgresql import UUID
 from app.db.database import Base
 
 
-class DocumentType(Base):
-    __tablename__ = "document_types"
+class ExpenseType(Base):
+    __tablename__ = "expense_types"
 
     # Shared multilingual UUID identifier.
     #
     # Same id across all locales:
     #
-    # id=AAA + locale=en     -> Lease Contract
-    # id=AAA + locale=zh-TW  -> 租賃契約
-    # id=AAA + locale=th     -> สัญญาเช่า
+    # id=AAA + locale=en     -> Repair
+    # id=AAA + locale=zh-TW  -> 修繕
+    # id=AAA + locale=th     -> ซ่อมแซม
     #
     id = Column(
         UUID(as_uuid=True),
@@ -46,15 +45,18 @@ class DocumentType(Base):
     # Stable internal/business code.
     #
     # Used for:
-    # - backend logic
-    # - integration
     # - reporting
-    # - conditional behavior
+    # - tax export
+    # - filtering
+    # - AI workflows
+    # - backend business logic
     #
     # Examples:
-    # LEASE_CONTRACT
-    # RECEIPT
-    # TAX_DOCUMENT
+    # REPAIR
+    # MAINTENANCE
+    # TAX
+    # INSURANCE
+    # CLEANING
     code = Column(
         String(50),
         nullable=False,
@@ -64,9 +66,9 @@ class DocumentType(Base):
     # Localized display name.
     #
     # Examples:
-    # Lease Contract
-    # 租賃契約
-    # สัญญาเช่า
+    # Repair
+    # 修繕
+    # ซ่อมแซม
     name = Column(
         String(100),
         nullable=False
@@ -74,7 +76,7 @@ class DocumentType(Base):
 
     # Optional localized description/help text.
     description = Column(
-        Text,
+        String(255),
         nullable=True
     )
 
@@ -99,12 +101,12 @@ class DocumentType(Base):
     # Prevent duplicate code within same locale.
     #
     # Example:
-    # LEASE_CONTRACT + en -> unique
-    # LEASE_CONTRACT + zh-TW -> unique
+    # REPAIR + en -> unique
+    # REPAIR + zh-TW -> unique
     __table_args__ = (
         UniqueConstraint(
             "code",
             "locale",
-            name="uq_document_type_code_locale"
+            name="uq_expense_type_code_locale"
         ),
     )

@@ -1,10 +1,16 @@
-# app/models/expense.py
+import uuid
+
 from sqlalchemy import (
-    Column, String, Date, Numeric, DateTime, ForeignKey, func, Enum
+    Column,
+    String,
+    Date,
+    Numeric,
+    DateTime,
+    ForeignKey,
+    func,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import uuid
 
 from app.db.database import Base
 
@@ -12,8 +18,16 @@ from app.db.database import Base
 class Expense(Base):
     __tablename__ = "expenses"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    # Internal expense UUID.
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4
+    )
 
+    # Related property.
+    #
+    # Indicates which property this expense belongs to.
     property_id = Column(
         UUID(as_uuid=True),
         ForeignKey("properties.id"),
@@ -21,12 +35,30 @@ class Expense(Base):
         index=True
     )
 
-    category_id = Column(
-        ForeignKey("expense_categories.id"),
+    # Shared multilingual expense type id.
+    #
+    # IMPORTANT:
+    # Only stores shared type identity.
+    # Localized display name is resolved
+    # later by frontend/viewer locale.
+    #
+    # Example:
+    # REPAIR
+    # -> Repair
+    # -> 修繕
+    # -> ซ่อมแซม
+    expense_type_id = Column(
+        UUID(as_uuid=True),
         nullable=True,
         index=True
     )
 
+    # Related contractor/vendor.
+    #
+    # Examples:
+    # plumber
+    # electrician
+    # painter
     contractor_id = Column(
         UUID(as_uuid=True),
         ForeignKey("contractors.id"),
@@ -34,21 +66,78 @@ class Expense(Base):
         index=True
     )
 
-    quoted_amount = Column(Numeric(10, 2), nullable=True)
-    actual_amount = Column(Numeric(10, 2), nullable=True)
+    # Initial estimated/quoted amount.
+    quoted_amount = Column(
+        Numeric(10, 2),
+        nullable=True
+    )
 
-    start_date = Column(Date, nullable=True)
-    end_date = Column(Date, nullable=True)
+    # Actual finalized amount paid.
+    actual_amount = Column(
+        Numeric(10, 2),
+        nullable=True
+    )
 
-    description = Column(String(255), nullable=True)
+    # Expense/service start date.
+    #
+    # Useful for:
+    # - renovation periods
+    # - maintenance windows
+    # - recurring services
+    start_date = Column(
+        Date,
+        nullable=True
+    )
 
-    # 狀態：pending / in_progress / completed / paid
-    status = Column(String(20), nullable=False, default="pending")
+    # Expense/service completion/end date.
+    end_date = Column(
+        Date,
+        nullable=True
+    )
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # Freeform notes/description.
+    #
+    # Examples:
+    # bathroom leak repair
+    # annual aircon cleaning
+    description = Column(
+        String(255),
+        nullable=True
+    )
 
-    # relationship
-    category = relationship("ExpenseCategory")
-    contractor = relationship("Contractor", back_populates="expenses")
-    property = relationship("Property", back_populates="expenses")
+    # Expense workflow/business status.
+    #
+    # Examples:
+    # pending
+    # in_progress
+    # completed
+    # paid
+    status = Column(
+        String(20),
+        nullable=False,
+        default="pending",
+        index=True
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
+    # Relationships
+
+    contractor = relationship(
+        "Contractor",
+        back_populates="expenses"
+    )
+
+    property = relationship(
+        "Property",
+        back_populates="expenses"
+    )

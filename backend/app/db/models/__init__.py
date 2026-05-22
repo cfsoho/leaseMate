@@ -5,7 +5,7 @@ from app.db.models.property_access import PropertyAccess
 from app.db.models.property_access_level import PropertyAccessLevel
 from app.db.models.contractor import Contractor
 from app.db.models.contractor_type import ContractorType
-from app.db.models.expense_category import ExpenseCategory
+from app.db.models.expense_type import ExpenseType
 from app.db.models.expense import Expense
 from app.db.models.lease import Lease
 from app.db.models.payment import Payment

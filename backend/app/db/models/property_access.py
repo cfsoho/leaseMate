@@ -1,12 +1,11 @@
-# app/db/models/property_access.py
+import uuid
 
 from sqlalchemy import (
-    Column, Integer, DateTime, ForeignKey, func,
+    Column, DateTime, ForeignKey, func,
     UniqueConstraint
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import uuid
 
 from app.db.database import Base
 
@@ -16,6 +15,7 @@ class PropertyAccess(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
+    # Property being shared
     property_id = Column(
         UUID(as_uuid=True),
         ForeignKey("properties.id", ondelete="CASCADE"),
@@ -23,6 +23,7 @@ class PropertyAccess(Base):
         index=True
     )
 
+    # User who receives access
     user_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -30,9 +31,10 @@ class PropertyAccess(Base):
         index=True
     )
 
+    # Shared multilingual access level id.
+    # Display label is resolved by frontend/user locale.
     access_level_id = Column(
-        Integer,
-        ForeignKey("property_access_levels.id"),
+        UUID(as_uuid=True),
         nullable=False,
         index=True
     )
@@ -43,9 +45,12 @@ class PropertyAccess(Base):
     )
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # Relationships
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
     user = relationship("User", back_populates="property_access")
     property = relationship("Property", back_populates="access_list")
-    access_level = relationship("PropertyAccessLevel")

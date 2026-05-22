@@ -1,4 +1,6 @@
 from app.db.models.user import User
+from app.db.models.user_verification_token import UserVerificationToken
+from app.db.models.user_refresh_token import UserRefreshToken
 from app.db.models.role import Role
 from app.db.models.property import Property
 from app.db.models.property_access import PropertyAccess

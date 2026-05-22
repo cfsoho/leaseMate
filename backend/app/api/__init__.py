@@ -8,6 +8,11 @@ from app.api.ledger_entry import router as ledger_entry_router
 from app.api.locale import router as locale_router
 from app.api.payment import router as payment_router
 from app.api.payment_coverage import router as payment_coverage_router
+from app.api.property import router as property_router
+from app.api.property_access import router as property_access_router
+from app.api.property_access_level import router as property_access_level_router
+from app.api.role import router as role_router
+from app.api.tax_record import router as tax_record_router
 
 all_routers = [
     contractor_type_router,
@@ -20,4 +25,9 @@ all_routers = [
     locale_router,
     payment_router,
     payment_coverage_router,
+    property_router,
+    property_access_router,
+    property_access_level_router,
+    role_router,
+    tax_record_router,
 ]

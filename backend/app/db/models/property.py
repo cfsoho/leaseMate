@@ -1,12 +1,11 @@
-# app/db/models/property.py
+import uuid
 
 from sqlalchemy import (
-    Column, String, Integer, ForeignKey,
+    Column, String, ForeignKey,
     Numeric, Date, DateTime, func
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import uuid
 
 from app.db.database import Base
 
@@ -16,20 +15,24 @@ class Property(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
+    # Display/property nickname
     name = Column(String(100), nullable=False)
+
     building_name = Column(String(100), nullable=True)
     address = Column(String(255), nullable=True)
     district = Column(String(100), nullable=True)
     city = Column(String(100), nullable=True, index=True)
     zipcode = Column(String(20), nullable=True)
 
+    # Physical/legal country of the property
     country_id = Column(
         UUID(as_uuid=True),
         ForeignKey("ref.countries.id"),
+        nullable=True,
         index=True
     )
 
-    # 產權人（房產證上的 owner）
+    # Legal owner / property certificate owner
     user_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id"),
@@ -37,59 +40,34 @@ class Property(Base):
         index=True
     )
 
-    # 購買資訊
+    # Purchase information
     purchase_price = Column(Numeric(12, 2), nullable=True)
     purchase_currency = Column(String(3), nullable=True)
     purchase_fx_rate = Column(Numeric(12, 6), nullable=True)
     purchase_date = Column(Date, nullable=True)
 
-    # 座標
+    # Geo coordinates
     latitude = Column(Numeric(10, 8), nullable=True)
     longitude = Column(Numeric(11, 8), nullable=True)
 
-    # 狀態
-    status = Column(Integer, nullable=False, default=1, index=True)
+    # Property lifecycle status
+    # Examples: active, inactive, sold, archived
+    status = Column(String(20), nullable=False, default="active", index=True)
 
-    # 審計欄位
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # Relationships
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
     country = relationship("Country", back_populates="properties")
     owner_user = relationship("User", back_populates="properties_owned")
 
-    leases = relationship(
-        "Lease", 
-        back_populates="property",
-        cascade="all, delete-orphan"
-    )
-
-    access_list = relationship(
-        "PropertyAccess",
-        back_populates="property",
-        cascade="all, delete-orphan"
-    )
-
-    expenses = relationship(
-        "Expense",
-        back_populates="property",
-        cascade="all, delete-orphan"
-    )
-
-    utility_bills = relationship(
-        "UtilityBill",
-        back_populates="property",
-        cascade="all, delete-orphan"
-    )
-
-    tax_records = relationship(
-        "TaxRecord",
-        back_populates="property",
-        cascade="all, delete-orphan"
-    )
-
-    ledger_entries = relationship(
-        "LedgerEntry",
-        back_populates="property",
-        cascade="all, delete-orphan"
-    )
+    leases = relationship("Lease", back_populates="property", cascade="all, delete-orphan")
+    access_list = relationship("PropertyAccess", back_populates="property", cascade="all, delete-orphan")
+    expenses = relationship("Expense", back_populates="property", cascade="all, delete-orphan")
+    utility_bills = relationship("UtilityBill", back_populates="property", cascade="all, delete-orphan")
+    tax_records = relationship("TaxRecord", back_populates="property", cascade="all, delete-orphan")
+    ledger_entries = relationship("LedgerEntry", back_populates="property", cascade="all, delete-orphan")

@@ -1,12 +1,17 @@
-# app/models/tax_record.py
+import uuid
 
 from sqlalchemy import (
-    Column, Date, Numeric, String, DateTime, ForeignKey,
-    Integer, func
+    Column,
+    Date,
+    Numeric,
+    String,
+    DateTime,
+    ForeignKey,
+    Integer,
+    func,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import uuid
 
 from app.db.database import Base
 
@@ -14,9 +19,16 @@ from app.db.database import Base
 class TaxRecord(Base):
     __tablename__ = "tax_records"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    # Internal tax record UUID.
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4
+    )
 
-    # 所屬物件
+    # Related property.
+    #
+    # Indicates which property this tax record belongs to.
     property_id = Column(
         UUID(as_uuid=True),
         ForeignKey("properties.id"),
@@ -24,7 +36,12 @@ class TaxRecord(Base):
         index=True
     )
 
-    # 課稅國家 → 改成 FK 正確！
+    # Country/jurisdiction where the tax applies.
+    #
+    # Examples:
+    # Thailand
+    # Japan
+    # Taiwan
     country_id = Column(
         UUID(as_uuid=True),
         ForeignKey("ref.countries.id"),
@@ -32,20 +49,96 @@ class TaxRecord(Base):
         index=True
     )
 
-    # 稅務資訊
-    tax_year = Column(Integer, nullable=False)  # 2024, 2025
-    tax_type = Column(String(50), nullable=False)  
-    # 建議：rental_income / property_tax / withholding_tax / capital_gain / other
+    # Tax reporting year.
+    #
+    # Examples:
+    # 2024
+    # 2025
+    tax_year = Column(
+        Integer,
+        nullable=False,
+        index=True
+    )
 
-    declared_amount = Column(Numeric(12, 2), nullable=True)
-    paid_amount = Column(Numeric(12, 2), nullable=True)
-    paid_date = Column(Date, nullable=True)
+    # Stable tax type code.
+    #
+    # Used for:
+    # - reporting
+    # - filtering
+    # - accounting integration
+    # - future multilingual display mapping
+    #
+    # Examples:
+    # RENTAL_INCOME
+    # PROPERTY_TAX
+    # WITHHOLDING_TAX
+    # CAPITAL_GAIN
+    # OTHER
+    tax_type_code = Column(
+        String(50),
+        nullable=False,
+        index=True
+    )
 
-    notes = Column(String(255), nullable=True)
+    # Currency used for tax amounts.
+    #
+    # Examples:
+    # THB
+    # JPY
+    # USD
+    currency_code = Column(
+        String(3),
+        nullable=False,
+        default="THB"
+    )
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # Amount declared to tax authority.
+    #
+    # May differ from actual paid amount.
+    declared_amount = Column(
+        Numeric(12, 2),
+        nullable=True
+    )
+
+    # Actual amount paid to tax authority.
+    paid_amount = Column(
+        Numeric(12, 2),
+        nullable=True
+    )
+
+    # Date tax payment was made.
+    paid_date = Column(
+        Date,
+        nullable=True
+    )
+
+    # Freeform notes/comments.
+    #
+    # Examples:
+    # annual rental income filing
+    # late filing penalty included
+    # accountant submitted manually
+    notes = Column(
+        String(255),
+        nullable=True
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
+    )
 
     # Relationships
-    property = relationship("Property", back_populates="tax_records")
-    country = relationship("Country")  # ← 正確、輕量、無需 back_populates
+
+    property = relationship(
+        "Property",
+        back_populates="tax_records"
+    )
+
+    country = relationship("Country")

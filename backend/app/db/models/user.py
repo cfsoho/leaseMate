@@ -1,32 +1,42 @@
-# app/models/user.py
+import uuid
 
 from sqlalchemy import (
-    Column, String, Integer, ForeignKey,
-    DateTime, func
+    Column,
+    String,
+    DateTime,
+    ForeignKey,
+    Enum,
+    func,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import uuid
 
 from app.db.database import Base
+from app.db.models.enums.user_status import UserStatus
 
 
 class User(Base):
     __tablename__ = "users"
 
+    # Internal user UUID.
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
-    # 名字
-    s_name = Column(String(50), nullable=False)
-    f_name = Column(String(50), nullable=False)
-    m_name = Column(String(50), nullable=True)
+    # Family/surname.
+    family_name = Column(String(50), nullable=False)
 
-    # 登入資訊
+    # Given/first name.
+    given_name = Column(String(50), nullable=False)
+
+    # Login email. Unique account identifier.
     email = Column(String(254), unique=True, nullable=False, index=True)
-    pwd = Column(String(128), nullable=False)
+
+    # Hashed password only. Never store plain text password.
+    password_hash = Column(String(255), nullable=False)
+
+    # Contact phone number.
     phone = Column(String(20), nullable=True)
 
-    # 角色 FK
+    # System role.
     role_id = Column(
         UUID(as_uuid=True),
         ForeignKey("roles.id"),
@@ -34,36 +44,67 @@ class User(Base):
         index=True
     )
 
-    # Relationships
-    role = relationship("Role", back_populates="users")
+    # Preferred UI/content locale.
+    preferred_locale_code = Column(
+        String(10),
+        ForeignKey("ref.locales.code"),
+        nullable=True,
+        index=True
+    )
 
-    # Properties owned by this user
+    # Account lifecycle status.
+    status = Column(
+        Enum(UserStatus),
+        nullable=False,
+        default=UserStatus.PENDING_EMAIL_VERIFICATION,
+        index=True
+    )
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
+    role = relationship("Role", back_populates="users")
+    preferred_locale = relationship("Locale")
+
     properties_owned = relationship("Property", back_populates="owner_user")
 
-    # Leases (multi-FK)
     leases_as_tenant = relationship(
         "Lease",
         back_populates="tenant_user",
         foreign_keys="Lease.tenant_id"
     )
+
     leases_as_agent = relationship(
         "Lease",
         back_populates="agent_user",
         foreign_keys="Lease.agent_id"
     )
+
     leases_as_owner = relationship(
         "Lease",
-        back_populates="landlord_user",  # ← 修正！（之前寫錯）
+        back_populates="landlord_user",
         foreign_keys="Lease.landlord_id"
     )
 
-    # Access control
     property_access = relationship(
         "PropertyAccess",
         back_populates="user",
         cascade="all, delete-orphan"
     )
 
-    # Audit
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    verification_tokens = relationship(
+        "UserVerificationToken",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    refresh_tokens = relationship(
+        "UserRefreshToken",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )

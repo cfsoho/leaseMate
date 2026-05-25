@@ -52,7 +52,7 @@ class UserLegalName(Base):
     # zh-TW
     # ja
     locale_code = Column(
-        String(10),
+        String(35),
         ForeignKey("ref.locales.code"),
         nullable=False,
         index=True

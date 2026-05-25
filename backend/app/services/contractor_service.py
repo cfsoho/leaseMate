@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.models.contractor import Contractor
 from app.db.schemas.contractor import ContractorCreate, ContractorUpdate
 
+from app.services.soft_delete import soft_delete
 
 def create_contractor(db: Session, payload: ContractorCreate) -> Contractor:
     contractor = Contractor(**payload.model_dump())
@@ -55,13 +56,12 @@ def update_contractor(
     return contractor
 
 
-def delete_contractor(db: Session, contractor_id: UUID) -> bool:
+def delete_contractor(db: Session, contractor_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     contractor = get_contractor(db, contractor_id)
 
     if not contractor:
         return False
-
-    db.delete(contractor)
-    db.commit()
+    soft_delete(db, contractor, deleted_by)
 
     return True

@@ -4,7 +4,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
-    Enum,
+    String,
     func,
     UniqueConstraint,
     Index,
@@ -13,8 +13,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
-from app.db.models.enums.document_object_type import DocumentObjectType
-
 
 class DocumentLink(Base):
     __tablename__ = "document_links"
@@ -47,7 +45,8 @@ class DocumentLink(Base):
     # PAYMENT
     # EXPENSE
     object_type = Column(
-        Enum(DocumentObjectType),
+        String(50),
+        ForeignKey("ref.document_object_types.code"),
         nullable=False,
         index=True
     )

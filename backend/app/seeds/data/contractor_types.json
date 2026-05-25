@@ -2,81 +2,576 @@
   {
     "code": "GENERAL_CONTRACTOR",
     "translations": {
-      "en": { "name": "General Contractor", "description": "General repair or construction contractor" },
-      "zh-TW": { "name": "一般承包商", "description": "一般修繕或施工承包商" },
-      "zh-HK": { "name": "一般承辦商", "description": "一般維修或工程承辦商" },
-      "ja": { "name": "一般業者", "description": "一般修繕または工事業者" },
-      "th": { "name": "ผู้รับเหมาทั่วไป", "description": "ผู้รับเหมาซ่อมแซมหรือก่อสร้างทั่วไป" }
+      "en": {
+        "name": "General Contractor",
+        "description": "General repair or construction contractor"
+      },
+      "zh-TW": {
+        "name": "一般承包商",
+        "description": "一般修繕或施工承包商"
+      },
+      "zh-HK": {
+        "name": "一般承辦商",
+        "description": "一般維修或工程承辦商"
+      },
+      "ja": {
+        "name": "一般業者",
+        "description": "一般修繕または工事業者"
+      },
+      "th": {
+        "name": "ผู้รับเหมาทั่วไป",
+        "description": "ผู้รับเหมาซ่อมแซมหรือก่อสร้างทั่วไป"
+      }
     }
   },
   {
     "code": "ELECTRICIAN",
     "translations": {
-      "en": { "name": "Electrician", "description": "Electrical repair or installation contractor" },
-      "zh-TW": { "name": "水電工", "description": "電力維修或安裝相關承包商" },
-      "zh-HK": { "name": "電工", "description": "電力維修或安裝相關承辦商" },
-      "ja": { "name": "電気工事業者", "description": "電気修理または設置工事業者" },
-      "th": { "name": "ช่างไฟฟ้า", "description": "ผู้รับเหมาซ่อมหรือติดตั้งระบบไฟฟ้า" }
+      "en": {
+        "name": "Electrician",
+        "description": "Electrical repair or installation contractor"
+      },
+      "zh-TW": {
+        "name": "水電工",
+        "description": "電力維修或安裝相關承包商"
+      },
+      "zh-HK": {
+        "name": "電工",
+        "description": "電力維修或安裝相關承辦商"
+      },
+      "ja": {
+        "name": "電気工事業者",
+        "description": "電気修理または設置工事業者"
+      },
+      "th": {
+        "name": "ช่างไฟฟ้า",
+        "description": "ผู้รับเหมาซ่อมหรือติดตั้งระบบไฟฟ้า"
+      }
     }
   },
   {
     "code": "PLUMBER",
     "translations": {
-      "en": { "name": "Plumber", "description": "Water pipe or plumbing contractor" },
-      "zh-TW": { "name": "水管工", "description": "水管或給排水相關承包商" },
-      "zh-HK": { "name": "水喉工", "description": "水喉或給排水相關承辦商" },
-      "ja": { "name": "水道業者", "description": "配管または給排水関連業者" },
-      "th": { "name": "ช่างประปา", "description": "ผู้รับเหมาระบบท่อหรืองานประปา" }
+      "en": {
+        "name": "Plumber",
+        "description": "Water pipe or plumbing contractor"
+      },
+      "zh-TW": {
+        "name": "水管工",
+        "description": "水管或給排水相關承包商"
+      },
+      "zh-HK": {
+        "name": "水喉工",
+        "description": "水喉或給排水相關承辦商"
+      },
+      "ja": {
+        "name": "水道業者",
+        "description": "配管または給排水関連業者"
+      },
+      "th": {
+        "name": "ช่างประปา",
+        "description": "ผู้รับเหมาระบบท่อหรืองานประปา"
+      }
     }
   },
   {
     "code": "AIR_CONDITIONING",
     "translations": {
-      "en": { "name": "Air Conditioning", "description": "Air conditioning repair or installation contractor" },
-      "zh-TW": { "name": "冷氣空調", "description": "冷氣或空調維修安裝相關承包商" },
-      "zh-HK": { "name": "冷氣空調", "description": "冷氣或空調維修安裝相關承辦商" },
-      "ja": { "name": "空調業者", "description": "エアコンまたは空調設備の修理・設置業者" },
-      "th": { "name": "ช่างแอร์", "description": "ผู้รับเหมาซ่อมหรือติดตั้งเครื่องปรับอากาศ" }
+      "en": {
+        "name": "Air Conditioning",
+        "description": "Air conditioning repair or installation contractor"
+      },
+      "zh-TW": {
+        "name": "冷氣空調",
+        "description": "冷氣或空調維修安裝相關承包商"
+      },
+      "zh-HK": {
+        "name": "冷氣空調",
+        "description": "冷氣或空調維修安裝相關承辦商"
+      },
+      "ja": {
+        "name": "空調業者",
+        "description": "エアコンまたは空調設備の修理・設置業者"
+      },
+      "th": {
+        "name": "ช่างแอร์",
+        "description": "ผู้รับเหมาซ่อมหรือติดตั้งเครื่องปรับอากาศ"
+      }
     }
   },
   {
     "code": "CLEANING",
     "translations": {
-      "en": { "name": "Cleaning", "description": "Cleaning service contractor" },
-      "zh-TW": { "name": "清潔業者", "description": "清潔服務相關承包商" },
-      "zh-HK": { "name": "清潔公司", "description": "清潔服務相關承辦商" },
-      "ja": { "name": "清掃業者", "description": "清掃サービス業者" },
-      "th": { "name": "บริการทำความสะอาด", "description": "ผู้ให้บริการทำความสะอาด" }
+      "en": {
+        "name": "Cleaning",
+        "description": "Cleaning service contractor"
+      },
+      "zh-TW": {
+        "name": "清潔業者",
+        "description": "清潔服務相關承包商"
+      },
+      "zh-HK": {
+        "name": "清潔公司",
+        "description": "清潔服務相關承辦商"
+      },
+      "ja": {
+        "name": "清掃業者",
+        "description": "清掃サービス業者"
+      },
+      "th": {
+        "name": "บริการทำความสะอาด",
+        "description": "ผู้ให้บริการทำความสะอาด"
+      }
     }
   },
   {
     "code": "PEST_CONTROL",
     "translations": {
-      "en": { "name": "Pest Control", "description": "Pest control or extermination service contractor" },
-      "zh-TW": { "name": "除蟲業者", "description": "除蟲或害蟲防治相關承包商" },
-      "zh-HK": { "name": "滅蟲公司", "description": "滅蟲或害蟲防治相關承辦商" },
-      "ja": { "name": "害虫駆除業者", "description": "害虫駆除サービス業者" },
-      "th": { "name": "กำจัดแมลง", "description": "ผู้ให้บริการกำจัดแมลงหรือศัตรูพืช" }
+      "en": {
+        "name": "Pest Control",
+        "description": "Pest control or extermination service contractor"
+      },
+      "zh-TW": {
+        "name": "除蟲業者",
+        "description": "除蟲或害蟲防治相關承包商"
+      },
+      "zh-HK": {
+        "name": "滅蟲公司",
+        "description": "滅蟲或害蟲防治相關承辦商"
+      },
+      "ja": {
+        "name": "害虫駆除業者",
+        "description": "害虫駆除サービス業者"
+      },
+      "th": {
+        "name": "กำจัดแมลง",
+        "description": "ผู้ให้บริการกำจัดแมลงหรือศัตรูพืช"
+      }
     }
   },
   {
     "code": "RENOVATION",
     "translations": {
-      "en": { "name": "Renovation", "description": "Renovation or remodeling contractor" },
-      "zh-TW": { "name": "裝修業者", "description": "裝修或改裝相關承包商" },
-      "zh-HK": { "name": "裝修公司", "description": "裝修或改裝相關承辦商" },
-      "ja": { "name": "リフォーム業者", "description": "リフォームまたは改装業者" },
-      "th": { "name": "ผู้รับเหมาตกแต่ง", "description": "ผู้รับเหมาต่อเติมหรือปรับปรุงภายใน" }
+      "en": {
+        "name": "Renovation",
+        "description": "Renovation or remodeling contractor"
+      },
+      "zh-TW": {
+        "name": "裝修業者",
+        "description": "裝修或改裝相關承包商"
+      },
+      "zh-HK": {
+        "name": "裝修公司",
+        "description": "裝修或改裝相關承辦商"
+      },
+      "ja": {
+        "name": "リフォーム業者",
+        "description": "リフォームまたは改装業者"
+      },
+      "th": {
+        "name": "ผู้รับเหมาตกแต่ง",
+        "description": "ผู้รับเหมาต่อเติมหรือปรับปรุงภายใน"
+      }
     }
   },
   {
     "code": "OTHER",
     "translations": {
-      "en": { "name": "Other", "description": "Other contractor type" },
-      "zh-TW": { "name": "其他", "description": "其他承包商類型" },
-      "zh-HK": { "name": "其他", "description": "其他承辦商類型" },
-      "ja": { "name": "その他", "description": "その他の業者種別" },
-      "th": { "name": "อื่น ๆ", "description": "ประเภทผู้รับเหมาอื่น ๆ" }
+      "en": {
+        "name": "Other",
+        "description": "Other contractor type"
+      },
+      "zh-TW": {
+        "name": "其他",
+        "description": "其他承包商類型"
+      },
+      "zh-HK": {
+        "name": "其他",
+        "description": "其他承辦商類型"
+      },
+      "ja": {
+        "name": "その他",
+        "description": "その他の業者種別"
+      },
+      "th": {
+        "name": "อื่น ๆ",
+        "description": "ประเภทผู้รับเหมาอื่น ๆ"
+      }
+    }
+  },
+  {
+    "code": "LOCKSMITH",
+    "translations": {
+      "en": {
+        "name": "Locksmith",
+        "description": "Lock and key service contractor"
+      },
+      "ja": {
+        "name": "鍵業者",
+        "description": "鍵と錠前サービス業者"
+      },
+      "zh-TW": {
+        "name": "鎖匠",
+        "description": "鎖與鑰匙服務承包商"
+      },
+      "zh-HK": {
+        "name": "鎖匠",
+        "description": "鎖與鑰匙服務承辦商"
+      },
+      "th": {
+        "name": "ช่างกุญแจ",
+        "description": "ผู้ให้บริการกุญแจและระบบล็อก"
+      }
+    }
+  },
+  {
+    "code": "CARPENTER",
+    "translations": {
+      "en": {
+        "name": "Carpenter",
+        "description": "Carpentry contractor"
+      },
+      "ja": {
+        "name": "大工",
+        "description": "木工作業業者"
+      },
+      "zh-TW": {
+        "name": "木工",
+        "description": "木工承包商"
+      },
+      "zh-HK": {
+        "name": "木工",
+        "description": "木工承辦商"
+      },
+      "th": {
+        "name": "ช่างไม้",
+        "description": "ผู้รับเหมางานไม้"
+      }
+    }
+  },
+  {
+    "code": "PAINTER",
+    "translations": {
+      "en": {
+        "name": "Painter",
+        "description": "Painting contractor"
+      },
+      "ja": {
+        "name": "塗装業者",
+        "description": "塗装工事業者"
+      },
+      "zh-TW": {
+        "name": "油漆工",
+        "description": "油漆承包商"
+      },
+      "zh-HK": {
+        "name": "油漆工",
+        "description": "油漆承辦商"
+      },
+      "th": {
+        "name": "ช่างทาสี",
+        "description": "ผู้รับเหมางานทาสี"
+      }
+    }
+  },
+  {
+    "code": "ROOFER",
+    "translations": {
+      "en": {
+        "name": "Roofer",
+        "description": "Roofing contractor"
+      },
+      "ja": {
+        "name": "屋根業者",
+        "description": "屋根工事業者"
+      },
+      "zh-TW": {
+        "name": "屋頂工程",
+        "description": "屋頂工程承包商"
+      },
+      "zh-HK": {
+        "name": "天台工程",
+        "description": "天台或屋頂工程承辦商"
+      },
+      "th": {
+        "name": "ช่างหลังคา",
+        "description": "ผู้รับเหมางานหลังคา"
+      }
+    }
+  },
+  {
+    "code": "GARDENER",
+    "translations": {
+      "en": {
+        "name": "Gardener",
+        "description": "Gardening or landscaping contractor"
+      },
+      "ja": {
+        "name": "庭師",
+        "description": "庭園または造園業者"
+      },
+      "zh-TW": {
+        "name": "園丁",
+        "description": "園藝或景觀承包商"
+      },
+      "zh-HK": {
+        "name": "園丁",
+        "description": "園藝或園景承辦商"
+      },
+      "th": {
+        "name": "คนสวน",
+        "description": "ผู้ให้บริการสวนหรือภูมิทัศน์"
+      }
+    }
+  },
+  {
+    "code": "SECURITY_COMPANY",
+    "translations": {
+      "en": {
+        "name": "Security Company",
+        "description": "Security service provider"
+      },
+      "ja": {
+        "name": "警備会社",
+        "description": "警備サービス提供業者"
+      },
+      "zh-TW": {
+        "name": "保全公司",
+        "description": "保全服務提供商"
+      },
+      "zh-HK": {
+        "name": "保安公司",
+        "description": "保安服務供應商"
+      },
+      "th": {
+        "name": "บริษัทรักษาความปลอดภัย",
+        "description": "ผู้ให้บริการรักษาความปลอดภัย"
+      }
+    }
+  },
+  {
+    "code": "PROPERTY_MANAGER",
+    "translations": {
+      "en": {
+        "name": "Property Manager",
+        "description": "Property management service provider"
+      },
+      "ja": {
+        "name": "物件管理会社",
+        "description": "物件管理サービス提供業者"
+      },
+      "zh-TW": {
+        "name": "物業管理人",
+        "description": "物業管理服務提供商"
+      },
+      "zh-HK": {
+        "name": "物業管理人",
+        "description": "物業管理服務供應商"
+      },
+      "th": {
+        "name": "ผู้จัดการทรัพย์สิน",
+        "description": "ผู้ให้บริการบริหารทรัพย์สิน"
+      }
+    }
+  },
+  {
+    "code": "REAL_ESTATE_AGENT",
+    "translations": {
+      "en": {
+        "name": "Real Estate Agent",
+        "description": "Real estate agent or broker"
+      },
+      "ja": {
+        "name": "不動産仲介",
+        "description": "不動産仲介業者またはブローカー"
+      },
+      "zh-TW": {
+        "name": "房地產仲介",
+        "description": "房地產仲介或經紀人"
+      },
+      "zh-HK": {
+        "name": "地產代理",
+        "description": "地產代理或經紀人"
+      },
+      "th": {
+        "name": "นายหน้าอสังหาริมทรัพย์",
+        "description": "นายหน้าหรือตัวแทนอสังหาริมทรัพย์"
+      }
+    }
+  },
+  {
+    "code": "ACCOUNTANT",
+    "translations": {
+      "en": {
+        "name": "Accountant",
+        "description": "Accounting or tax service provider"
+      },
+      "ja": {
+        "name": "会計士",
+        "description": "会計または税務サービス提供者"
+      },
+      "zh-TW": {
+        "name": "會計師",
+        "description": "會計或稅務服務提供商"
+      },
+      "zh-HK": {
+        "name": "會計師",
+        "description": "會計或稅務服務供應商"
+      },
+      "th": {
+        "name": "นักบัญชี",
+        "description": "ผู้ให้บริการบัญชีหรือภาษี"
+      }
+    }
+  },
+  {
+    "code": "LAWYER",
+    "translations": {
+      "en": {
+        "name": "Lawyer",
+        "description": "Legal service provider"
+      },
+      "ja": {
+        "name": "弁護士",
+        "description": "法律サービス提供者"
+      },
+      "zh-TW": {
+        "name": "律師",
+        "description": "法律服務提供商"
+      },
+      "zh-HK": {
+        "name": "律師",
+        "description": "法律服務供應商"
+      },
+      "th": {
+        "name": "ทนายความ",
+        "description": "ผู้ให้บริการทางกฎหมาย"
+      }
+    }
+  },
+  {
+    "code": "INSURANCE_AGENT",
+    "translations": {
+      "en": {
+        "name": "Insurance Agent",
+        "description": "Insurance broker or agent"
+      },
+      "ja": {
+        "name": "保険代理店",
+        "description": "保険ブローカーまたは代理店"
+      },
+      "zh-TW": {
+        "name": "保險代理人",
+        "description": "保險經紀或代理人"
+      },
+      "zh-HK": {
+        "name": "保險代理",
+        "description": "保險經紀或代理"
+      },
+      "th": {
+        "name": "ตัวแทนประกันภัย",
+        "description": "นายหน้าหรือตัวแทนประกันภัย"
+      }
+    }
+  },
+  {
+    "code": "MOVING_COMPANY",
+    "translations": {
+      "en": {
+        "name": "Moving Company",
+        "description": "Moving or relocation service provider"
+      },
+      "ja": {
+        "name": "引越し業者",
+        "description": "引越しまたは移転サービス提供者"
+      },
+      "zh-TW": {
+        "name": "搬家公司",
+        "description": "搬家或遷移服務提供商"
+      },
+      "zh-HK": {
+        "name": "搬屋公司",
+        "description": "搬屋或遷移服務供應商"
+      },
+      "th": {
+        "name": "บริษัทขนย้าย",
+        "description": "ผู้ให้บริการขนย้ายหรือย้ายที่อยู่"
+      }
+    }
+  },
+  {
+    "code": "INTERNET_PROVIDER",
+    "translations": {
+      "en": {
+        "name": "Internet Provider",
+        "description": "Internet service provider"
+      },
+      "ja": {
+        "name": "インターネット事業者",
+        "description": "インターネットサービス提供者"
+      },
+      "zh-TW": {
+        "name": "網路服務商",
+        "description": "網路服務提供商"
+      },
+      "zh-HK": {
+        "name": "上網服務供應商",
+        "description": "上網服務供應商"
+      },
+      "th": {
+        "name": "ผู้ให้บริการอินเทอร์เน็ต",
+        "description": "ผู้ให้บริการอินเทอร์เน็ต"
+      }
+    }
+  },
+  {
+    "code": "APPLIANCE_REPAIR",
+    "translations": {
+      "en": {
+        "name": "Appliance Repair",
+        "description": "Appliance repair contractor"
+      },
+      "ja": {
+        "name": "家電修理",
+        "description": "家電修理業者"
+      },
+      "zh-TW": {
+        "name": "家電維修",
+        "description": "家電維修承包商"
+      },
+      "zh-HK": {
+        "name": "電器維修",
+        "description": "電器維修承辦商"
+      },
+      "th": {
+        "name": "ซ่อมเครื่องใช้ไฟฟ้า",
+        "description": "ผู้ให้บริการซ่อมเครื่องใช้ไฟฟ้า"
+      }
+    }
+  },
+  {
+    "code": "ELEVATOR_MAINTENANCE",
+    "translations": {
+      "en": {
+        "name": "Elevator Maintenance",
+        "description": "Elevator maintenance contractor"
+      },
+      "ja": {
+        "name": "エレベーター保守",
+        "description": "エレベーター保守業者"
+      },
+      "zh-TW": {
+        "name": "電梯維護",
+        "description": "電梯維護承包商"
+      },
+      "zh-HK": {
+        "name": "升降機保養",
+        "description": "升降機保養承辦商"
+      },
+      "th": {
+        "name": "บำรุงรักษาลิฟต์",
+        "description": "ผู้ให้บริการบำรุงรักษาลิฟต์"
+      }
     }
   }
 ]

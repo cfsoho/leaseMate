@@ -9,6 +9,7 @@ from app.db.schemas.payment import (
     PaymentUpdate,
 )
 
+from app.services.soft_delete import soft_delete
 
 def create_payment(
     db: Session,
@@ -74,15 +75,13 @@ def update_payment(
 
 def delete_payment(
     db: Session,
-    payment_id: UUID
-) -> bool:
+    payment_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
 
     payment = get_payment(db, payment_id)
 
     if not payment:
         return False
-
-    db.delete(payment)
-    db.commit()
+    soft_delete(db, payment, deleted_by)
 
     return True

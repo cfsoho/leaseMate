@@ -7,17 +7,12 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
-    Enum,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
-from app.db.models.enums.financial_transaction_source_type import (
-    FinancialTransactionSourceType,
-)
-
 
 class FinancialTransaction(Base):
     __tablename__ = "financial_transactions"
@@ -44,7 +39,8 @@ class FinancialTransaction(Base):
     # PERSONAL_WITHDRAWAL  -> owner takes money out
     # OPENING_BALANCE      -> first balance entry
     source_type = Column(
-        Enum(FinancialTransactionSourceType),
+        String(50),
+        ForeignKey("ref.financial_transaction_source_types.code"),
         nullable=False,
         index=True
     )

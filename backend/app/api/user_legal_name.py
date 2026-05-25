@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_current_user
 from app.db.schemas.user_legal_name import (
     UserLegalNameCreate,
     UserLegalNameUpdate,
@@ -20,7 +21,8 @@ from app.services.user_legal_name_service import (
 
 router = APIRouter(
     prefix="/user-legal-names",
-    tags=["User Legal Names"]
+    tags=["User Legal Names"],
+    dependencies=[Depends(require_current_user)]
 )
 
 
@@ -77,9 +79,10 @@ def update(
 @router.delete("/{legal_name_id}")
 def delete(
     legal_name_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_user_legal_name(db, legal_name_id)
+    deleted = delete_user_legal_name(db, legal_name_id, current_user.id)
 
     if not deleted:
         raise HTTPException(

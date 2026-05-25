@@ -13,6 +13,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
+from app.db.models.ref.status_code import STATUS_CODE_IDS
 
 
 class Expense(Base):
@@ -106,17 +107,12 @@ class Expense(Base):
     )
 
     # Expense workflow/business status.
-    #
-    # Examples:
-    # pending
-    # in_progress
-    # completed
-    # paid
-    status = Column(
-        String(20),
+    status_id = Column(
+        UUID(as_uuid=True),
         nullable=False,
-        default="pending",
-        index=True
+        default=STATUS_CODE_IDS["EXPENSE_PENDING"],
+        index=True,
+        comment="Current workflow status for this expense."
     )
 
     created_at = Column(

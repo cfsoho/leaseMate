@@ -123,5 +123,105 @@
         "description": "สิทธิ์เข้าถึงแบบอ่านอย่างเดียว"
       }
     }
+  },
+  {
+    "code": "TENANT",
+    "translations": {
+      "en": {
+        "name": "Tenant",
+        "description": "Tenant access to relevant property and lease data"
+      },
+      "ja": {
+        "name": "入居者",
+        "description": "関連する物件と契約情報への入居者アクセス"
+      },
+      "zh-TW": {
+        "name": "租客",
+        "description": "租客可存取相關房產與租約資料"
+      },
+      "zh-HK": {
+        "name": "租客",
+        "description": "租客可存取相關物業與租約資料"
+      },
+      "th": {
+        "name": "ผู้เช่า",
+        "description": "สิทธิ์ผู้เช่าในการเข้าถึงข้อมูลทรัพย์สินและสัญญาเช่าที่เกี่ยวข้อง"
+      }
+    }
+  },
+  {
+    "code": "MAINTENANCE_VENDOR",
+    "translations": {
+      "en": {
+        "name": "Maintenance Vendor",
+        "description": "Limited access for maintenance vendors"
+      },
+      "ja": {
+        "name": "メンテナンス業者",
+        "description": "メンテナンス業者向けの限定アクセス"
+      },
+      "zh-TW": {
+        "name": "維修廠商",
+        "description": "維修廠商的有限存取權限"
+      },
+      "zh-HK": {
+        "name": "維修供應商",
+        "description": "維修供應商的有限存取權限"
+      },
+      "th": {
+        "name": "ผู้ให้บริการซ่อมบำรุง",
+        "description": "สิทธิ์เข้าถึงแบบจำกัดสำหรับผู้ให้บริการซ่อมบำรุง"
+      }
+    }
+  },
+  {
+    "code": "LEGAL_REPRESENTATIVE",
+    "translations": {
+      "en": {
+        "name": "Legal Representative",
+        "description": "Access for legal representatives"
+      },
+      "ja": {
+        "name": "法定代理人",
+        "description": "法定代理人向けアクセス"
+      },
+      "zh-TW": {
+        "name": "法律代表",
+        "description": "法律代表的存取權限"
+      },
+      "zh-HK": {
+        "name": "法律代表",
+        "description": "法律代表的存取權限"
+      },
+      "th": {
+        "name": "ผู้แทนทางกฎหมาย",
+        "description": "สิทธิ์เข้าถึงสำหรับผู้แทนทางกฎหมาย"
+      }
+    }
+  },
+  {
+    "code": "FAMILY_MEMBER",
+    "translations": {
+      "en": {
+        "name": "Family Member",
+        "description": "Access for family members"
+      },
+      "ja": {
+        "name": "家族",
+        "description": "家族向けアクセス"
+      },
+      "zh-TW": {
+        "name": "家庭成員",
+        "description": "家庭成員的存取權限"
+      },
+      "zh-HK": {
+        "name": "家庭成員",
+        "description": "家庭成員的存取權限"
+      },
+      "th": {
+        "name": "สมาชิกครอบครัว",
+        "description": "สิทธิ์เข้าถึงสำหรับสมาชิกครอบครัว"
+      }
+    }
   }
 ]

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.models.property import Property
 from app.db.schemas.property import PropertyCreate, PropertyUpdate
 
+from app.services.soft_delete import soft_delete
 
 def create_property(db: Session, payload: PropertyCreate) -> Property:
     property_obj = Property(**payload.model_dump())
@@ -55,13 +56,12 @@ def update_property(
     return property_obj
 
 
-def delete_property(db: Session, property_id: UUID) -> bool:
+def delete_property(db: Session, property_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     property_obj = get_property(db, property_id)
 
     if not property_obj:
         return False
-
-    db.delete(property_obj)
-    db.commit()
+    soft_delete(db, property_obj, deleted_by)
 
     return True

@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_current_user
 from app.db.schemas.financial_account import (
     FinancialAccountCreate,
     FinancialAccountUpdate,
@@ -20,7 +21,8 @@ from app.services.financial_account_service import (
 
 router = APIRouter(
     prefix="/financial-accounts",
-    tags=["Financial Accounts"]
+    tags=["Financial Accounts"],
+    dependencies=[Depends(require_current_user)]
 )
 
 
@@ -77,9 +79,10 @@ def update(
 @router.delete("/{account_id}")
 def delete(
     account_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_financial_account(db, account_id)
+    deleted = delete_financial_account(db, account_id, current_user.id)
 
     if not deleted:
         raise HTTPException(

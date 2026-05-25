@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.models.lease import Lease
 from app.db.schemas.lease import LeaseCreate, LeaseUpdate
 
+from app.services.soft_delete import soft_delete
 
 def create_lease(db: Session, payload: LeaseCreate) -> Lease:
     lease = Lease(**payload.model_dump())
@@ -55,13 +56,12 @@ def update_lease(
     return lease
 
 
-def delete_lease(db: Session, lease_id: UUID) -> bool:
+def delete_lease(db: Session, lease_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     lease = get_lease(db, lease_id)
 
     if not lease:
         return False
-
-    db.delete(lease)
-    db.commit()
+    soft_delete(db, lease, deleted_by)
 
     return True

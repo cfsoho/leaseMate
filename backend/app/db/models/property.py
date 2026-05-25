@@ -8,6 +8,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
+from app.db.models.ref.status_code import STATUS_CODE_IDS
 
 
 class Property(Base):
@@ -68,9 +69,14 @@ class Property(Base):
     latitude = Column(Numeric(10, 8), nullable=True)
     longitude = Column(Numeric(11, 8), nullable=True)
 
-    # Property lifecycle status
-    # Examples: active, inactive, sold, archived
-    status = Column(String(20), nullable=False, default="active", index=True)
+    # Property lifecycle status.
+    status_id = Column(
+        UUID(as_uuid=True),
+        nullable=False,
+        default=STATUS_CODE_IDS["PROPERTY_ACTIVE"],
+        index=True,
+        comment="Current lifecycle status for this property."
+    )
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -90,3 +96,13 @@ class Property(Base):
     utility_bills = relationship("UtilityBill", back_populates="property", cascade="all, delete-orphan")
     tax_records = relationship("TaxRecord", back_populates="property", cascade="all, delete-orphan")
     ledger_entries = relationship("LedgerEntry", back_populates="property", cascade="all, delete-orphan")
+    recurring_expense_schedules = relationship(
+        "RecurringExpenseSchedule",
+        back_populates="property",
+        cascade="all, delete-orphan"
+    )
+    reminders = relationship(
+        "Reminder",
+        back_populates="property",
+        cascade="all, delete-orphan"
+    )

@@ -46,7 +46,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "docker-compose.yml,nginx/leasemate.conf" # 👈 Files pulled from Git
+        source: "docker-compose.prod.yml,nginx/leasemate.conf,docker/pgadmin/servers.json" # 👈 Files pulled from Git
         target: "~/leasemate-deploy"                     # 👈 Destination on AWS
 
     # 5. SSH into AWS to apply the configuration and start containers
@@ -59,6 +59,34 @@ jobs:
         script: |
           # Move into the folder where SCP dropped the files
           cd ~/leasemate-deploy
+
+          # Create the production environment file from GitHub Actions secrets.
+          # Do not commit real credentials to the repo; update these values in
+          # GitHub Settings > Secrets and variables > Actions.
+          sudo tee .env > /dev/null <<EOF
+          POSTGRES_HOST=db
+          POSTGRES_PORT=5432
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
+          PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          AUTO_CREATE_TABLES=false
+          APP_PUBLIC_URL=${{ secrets.APP_PUBLIC_URL }}
+          ACCESS_TOKEN_EXPIRE_MINUTES=15
+          EMAIL_CONFIRMATION_EXPIRE_HOURS=24
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_USE_TLS=true
+          SMTP_NOREPLY_USER=${{ secrets.SMTP_NOREPLY_USER }}
+          SMTP_NOREPLY_PASSWORD=${{ secrets.SMTP_NOREPLY_PASSWORD }}
+          SMTP_NOREPLY_FROM=${{ secrets.SMTP_NOREPLY_FROM }}
+          SMTP_SYSTEM_USER=${{ secrets.SMTP_SYSTEM_USER }}
+          SMTP_SYSTEM_PASSWORD=${{ secrets.SMTP_SYSTEM_PASSWORD }}
+          SMTP_SYSTEM_FROM=${{ secrets.SMTP_SYSTEM_FROM }}
+          EOF
           
           # Move the Nginx file to the system-wide Nginx configuration directory
           sudo cp ./nginx/leasemate.conf /etc/nginx/conf.d/leasemate.conf
@@ -68,5 +96,7 @@ jobs:
 
           # Authenticate Docker on AWS and pull the new images from GHCR
           echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          sudo docker compose pull
-          sudo docker compose up -d
+          sudo docker compose -f docker-compose.prod.yml pull
+          sudo docker compose -f docker-compose.prod.yml up -d
+          sudo docker compose -f docker-compose.prod.yml exec -T backend alembic upgrade head
+          sudo docker compose -f docker-compose.prod.yml exec -T backend python -m app.seeds.seed_master_data

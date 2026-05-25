@@ -23,5 +23,9 @@ class UserRefreshTokenRead(BaseModel):
     last_used_at: Optional[datetime]
     created_at: datetime
 
+    is_deleted: bool
+    deleted_at: Optional[datetime]
+    deleted_by: Optional[UUID]
+
     class Config:
         from_attributes = True

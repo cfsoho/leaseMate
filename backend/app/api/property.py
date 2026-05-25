@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_current_user
 from app.db.schemas.property import (
     PropertyCreate,
     PropertyUpdate,
@@ -20,7 +21,8 @@ from app.services.property_service import (
 
 router = APIRouter(
     prefix="/properties",
-    tags=["Properties"]
+    tags=["Properties"],
+    dependencies=[Depends(require_current_user)]
 )
 
 
@@ -77,9 +79,10 @@ def update(
 @router.delete("/{property_id}")
 def delete(
     property_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_property(db, property_id)
+    deleted = delete_property(db, property_id, current_user.id)
 
     if not deleted:
         raise HTTPException(

@@ -14,6 +14,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
+from app.db.models.ref.status_code import STATUS_CODE_IDS
 
 
 class Lease(Base):
@@ -130,18 +131,12 @@ class Lease(Base):
     )
 
     # Lease lifecycle status.
-    #
-    # Recommended values:
-    # draft
-    # active
-    # expired
-    # terminated
-    # cancelled
-    status = Column(
-        String(20),
+    status_id = Column(
+        UUID(as_uuid=True),
         nullable=False,
-        default="draft",
-        index=True
+        default=STATUS_CODE_IDS["LEASE_DRAFT"],
+        index=True,
+        comment="Current lifecycle status for this lease."
     )
 
     created_at = Column(
@@ -188,6 +183,18 @@ class Lease(Base):
 
     coverage_entries = relationship(
         "PaymentCoverage",
+        back_populates="lease",
+        cascade="all, delete-orphan"
+    )
+
+    rent_periods = relationship(
+        "LeaseRentPeriod",
+        back_populates="lease",
+        cascade="all, delete-orphan"
+    )
+
+    deposits = relationship(
+        "LeaseDeposit",
         back_populates="lease",
         cascade="all, delete-orphan"
     )

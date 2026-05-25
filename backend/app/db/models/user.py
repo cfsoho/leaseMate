@@ -5,15 +5,12 @@ from sqlalchemy import (
     String,
     DateTime,
     ForeignKey,
-    Enum,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
-from app.db.models.enums.user_status import UserStatus
-
 
 class User(Base):
     __tablename__ = "users"
@@ -39,14 +36,14 @@ class User(Base):
     # System role.
     role_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("roles.id"),
+        ForeignKey("ref.roles.id"),
         nullable=True,
         index=True
     )
 
     # Preferred UI/content locale.
     preferred_locale_code = Column(
-        String(10),
+        String(35),
         ForeignKey("ref.locales.code"),
         nullable=True,
         index=True
@@ -54,9 +51,10 @@ class User(Base):
 
     # Account lifecycle status.
     status = Column(
-        Enum(UserStatus),
+        String(50),
+        ForeignKey("ref.user_statuses.code"),
         nullable=False,
-        default=UserStatus.PENDING_EMAIL_VERIFICATION,
+        default="PENDING_EMAIL_VERIFICATION",
         index=True
     )
 

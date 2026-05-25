@@ -10,6 +10,7 @@ from app.db.schemas.financial_transaction import (
     FinancialTransactionUpdate,
 )
 
+from app.services.soft_delete import soft_delete
 
 def validate_transaction_amounts(
     deposit_amount,
@@ -122,14 +123,12 @@ def update_financial_transaction(
 
 def delete_financial_transaction(
     db: Session,
-    transaction_id: UUID
-) -> bool:
+    transaction_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     transaction = get_financial_transaction(db, transaction_id)
 
     if not transaction:
         return False
-
-    db.delete(transaction)
-    db.commit()
+    soft_delete(db, transaction, deleted_by)
 
     return True

@@ -10,6 +10,7 @@ from app.db.schemas.payment_coverage import (
     PaymentCoverageUpdate,
 )
 
+from app.services.soft_delete import soft_delete
 
 def create_payment_coverage(
     db: Session,
@@ -78,8 +79,8 @@ def update_payment_coverage(
 
 def delete_payment_coverage(
     db: Session,
-    payment_coverage_id: UUID
-) -> bool:
+    payment_coverage_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
 
     payment_coverage = get_payment_coverage(
         db,
@@ -88,8 +89,6 @@ def delete_payment_coverage(
 
     if not payment_coverage:
         return False
-
-    db.delete(payment_coverage)
-    db.commit()
+    soft_delete(db, payment_coverage, deleted_by)
 
     return True

@@ -7,17 +7,12 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     func,
-    Enum,
     Boolean,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
-from app.db.models.enums.document_status import DocumentStatus
-from app.db.models.enums.document_visibility import DocumentVisibility
-from app.db.models.enums.storage_type import StorageType
-
 
 class Document(Base):
     __tablename__ = "documents"
@@ -77,13 +72,6 @@ class Document(Base):
         nullable=False
     )
 
-    # Physical storage backend type.
-    storage_type = Column(
-        Enum(StorageType),
-        nullable=False,
-        default=StorageType.NAS
-    )
-
     # MIME content type.
     #
     # Examples:
@@ -119,16 +107,18 @@ class Document(Base):
     # FINAL
     # SIGNED
     status = Column(
-        Enum(DocumentStatus),
+        String(50),
+        ForeignKey("ref.document_statuses.code"),
         nullable=False,
-        default=DocumentStatus.DRAFT
+        default="DRAFT"
     )
 
     # Visibility/access scope.
     visibility = Column(
-        Enum(DocumentVisibility),
+        String(50),
+        ForeignKey("ref.document_visibilities.code"),
         nullable=False,
-        default=DocumentVisibility.OWNER_ONLY
+        default="OWNER_ONLY"
     )
 
     # User who uploaded the document.

@@ -4,9 +4,6 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
-from app.db.models.enums.user_status import UserStatus
-
-
 class UserCreate(BaseModel):
     family_name: str
     given_name: str
@@ -23,11 +20,11 @@ class UserUpdate(BaseModel):
     phone: Optional[str] = None
     role_id: Optional[UUID] = None
     preferred_locale_code: Optional[str] = None
-    status: Optional[UserStatus] = None
+    status: Optional[str] = None
 
 
 class UserPasswordChange(BaseModel):
-    old_password: str
+    old_password: Optional[str] = None
     new_password: str
 
 
@@ -39,9 +36,13 @@ class UserRead(BaseModel):
     phone: Optional[str]
     role_id: Optional[UUID]
     preferred_locale_code: Optional[str]
-    status: UserStatus
+    status: str
     created_at: datetime
     updated_at: Optional[datetime]
+
+    is_deleted: bool
+    deleted_at: Optional[datetime]
+    deleted_by: Optional[UUID]
 
     class Config:
         from_attributes = True

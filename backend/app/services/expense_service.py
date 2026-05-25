@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.models.expense import Expense
 from app.db.schemas.expense import ExpenseCreate, ExpenseUpdate
 
+from app.services.soft_delete import soft_delete
 
 def create_expense(db: Session, payload: ExpenseCreate) -> Expense:
     expense = Expense(**payload.model_dump())
@@ -55,14 +56,13 @@ def update_expense(
     return expense
 
 
-def delete_expense(db: Session, expense_id: UUID) -> bool:
+def delete_expense(db: Session, expense_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     expense = get_expense(db, expense_id)
 
     if not expense:
         return False
-
-    db.delete(expense)
-    db.commit()
+    soft_delete(db, expense, deleted_by)
 
     return True
 

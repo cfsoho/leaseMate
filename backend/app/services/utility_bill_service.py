@@ -9,6 +9,7 @@ from app.db.schemas.utility_bill import (
     UtilityBillUpdate,
 )
 
+from app.services.soft_delete import soft_delete
 
 def create_utility_bill(
     db: Session,
@@ -68,14 +69,12 @@ def update_utility_bill(
 
 def delete_utility_bill(
     db: Session,
-    utility_bill_id: UUID
-) -> bool:
+    utility_bill_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     utility_bill = get_utility_bill(db, utility_bill_id)
 
     if not utility_bill:
         return False
-
-    db.delete(utility_bill)
-    db.commit()
+    soft_delete(db, utility_bill, deleted_by)
 
     return True

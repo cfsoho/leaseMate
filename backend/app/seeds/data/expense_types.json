@@ -123,5 +123,430 @@
         "description": "ค่าใช้จ่ายเกี่ยวกับประกัน"
       }
     }
+  },
+  {
+    "code": "UTILITY",
+    "translations": {
+      "en": {
+        "name": "Utility",
+        "description": "Utility-related expense"
+      },
+      "ja": {
+        "name": "公共料金",
+        "description": "公共料金関連費用"
+      },
+      "zh-TW": {
+        "name": "公用事業",
+        "description": "水電瓦斯等公用事業費用"
+      },
+      "zh-HK": {
+        "name": "公用事業",
+        "description": "水電煤等公用事業費用"
+      },
+      "th": {
+        "name": "ค่าสาธารณูปโภค",
+        "description": "ค่าใช้จ่ายเกี่ยวกับสาธารณูปโภค"
+      }
+    }
+  },
+  {
+    "code": "COMMON_FEE",
+    "translations": {
+      "en": {
+        "name": "Common Fee",
+        "description": "Building common area or management fee"
+      },
+      "ja": {
+        "name": "管理費",
+        "description": "建物共用部または管理費"
+      },
+      "zh-TW": {
+        "name": "管理費",
+        "description": "大樓公共區域或管理費用"
+      },
+      "zh-HK": {
+        "name": "管理費",
+        "description": "大廈公共區域或管理費用"
+      },
+      "th": {
+        "name": "ค่าส่วนกลาง",
+        "description": "ค่าพื้นที่ส่วนกลางหรือค่าบริหารอาคาร"
+      }
+    }
+  },
+  {
+    "code": "PROPERTY_MANAGEMENT_FEE",
+    "translations": {
+      "en": {
+        "name": "Property Management Fee",
+        "description": "Property management service fee"
+      },
+      "ja": {
+        "name": "物件管理手数料",
+        "description": "物件管理サービス手数料"
+      },
+      "zh-TW": {
+        "name": "物業管理費",
+        "description": "物業管理服務費"
+      },
+      "zh-HK": {
+        "name": "物業管理費",
+        "description": "物業管理服務費"
+      },
+      "th": {
+        "name": "ค่าบริหารทรัพย์สิน",
+        "description": "ค่าบริการบริหารทรัพย์สิน"
+      }
+    }
+  },
+  {
+    "code": "AGENT_COMMISSION",
+    "translations": {
+      "en": {
+        "name": "Agent Commission",
+        "description": "Real estate agent commission"
+      },
+      "ja": {
+        "name": "仲介手数料",
+        "description": "不動産仲介手数料"
+      },
+      "zh-TW": {
+        "name": "仲介佣金",
+        "description": "房地產仲介佣金"
+      },
+      "zh-HK": {
+        "name": "代理佣金",
+        "description": "地產代理佣金"
+      },
+      "th": {
+        "name": "ค่านายหน้า",
+        "description": "ค่านายหน้าอสังหาริมทรัพย์"
+      }
+    }
+  },
+  {
+    "code": "BANK_FEE",
+    "translations": {
+      "en": {
+        "name": "Bank Fee",
+        "description": "Bank fee or transaction charge"
+      },
+      "ja": {
+        "name": "銀行手数料",
+        "description": "銀行または取引手数料"
+      },
+      "zh-TW": {
+        "name": "銀行手續費",
+        "description": "銀行或交易手續費"
+      },
+      "zh-HK": {
+        "name": "銀行手續費",
+        "description": "銀行或交易手續費"
+      },
+      "th": {
+        "name": "ค่าธรรมเนียมธนาคาร",
+        "description": "ค่าธรรมเนียมธนาคารหรือธุรกรรม"
+      }
+    }
+  },
+  {
+    "code": "LEGAL_FEE",
+    "translations": {
+      "en": {
+        "name": "Legal Fee",
+        "description": "Legal service fee"
+      },
+      "ja": {
+        "name": "法律費用",
+        "description": "法律サービス費用"
+      },
+      "zh-TW": {
+        "name": "法律費用",
+        "description": "法律服務費用"
+      },
+      "zh-HK": {
+        "name": "法律費用",
+        "description": "法律服務費用"
+      },
+      "th": {
+        "name": "ค่ากฎหมาย",
+        "description": "ค่าบริการทางกฎหมาย"
+      }
+    }
+  },
+  {
+    "code": "ACCOUNTING_FEE",
+    "translations": {
+      "en": {
+        "name": "Accounting Fee",
+        "description": "Accounting or bookkeeping fee"
+      },
+      "ja": {
+        "name": "会計費用",
+        "description": "会計または記帳費用"
+      },
+      "zh-TW": {
+        "name": "會計費用",
+        "description": "會計或記帳費用"
+      },
+      "zh-HK": {
+        "name": "會計費用",
+        "description": "會計或簿記費用"
+      },
+      "th": {
+        "name": "ค่าบัญชี",
+        "description": "ค่าบริการบัญชีหรือทำบัญชี"
+      }
+    }
+  },
+  {
+    "code": "RENOVATION",
+    "translations": {
+      "en": {
+        "name": "Renovation",
+        "description": "Renovation or remodeling expense"
+      },
+      "ja": {
+        "name": "リフォーム",
+        "description": "改装またはリフォーム費用"
+      },
+      "zh-TW": {
+        "name": "裝修",
+        "description": "裝修或改造費用"
+      },
+      "zh-HK": {
+        "name": "裝修",
+        "description": "裝修或改造費用"
+      },
+      "th": {
+        "name": "ค่าปรับปรุง",
+        "description": "ค่าใช้จ่ายในการปรับปรุงหรือตกแต่ง"
+      }
+    }
+  },
+  {
+    "code": "FURNITURE",
+    "translations": {
+      "en": {
+        "name": "Furniture",
+        "description": "Furniture purchase or replacement"
+      },
+      "ja": {
+        "name": "家具",
+        "description": "家具の購入または交換"
+      },
+      "zh-TW": {
+        "name": "家具",
+        "description": "家具購買或更換"
+      },
+      "zh-HK": {
+        "name": "傢俬",
+        "description": "傢俬購買或更換"
+      },
+      "th": {
+        "name": "เฟอร์นิเจอร์",
+        "description": "การซื้อหรือเปลี่ยนเฟอร์นิเจอร์"
+      }
+    }
+  },
+  {
+    "code": "APPLIANCE",
+    "translations": {
+      "en": {
+        "name": "Appliance",
+        "description": "Appliance purchase or repair"
+      },
+      "ja": {
+        "name": "家電",
+        "description": "家電の購入または修理"
+      },
+      "zh-TW": {
+        "name": "家電",
+        "description": "家電購買或維修"
+      },
+      "zh-HK": {
+        "name": "電器",
+        "description": "電器購買或維修"
+      },
+      "th": {
+        "name": "เครื่องใช้ไฟฟ้า",
+        "description": "การซื้อหรือซ่อมเครื่องใช้ไฟฟ้า"
+      }
+    }
+  },
+  {
+    "code": "PEST_CONTROL",
+    "translations": {
+      "en": {
+        "name": "Pest Control",
+        "description": "Pest control expense"
+      },
+      "ja": {
+        "name": "害虫駆除",
+        "description": "害虫駆除費用"
+      },
+      "zh-TW": {
+        "name": "除蟲",
+        "description": "除蟲費用"
+      },
+      "zh-HK": {
+        "name": "滅蟲",
+        "description": "滅蟲費用"
+      },
+      "th": {
+        "name": "กำจัดแมลง",
+        "description": "ค่าใช้จ่ายในการกำจัดแมลง"
+      }
+    }
+  },
+  {
+    "code": "SECURITY",
+    "translations": {
+      "en": {
+        "name": "Security",
+        "description": "Security-related expense"
+      },
+      "ja": {
+        "name": "セキュリティ",
+        "description": "セキュリティ関連費用"
+      },
+      "zh-TW": {
+        "name": "保全",
+        "description": "保全或安全相關費用"
+      },
+      "zh-HK": {
+        "name": "保安",
+        "description": "保安相關費用"
+      },
+      "th": {
+        "name": "ความปลอดภัย",
+        "description": "ค่าใช้จ่ายเกี่ยวกับความปลอดภัย"
+      }
+    }
+  },
+  {
+    "code": "GARDENING",
+    "translations": {
+      "en": {
+        "name": "Gardening",
+        "description": "Gardening or landscaping expense"
+      },
+      "ja": {
+        "name": "園芸",
+        "description": "庭園または造園費用"
+      },
+      "zh-TW": {
+        "name": "園藝",
+        "description": "園藝或景觀維護費用"
+      },
+      "zh-HK": {
+        "name": "園藝",
+        "description": "園藝或園景維護費用"
+      },
+      "th": {
+        "name": "สวน",
+        "description": "ค่าใช้จ่ายเกี่ยวกับสวนหรือภูมิทัศน์"
+      }
+    }
+  },
+  {
+    "code": "INTERNET",
+    "translations": {
+      "en": {
+        "name": "Internet",
+        "description": "Internet service expense"
+      },
+      "ja": {
+        "name": "インターネット",
+        "description": "インターネットサービス費用"
+      },
+      "zh-TW": {
+        "name": "網路",
+        "description": "網路服務費用"
+      },
+      "zh-HK": {
+        "name": "上網服務",
+        "description": "上網服務費用"
+      },
+      "th": {
+        "name": "อินเทอร์เน็ต",
+        "description": "ค่าใช้บริการอินเทอร์เน็ต"
+      }
+    }
+  },
+  {
+    "code": "MORTGAGE_INTEREST",
+    "translations": {
+      "en": {
+        "name": "Mortgage Interest",
+        "description": "Mortgage interest expense"
+      },
+      "ja": {
+        "name": "住宅ローン利息",
+        "description": "住宅ローン利息費用"
+      },
+      "zh-TW": {
+        "name": "房貸利息",
+        "description": "房貸利息費用"
+      },
+      "zh-HK": {
+        "name": "按揭利息",
+        "description": "按揭利息費用"
+      },
+      "th": {
+        "name": "ดอกเบี้ยจำนอง",
+        "description": "ดอกเบี้ยเงินกู้จำนอง"
+      }
+    }
+  },
+  {
+    "code": "DEPRECIATION",
+    "translations": {
+      "en": {
+        "name": "Depreciation",
+        "description": "Depreciation expense"
+      },
+      "ja": {
+        "name": "減価償却",
+        "description": "減価償却費"
+      },
+      "zh-TW": {
+        "name": "折舊",
+        "description": "折舊費用"
+      },
+      "zh-HK": {
+        "name": "折舊",
+        "description": "折舊費用"
+      },
+      "th": {
+        "name": "ค่าเสื่อมราคา",
+        "description": "ค่าใช้จ่ายค่าเสื่อมราคา"
+      }
+    }
+  },
+  {
+    "code": "OTHER",
+    "translations": {
+      "en": {
+        "name": "Other",
+        "description": "Other expense"
+      },
+      "ja": {
+        "name": "その他",
+        "description": "その他の費用"
+      },
+      "zh-TW": {
+        "name": "其他",
+        "description": "其他費用"
+      },
+      "zh-HK": {
+        "name": "其他",
+        "description": "其他費用"
+      },
+      "th": {
+        "name": "อื่น ๆ",
+        "description": "ค่าใช้จ่ายอื่น ๆ"
+      }
+    }
   }
 ]

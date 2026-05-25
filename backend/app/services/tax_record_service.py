@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.models.tax_record import TaxRecord
 from app.db.schemas.tax_record import TaxRecordCreate, TaxRecordUpdate
 
+from app.services.soft_delete import soft_delete
 
 def create_tax_record(db: Session, payload: TaxRecordCreate) -> TaxRecord:
     tax_record = TaxRecord(**payload.model_dump())
@@ -55,13 +56,12 @@ def update_tax_record(
     return tax_record
 
 
-def delete_tax_record(db: Session, tax_record_id: UUID) -> bool:
+def delete_tax_record(db: Session, tax_record_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     tax_record = get_tax_record(db, tax_record_id)
 
     if not tax_record:
         return False
-
-    db.delete(tax_record)
-    db.commit()
+    soft_delete(db, tax_record, deleted_by)
 
     return True

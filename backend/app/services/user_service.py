@@ -7,6 +7,7 @@ from app.db.models.user import User
 from app.db.schemas.user import UserCreate, UserUpdate
 from app.services.user_auth_service import hash_password
 
+from app.services.soft_delete import soft_delete
 
 def create_user(db: Session, payload: UserCreate) -> User:
     data = payload.model_dump()
@@ -55,13 +56,12 @@ def update_user(
     return user
 
 
-def delete_user(db: Session, user_id: UUID) -> bool:
+def delete_user(db: Session, user_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     user = get_user(db, user_id)
 
     if not user:
         return False
-
-    db.delete(user)
-    db.commit()
+    soft_delete(db, user, deleted_by)
 
     return True

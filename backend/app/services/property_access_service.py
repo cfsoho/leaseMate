@@ -9,6 +9,7 @@ from app.db.schemas.property_access import (
     PropertyAccessUpdate,
 )
 
+from app.services.soft_delete import soft_delete
 
 def create_property_access(
     db: Session,
@@ -70,14 +71,12 @@ def update_property_access(
 
 def delete_property_access(
     db: Session,
-    property_access_id: UUID
-) -> bool:
+    property_access_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     access = get_property_access(db, property_access_id)
 
     if not access:
         return False
-
-    db.delete(access)
-    db.commit()
+    soft_delete(db, access, deleted_by)
 
     return True

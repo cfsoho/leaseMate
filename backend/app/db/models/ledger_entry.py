@@ -9,7 +9,6 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
-    Enum,
     Boolean,
     func,
 )
@@ -17,9 +16,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
-from app.db.models.enums.ledger_entry_type import LedgerEntryType
-from app.db.models.enums.document_object_type import DocumentObjectType
-
 
 class LedgerEntry(Base):
     __tablename__ = "ledger_entries"
@@ -47,7 +43,8 @@ class LedgerEntry(Base):
     # UTILITY_EXPENSE
     # TAX
     entry_type = Column(
-        Enum(LedgerEntryType),
+        String(50),
+        ForeignKey("ref.ledger_entry_types.code"),
         nullable=False,
         index=True
     )
@@ -102,7 +99,8 @@ class LedgerEntry(Base):
     # EXPENSE
     # UTILITY_BILL
     source_type = Column(
-        Enum(DocumentObjectType),
+        String(50),
+        ForeignKey("ref.document_object_types.code"),
         nullable=True,
         index=True
     )

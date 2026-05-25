@@ -25,5 +25,9 @@ class PropertyAccessRead(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
 
+    is_deleted: bool
+    deleted_at: Optional[datetime]
+    deleted_by: Optional[UUID]
+
     class Config:
         from_attributes = True

@@ -1,0 +1,79 @@
+{
+  "role_codes": [
+    { "code": "ADMIN", "name": "Admin", "description": "System administrator" },
+    { "code": "USER", "name": "User", "description": "Standard application user" }
+  ],
+  "user_statuses": [
+    { "code": "PENDING_EMAIL_VERIFICATION", "name": "Pending email verification" },
+    { "code": "ACTIVE", "name": "Active" },
+    { "code": "INACTIVE", "name": "Inactive" },
+    { "code": "LOCKED", "name": "Locked" }
+  ],
+  "user_verification_token_types": [
+    { "code": "EMAIL_CONFIRMATION", "name": "Email confirmation" },
+    { "code": "PASSWORD_RESET", "name": "Password reset" },
+    { "code": "EMAIL_CHANGE", "name": "Email change" }
+  ],
+  "property_access_level_codes": [
+    { "code": "OWNER", "name": "Owner" },
+    { "code": "MANAGER", "name": "Manager" },
+    { "code": "REAL_ESTATE_AGENT", "name": "Real estate agent" },
+    { "code": "ACCOUNTANT", "name": "Accountant" },
+    { "code": "VIEWER", "name": "Viewer" },
+    { "code": "TENANT", "name": "Tenant" },
+    { "code": "MAINTENANCE_VENDOR", "name": "Maintenance vendor" },
+    { "code": "LEGAL_REPRESENTATIVE", "name": "Legal representative" },
+    { "code": "FAMILY_MEMBER", "name": "Family member" }
+  ],
+  "document_statuses": [
+    { "code": "DRAFT", "name": "Draft" },
+    { "code": "FINAL", "name": "Final" },
+    { "code": "SIGNED", "name": "Signed" },
+    { "code": "EXPIRED", "name": "Expired" },
+    { "code": "SUPERSEDED", "name": "Superseded" },
+    { "code": "VOID", "name": "Void" }
+  ],
+  "document_visibilities": [
+    { "code": "OWNER_ONLY", "name": "Owner only" },
+    { "code": "OWNER_AGENT", "name": "Owner and agent" },
+    { "code": "TENANT_ALL", "name": "Tenant visible" },
+    { "code": "INHERIT", "name": "Inherit from linked object" }
+  ],
+  "document_object_types": [
+    { "code": "PROPERTY", "name": "Property" },
+    { "code": "LEASE", "name": "Lease" },
+    { "code": "PAYMENT", "name": "Payment" },
+    { "code": "EXPENSE", "name": "Expense" },
+    { "code": "UTILITY", "name": "Utility" },
+    { "code": "TAX_RECORD", "name": "Tax record" },
+    { "code": "LEDGER", "name": "Ledger" },
+    { "code": "CONTRACTOR", "name": "Contractor" },
+    { "code": "TENANT", "name": "Tenant" }
+  ],
+  "financial_transaction_source_types": [
+    { "code": "OPENING_BALANCE", "name": "Opening balance" },
+    { "code": "PAYMENT", "name": "Payment" },
+    { "code": "EXPENSE", "name": "Expense" },
+    { "code": "UTILITY_BILL", "name": "Utility bill" },
+    { "code": "TAX_RECORD", "name": "Tax record" },
+    { "code": "PERSONAL_DEPOSIT", "name": "Personal deposit" },
+    { "code": "PERSONAL_WITHDRAWAL", "name": "Personal withdrawal" },
+    { "code": "TRANSFER", "name": "Transfer" },
+    { "code": "OTHER", "name": "Other" }
+  ],
+  "ledger_entry_types": [
+    { "code": "RENT_INCOME", "name": "Rent income", "is_income": true },
+    { "code": "OTHER_INCOME", "name": "Other income", "is_income": true },
+    { "code": "UTILITY_EXPENSE", "name": "Utility expense", "is_income": false },
+    { "code": "MAINTENANCE", "name": "Maintenance", "is_income": false },
+    { "code": "REPAIR_EXPENSE", "name": "Repair expense", "is_income": false },
+    { "code": "TAX_PAYMENT", "name": "Tax payment", "is_income": false },
+    { "code": "BANK_FEE", "name": "Bank fee", "is_income": false },
+    { "code": "PROPERTY_MANAGEMENT_FEE", "name": "Property management fee", "is_income": false },
+    { "code": "AGENT_COMMISSION", "name": "Agent commission", "is_income": false },
+    { "code": "INSURANCE", "name": "Insurance", "is_income": false },
+    { "code": "LEGAL_FEE", "name": "Legal fee", "is_income": false },
+    { "code": "ACCOUNTING_FEE", "name": "Accounting fee", "is_income": false },
+    { "code": "OTHER_EXPENSE", "name": "Other expense", "is_income": false }
+  ]
+}

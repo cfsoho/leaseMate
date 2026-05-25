@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_current_user
 from app.db.schemas.utility_bill import (
     UtilityBillCreate,
     UtilityBillUpdate,
@@ -20,7 +21,8 @@ from app.services.utility_bill_service import (
 
 router = APIRouter(
     prefix="/utility-bills",
-    tags=["Utility Bills"]
+    tags=["Utility Bills"],
+    dependencies=[Depends(require_current_user)]
 )
 
 
@@ -81,9 +83,10 @@ def update(
 @router.delete("/{utility_bill_id}")
 def delete(
     utility_bill_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_utility_bill(db, utility_bill_id)
+    deleted = delete_utility_bill(db, utility_bill_id, current_user.id)
 
     if not deleted:
         raise HTTPException(

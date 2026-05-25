@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_current_user
 from app.db.schemas.expense import (
     ExpenseCreate,
     ExpenseUpdate,
@@ -20,7 +21,8 @@ from app.services.expense_service import (
 
 router = APIRouter(
     prefix="/expenses",
-    tags=["Expenses"]
+    tags=["Expenses"],
+    dependencies=[Depends(require_current_user)]
 )
 
 
@@ -71,9 +73,10 @@ def update(
 @router.delete("/{expense_id}")
 def delete(
     expense_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_expense(db, expense_id)
+    deleted = delete_expense(db, expense_id, current_user.id)
 
     if not deleted:
         raise HTTPException(status_code=404, detail="Expense not found")

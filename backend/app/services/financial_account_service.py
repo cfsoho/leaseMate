@@ -9,6 +9,7 @@ from app.db.schemas.financial_account import (
     FinancialAccountUpdate,
 )
 
+from app.services.soft_delete import soft_delete
 
 def create_financial_account(
     db: Session,
@@ -68,14 +69,12 @@ def update_financial_account(
 
 def delete_financial_account(
     db: Session,
-    account_id: UUID
-) -> bool:
+    account_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     account = get_financial_account(db, account_id)
 
     if not account:
         return False
-
-    db.delete(account)
-    db.commit()
+    soft_delete(db, account, deleted_by)
 
     return True

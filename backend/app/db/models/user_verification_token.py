@@ -5,17 +5,12 @@ from sqlalchemy import (
     String,
     DateTime,
     ForeignKey,
-    Enum,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
-from app.db.models.enums.user_verification_token_type import (
-    UserVerificationTokenType,
-)
-
 
 class UserVerificationToken(Base):
     __tablename__ = "user_verification_tokens"
@@ -34,7 +29,8 @@ class UserVerificationToken(Base):
     # Token purpose:
     # EMAIL_CONFIRMATION / PASSWORD_RESET / EMAIL_CHANGE
     token_type = Column(
-        Enum(UserVerificationTokenType),
+        String(50),
+        ForeignKey("ref.user_verification_token_types.code"),
         nullable=False,
         index=True
     )

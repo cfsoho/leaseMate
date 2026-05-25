@@ -14,6 +14,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
+from app.db.models.ref.status_code import STATUS_CODE_IDS
 
 
 class UtilityBill(Base):
@@ -111,17 +112,12 @@ class UtilityBill(Base):
     )
 
     # Utility bill lifecycle status.
-    #
-    # Examples:
-    # pending
-    # paid
-    # overdue
-    # cancelled
-    status = Column(
-        String(20),
+    status_id = Column(
+        UUID(as_uuid=True),
         nullable=False,
-        default="pending",
-        index=True
+        default=STATUS_CODE_IDS["UTILITY_BILL_PENDING"],
+        index=True,
+        comment="Current utility bill lifecycle status."
     )
 
     # Freeform notes.

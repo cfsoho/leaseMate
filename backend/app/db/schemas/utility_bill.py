@@ -5,6 +5,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from app.db.models.ref.status_code import STATUS_CODE_IDS
+
 
 class UtilityBillCreate(BaseModel):
     property_id: UUID
@@ -22,7 +24,7 @@ class UtilityBillCreate(BaseModel):
     meter_start: Optional[Decimal] = None
     meter_end: Optional[Decimal] = None
 
-    status: str = "pending"
+    status_id: UUID = STATUS_CODE_IDS["UTILITY_BILL_PENDING"]
     notes: Optional[str] = None
 
 
@@ -42,7 +44,7 @@ class UtilityBillUpdate(BaseModel):
     meter_start: Optional[Decimal] = None
     meter_end: Optional[Decimal] = None
 
-    status: Optional[str] = None
+    status_id: Optional[UUID] = None
     notes: Optional[str] = None
 
 
@@ -64,11 +66,15 @@ class UtilityBillRead(BaseModel):
     meter_start: Optional[Decimal]
     meter_end: Optional[Decimal]
 
-    status: str
+    status_id: UUID
     notes: Optional[str]
 
     created_at: datetime
     updated_at: Optional[datetime]
+
+    is_deleted: bool
+    deleted_at: Optional[datetime]
+    deleted_by: Optional[UUID]
 
     class Config:
         from_attributes = True

@@ -1,0 +1,814 @@
+[
+  {
+    "id": "6b092ed8-39ed-47ce-93fd-94cf1b121e1c",
+    "group_code": "PROPERTY",
+    "code": "ACTIVE",
+    "is_terminal": false,
+    "is_success": false,
+    "sort_order": 10,
+    "translations": {
+      "en": {
+        "name": "Active"
+      },
+      "ja": {
+        "name": "有効"
+      },
+      "zh-TW": {
+        "name": "啟用"
+      },
+      "zh-HK": {
+        "name": "啟用"
+      },
+      "th": {
+        "name": "ใช้งานอยู่"
+      }
+    }
+  },
+  {
+    "id": "13d8d10a-3a19-44bf-bdc9-14c40a69814b",
+    "group_code": "PROPERTY",
+    "code": "INACTIVE",
+    "is_terminal": false,
+    "is_success": false,
+    "sort_order": 20,
+    "translations": {
+      "en": {
+        "name": "Inactive"
+      },
+      "ja": {
+        "name": "無効"
+      },
+      "zh-TW": {
+        "name": "停用"
+      },
+      "zh-HK": {
+        "name": "停用"
+      },
+      "th": {
+        "name": "ไม่ได้ใช้งาน"
+      }
+    }
+  },
+  {
+    "id": "7b2a812f-ea02-4356-b31a-e6f596eb7bb5",
+    "group_code": "PROPERTY",
+    "code": "SOLD",
+    "is_terminal": true,
+    "is_success": true,
+    "sort_order": 30,
+    "translations": {
+      "en": {
+        "name": "Sold"
+      },
+      "ja": {
+        "name": "売却済み"
+      },
+      "zh-TW": {
+        "name": "已出售"
+      },
+      "zh-HK": {
+        "name": "已出售"
+      },
+      "th": {
+        "name": "ขายแล้ว"
+      }
+    }
+  },
+  {
+    "id": "758111fd-ea86-46a8-b84a-fca41f9adddb",
+    "group_code": "PROPERTY",
+    "code": "ARCHIVED",
+    "is_terminal": true,
+    "is_success": false,
+    "sort_order": 40,
+    "translations": {
+      "en": {
+        "name": "Archived"
+      },
+      "ja": {
+        "name": "アーカイブ済み"
+      },
+      "zh-TW": {
+        "name": "已封存"
+      },
+      "zh-HK": {
+        "name": "已封存"
+      },
+      "th": {
+        "name": "เก็บถาวรแล้ว"
+      }
+    }
+  },
+  {
+    "id": "cf99c507-0c69-4afe-b056-005fce557357",
+    "group_code": "LEASE",
+    "code": "DRAFT",
+    "sort_order": 10,
+    "translations": {
+      "en": {
+        "name": "Draft"
+      },
+      "ja": {
+        "name": "下書き"
+      },
+      "zh-TW": {
+        "name": "草稿"
+      },
+      "zh-HK": {
+        "name": "草稿"
+      },
+      "th": {
+        "name": "ฉบับร่าง"
+      }
+    }
+  },
+  {
+    "id": "72818a71-d566-4838-9f05-99792dded273",
+    "group_code": "LEASE",
+    "code": "ACTIVE",
+    "sort_order": 20,
+    "translations": {
+      "en": {
+        "name": "Active"
+      },
+      "ja": {
+        "name": "有効"
+      },
+      "zh-TW": {
+        "name": "生效中"
+      },
+      "zh-HK": {
+        "name": "生效中"
+      },
+      "th": {
+        "name": "มีผลใช้งาน"
+      }
+    }
+  },
+  {
+    "id": "f48e4682-2ef4-4c67-93b6-41bc64714c27",
+    "group_code": "LEASE",
+    "code": "EXPIRED",
+    "is_terminal": true,
+    "sort_order": 30,
+    "translations": {
+      "en": {
+        "name": "Expired"
+      },
+      "ja": {
+        "name": "期限切れ"
+      },
+      "zh-TW": {
+        "name": "已到期"
+      },
+      "zh-HK": {
+        "name": "已到期"
+      },
+      "th": {
+        "name": "หมดอายุ"
+      }
+    }
+  },
+  {
+    "id": "abfb71e2-f2f7-40ed-8fbf-e3c983ac2c9c",
+    "group_code": "LEASE",
+    "code": "TERMINATED",
+    "is_terminal": true,
+    "sort_order": 40,
+    "translations": {
+      "en": {
+        "name": "Terminated"
+      },
+      "ja": {
+        "name": "解約済み"
+      },
+      "zh-TW": {
+        "name": "已終止"
+      },
+      "zh-HK": {
+        "name": "已終止"
+      },
+      "th": {
+        "name": "ยุติแล้ว"
+      }
+    }
+  },
+  {
+    "id": "282dd605-1910-433e-a1f5-268ea091e702",
+    "group_code": "LEASE",
+    "code": "CANCELLED",
+    "is_terminal": true,
+    "sort_order": 50,
+    "translations": {
+      "en": {
+        "name": "Cancelled"
+      },
+      "ja": {
+        "name": "キャンセル済み"
+      },
+      "zh-TW": {
+        "name": "已取消"
+      },
+      "zh-HK": {
+        "name": "已取消"
+      },
+      "th": {
+        "name": "ยกเลิกแล้ว"
+      }
+    }
+  },
+  {
+    "id": "aa38978e-8e45-43cc-90f1-c863f261ef82",
+    "group_code": "EXPENSE",
+    "code": "PENDING",
+    "sort_order": 10,
+    "translations": {
+      "en": {
+        "name": "Pending"
+      },
+      "ja": {
+        "name": "保留中"
+      },
+      "zh-TW": {
+        "name": "待處理"
+      },
+      "zh-HK": {
+        "name": "待處理"
+      },
+      "th": {
+        "name": "รอดำเนินการ"
+      }
+    }
+  },
+  {
+    "id": "69bf95cf-b416-425b-9643-d16e815712da",
+    "group_code": "EXPENSE",
+    "code": "IN_PROGRESS",
+    "sort_order": 20,
+    "translations": {
+      "en": {
+        "name": "In progress"
+      },
+      "ja": {
+        "name": "進行中"
+      },
+      "zh-TW": {
+        "name": "處理中"
+      },
+      "zh-HK": {
+        "name": "處理中"
+      },
+      "th": {
+        "name": "กำลังดำเนินการ"
+      }
+    }
+  },
+  {
+    "id": "6a70acdd-3580-4934-99f4-28fed3cd7e15",
+    "group_code": "EXPENSE",
+    "code": "COMPLETED",
+    "is_terminal": true,
+    "is_success": true,
+    "sort_order": 30,
+    "translations": {
+      "en": {
+        "name": "Completed"
+      },
+      "ja": {
+        "name": "完了"
+      },
+      "zh-TW": {
+        "name": "已完成"
+      },
+      "zh-HK": {
+        "name": "已完成"
+      },
+      "th": {
+        "name": "เสร็จสิ้น"
+      }
+    }
+  },
+  {
+    "id": "d69c33eb-fd38-472c-8b9f-93eb0c946274",
+    "group_code": "EXPENSE",
+    "code": "PAID",
+    "is_terminal": true,
+    "is_success": true,
+    "sort_order": 40,
+    "translations": {
+      "en": {
+        "name": "Paid"
+      },
+      "ja": {
+        "name": "支払済み"
+      },
+      "zh-TW": {
+        "name": "已付款"
+      },
+      "zh-HK": {
+        "name": "已付款"
+      },
+      "th": {
+        "name": "ชำระแล้ว"
+      }
+    }
+  },
+  {
+    "id": "7318351c-746f-4472-9124-1009b1b816c8",
+    "group_code": "RENT_PERIOD",
+    "code": "PENDING",
+    "sort_order": 10,
+    "translations": {
+      "en": {
+        "name": "Pending"
+      },
+      "ja": {
+        "name": "保留中"
+      },
+      "zh-TW": {
+        "name": "待處理"
+      },
+      "zh-HK": {
+        "name": "待處理"
+      },
+      "th": {
+        "name": "รอดำเนินการ"
+      }
+    }
+  },
+  {
+    "id": "71f4cf32-0aae-4cfd-bdc2-e21df158bf69",
+    "group_code": "RENT_PERIOD",
+    "code": "PARTIALLY_PAID",
+    "sort_order": 20,
+    "translations": {
+      "en": {
+        "name": "Partially paid"
+      },
+      "ja": {
+        "name": "一部支払済み"
+      },
+      "zh-TW": {
+        "name": "部分付款"
+      },
+      "zh-HK": {
+        "name": "部分付款"
+      },
+      "th": {
+        "name": "ชำระบางส่วน"
+      }
+    }
+  },
+  {
+    "id": "38bba064-9a80-4339-886c-9de53c11b13b",
+    "group_code": "RENT_PERIOD",
+    "code": "PAID",
+    "is_terminal": true,
+    "is_success": true,
+    "sort_order": 30,
+    "translations": {
+      "en": {
+        "name": "Paid"
+      },
+      "ja": {
+        "name": "支払済み"
+      },
+      "zh-TW": {
+        "name": "已付款"
+      },
+      "zh-HK": {
+        "name": "已付款"
+      },
+      "th": {
+        "name": "ชำระแล้ว"
+      }
+    }
+  },
+  {
+    "id": "cba177ed-67ae-49fa-9f13-7e8a6422b7a5",
+    "group_code": "RENT_PERIOD",
+    "code": "OVERDUE",
+    "sort_order": 40,
+    "translations": {
+      "en": {
+        "name": "Overdue"
+      },
+      "ja": {
+        "name": "期限超過"
+      },
+      "zh-TW": {
+        "name": "逾期"
+      },
+      "zh-HK": {
+        "name": "逾期"
+      },
+      "th": {
+        "name": "เกินกำหนด"
+      }
+    }
+  },
+  {
+    "id": "9219bcd4-ddd9-4835-8261-9a2b97443090",
+    "group_code": "RENT_PERIOD",
+    "code": "CANCELLED",
+    "is_terminal": true,
+    "sort_order": 50,
+    "translations": {
+      "en": {
+        "name": "Cancelled"
+      },
+      "ja": {
+        "name": "キャンセル済み"
+      },
+      "zh-TW": {
+        "name": "已取消"
+      },
+      "zh-HK": {
+        "name": "已取消"
+      },
+      "th": {
+        "name": "ยกเลิกแล้ว"
+      }
+    }
+  },
+  {
+    "id": "5d01af0c-b128-4ae7-85c9-d906e676b054",
+    "group_code": "DEPOSIT",
+    "code": "PENDING",
+    "sort_order": 10,
+    "translations": {
+      "en": {
+        "name": "Pending"
+      },
+      "ja": {
+        "name": "保留中"
+      },
+      "zh-TW": {
+        "name": "待處理"
+      },
+      "zh-HK": {
+        "name": "待處理"
+      },
+      "th": {
+        "name": "รอดำเนินการ"
+      }
+    }
+  },
+  {
+    "id": "19a786a3-2871-43c5-83b2-59208c9d8337",
+    "group_code": "DEPOSIT",
+    "code": "RECEIVED",
+    "is_success": true,
+    "sort_order": 20,
+    "translations": {
+      "en": {
+        "name": "Received"
+      },
+      "ja": {
+        "name": "受領済み"
+      },
+      "zh-TW": {
+        "name": "已收取"
+      },
+      "zh-HK": {
+        "name": "已收取"
+      },
+      "th": {
+        "name": "ได้รับแล้ว"
+      }
+    }
+  },
+  {
+    "id": "7783769a-f2aa-43b0-b2f9-c644197b9228",
+    "group_code": "DEPOSIT",
+    "code": "PARTIALLY_REFUNDED",
+    "sort_order": 30,
+    "translations": {
+      "en": {
+        "name": "Partially refunded"
+      },
+      "ja": {
+        "name": "一部返金済み"
+      },
+      "zh-TW": {
+        "name": "部分退還"
+      },
+      "zh-HK": {
+        "name": "部分退還"
+      },
+      "th": {
+        "name": "คืนบางส่วนแล้ว"
+      }
+    }
+  },
+  {
+    "id": "748c1f18-1cef-44d9-bb5c-c17df1cfc354",
+    "group_code": "DEPOSIT",
+    "code": "REFUNDED",
+    "is_terminal": true,
+    "is_success": true,
+    "sort_order": 40,
+    "translations": {
+      "en": {
+        "name": "Refunded"
+      },
+      "ja": {
+        "name": "返金済み"
+      },
+      "zh-TW": {
+        "name": "已退還"
+      },
+      "zh-HK": {
+        "name": "已退還"
+      },
+      "th": {
+        "name": "คืนแล้ว"
+      }
+    }
+  },
+  {
+    "id": "a6219b70-3bee-4d4b-b8d5-d6e2f89d1974",
+    "group_code": "DEPOSIT",
+    "code": "FORFEITED",
+    "is_terminal": true,
+    "sort_order": 50,
+    "translations": {
+      "en": {
+        "name": "Forfeited"
+      },
+      "ja": {
+        "name": "没収済み"
+      },
+      "zh-TW": {
+        "name": "已沒收"
+      },
+      "zh-HK": {
+        "name": "已沒收"
+      },
+      "th": {
+        "name": "ถูกริบแล้ว"
+      }
+    }
+  },
+  {
+    "id": "928f5510-542b-4785-a7eb-e75532fb9c45",
+    "group_code": "UTILITY_BILL",
+    "code": "PENDING",
+    "sort_order": 10,
+    "translations": {
+      "en": {
+        "name": "Pending"
+      },
+      "ja": {
+        "name": "保留中"
+      },
+      "zh-TW": {
+        "name": "待處理"
+      },
+      "zh-HK": {
+        "name": "待處理"
+      },
+      "th": {
+        "name": "รอดำเนินการ"
+      }
+    }
+  },
+  {
+    "id": "fc8a66ba-d38c-4f2b-907e-ea048fb49fc3",
+    "group_code": "UTILITY_BILL",
+    "code": "PAID",
+    "is_terminal": true,
+    "is_success": true,
+    "sort_order": 20,
+    "translations": {
+      "en": {
+        "name": "Paid"
+      },
+      "ja": {
+        "name": "支払済み"
+      },
+      "zh-TW": {
+        "name": "已付款"
+      },
+      "zh-HK": {
+        "name": "已付款"
+      },
+      "th": {
+        "name": "ชำระแล้ว"
+      }
+    }
+  },
+  {
+    "id": "d1a981f5-9f4e-4470-a82d-ff45b115cbf8",
+    "group_code": "UTILITY_BILL",
+    "code": "OVERDUE",
+    "sort_order": 30,
+    "translations": {
+      "en": {
+        "name": "Overdue"
+      },
+      "ja": {
+        "name": "期限超過"
+      },
+      "zh-TW": {
+        "name": "逾期"
+      },
+      "zh-HK": {
+        "name": "逾期"
+      },
+      "th": {
+        "name": "เกินกำหนด"
+      }
+    }
+  },
+  {
+    "id": "4e4409f3-d12a-408d-9d8c-fdbd4cb81de4",
+    "group_code": "UTILITY_BILL",
+    "code": "CANCELLED",
+    "is_terminal": true,
+    "sort_order": 40,
+    "translations": {
+      "en": {
+        "name": "Cancelled"
+      },
+      "ja": {
+        "name": "キャンセル済み"
+      },
+      "zh-TW": {
+        "name": "已取消"
+      },
+      "zh-HK": {
+        "name": "已取消"
+      },
+      "th": {
+        "name": "ยกเลิกแล้ว"
+      }
+    }
+  },
+  {
+    "id": "c60d3fd5-e93d-40e4-ad78-48d335ccaf1e",
+    "group_code": "RECURRING_SCHEDULE",
+    "code": "ACTIVE",
+    "sort_order": 10,
+    "translations": {
+      "en": {
+        "name": "Active"
+      },
+      "ja": {
+        "name": "有効"
+      },
+      "zh-TW": {
+        "name": "啟用"
+      },
+      "zh-HK": {
+        "name": "啟用"
+      },
+      "th": {
+        "name": "ใช้งานอยู่"
+      }
+    }
+  },
+  {
+    "id": "ac9e6c16-2a71-409e-8350-844b856142e2",
+    "group_code": "RECURRING_SCHEDULE",
+    "code": "PAUSED",
+    "sort_order": 20,
+    "translations": {
+      "en": {
+        "name": "Paused"
+      },
+      "ja": {
+        "name": "一時停止"
+      },
+      "zh-TW": {
+        "name": "已暫停"
+      },
+      "zh-HK": {
+        "name": "已暫停"
+      },
+      "th": {
+        "name": "หยุดชั่วคราว"
+      }
+    }
+  },
+  {
+    "id": "8f631d79-6721-4570-b1cc-b8be58a359ff",
+    "group_code": "RECURRING_SCHEDULE",
+    "code": "ENDED",
+    "is_terminal": true,
+    "sort_order": 30,
+    "translations": {
+      "en": {
+        "name": "Ended"
+      },
+      "ja": {
+        "name": "終了"
+      },
+      "zh-TW": {
+        "name": "已結束"
+      },
+      "zh-HK": {
+        "name": "已結束"
+      },
+      "th": {
+        "name": "สิ้นสุดแล้ว"
+      }
+    }
+  },
+  {
+    "id": "ac5235f7-7d0b-4aa8-95f5-f606518fe73a",
+    "group_code": "REMINDER",
+    "code": "PENDING",
+    "sort_order": 10,
+    "translations": {
+      "en": {
+        "name": "Pending"
+      },
+      "ja": {
+        "name": "保留中"
+      },
+      "zh-TW": {
+        "name": "待處理"
+      },
+      "zh-HK": {
+        "name": "待處理"
+      },
+      "th": {
+        "name": "รอดำเนินการ"
+      }
+    }
+  },
+  {
+    "id": "4237fa77-ef1f-433e-848f-dc5851f340de",
+    "group_code": "REMINDER",
+    "code": "COMPLETED",
+    "is_terminal": true,
+    "is_success": true,
+    "sort_order": 20,
+    "translations": {
+      "en": {
+        "name": "Completed"
+      },
+      "ja": {
+        "name": "完了"
+      },
+      "zh-TW": {
+        "name": "已完成"
+      },
+      "zh-HK": {
+        "name": "已完成"
+      },
+      "th": {
+        "name": "เสร็จสิ้น"
+      }
+    }
+  },
+  {
+    "id": "1b1ccc50-f1cc-4b02-b9ba-d666bf7a40a0",
+    "group_code": "REMINDER",
+    "code": "DISMISSED",
+    "is_terminal": true,
+    "sort_order": 30,
+    "translations": {
+      "en": {
+        "name": "Dismissed"
+      },
+      "ja": {
+        "name": "却下済み"
+      },
+      "zh-TW": {
+        "name": "已忽略"
+      },
+      "zh-HK": {
+        "name": "已忽略"
+      },
+      "th": {
+        "name": "ปิดแล้ว"
+      }
+    }
+  },
+  {
+    "id": "a7b636be-dce7-4a80-af4e-3ee3ef8aea72",
+    "group_code": "REMINDER",
+    "code": "CANCELLED",
+    "is_terminal": true,
+    "sort_order": 40,
+    "translations": {
+      "en": {
+        "name": "Cancelled"
+      },
+      "ja": {
+        "name": "キャンセル済み"
+      },
+      "zh-TW": {
+        "name": "已取消"
+      },
+      "zh-HK": {
+        "name": "已取消"
+      },
+      "th": {
+        "name": "ยกเลิกแล้ว"
+      }
+    }
+  }
+]

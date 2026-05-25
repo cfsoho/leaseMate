@@ -41,7 +41,7 @@ class FinancialAccount(Base):
     # Nullable for CASH account.
     financial_institution_branch_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("financial_institution_branches.id"),
+        ForeignKey("ref.financial_institution_branches.id"),
         nullable=True,
         index=True
     )

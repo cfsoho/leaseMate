@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_current_user
 from app.db.schemas.tax_record import (
     TaxRecordCreate,
     TaxRecordUpdate,
@@ -20,7 +21,8 @@ from app.services.tax_record_service import (
 
 router = APIRouter(
     prefix="/tax-records",
-    tags=["Tax Records"]
+    tags=["Tax Records"],
+    dependencies=[Depends(require_current_user)]
 )
 
 
@@ -81,9 +83,10 @@ def update(
 @router.delete("/{tax_record_id}")
 def delete(
     tax_record_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_tax_record(db, tax_record_id)
+    deleted = delete_tax_record(db, tax_record_id, current_user.id)
 
     if not deleted:
         raise HTTPException(

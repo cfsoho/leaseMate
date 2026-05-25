@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.models.ledger_entry import LedgerEntry
 from app.db.schemas.ledger_entry import LedgerEntryCreate, LedgerEntryUpdate
 
+from app.services.soft_delete import soft_delete
 
 def create_ledger_entry(
     db: Session,
@@ -67,14 +68,12 @@ def update_ledger_entry(
 
 def delete_ledger_entry(
     db: Session,
-    ledger_entry_id: UUID
-) -> bool:
+    ledger_entry_id: UUID,
+    deleted_by: Optional[UUID] = None) -> bool:
     ledger_entry = get_ledger_entry(db, ledger_entry_id)
 
     if not ledger_entry:
         return False
-
-    db.delete(ledger_entry)
-    db.commit()
+    soft_delete(db, ledger_entry, deleted_by)
 
     return True

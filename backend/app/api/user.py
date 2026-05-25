@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_admin
 from app.db.schemas.user import (
     UserCreate,
     UserUpdate,
@@ -22,7 +23,8 @@ from app.services.user_auth_service import deactivate_user
 
 router = APIRouter(
     prefix="/users",
-    tags=["Users"]
+    tags=["Users"],
+    dependencies=[Depends(require_admin)]
 )
 
 
@@ -86,9 +88,10 @@ def deactivate(
 @router.delete("/{user_id}")
 def delete(
     user_id: UUID,
+    current_user=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_user(db, user_id)
+    deleted = delete_user(db, user_id, current_user.id)
 
     if not deleted:
         raise HTTPException(status_code=404, detail="User not found")

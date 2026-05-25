@@ -5,14 +5,9 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.enums.financial_transaction_source_type import (
-    FinancialTransactionSourceType,
-)
-
-
 class FinancialTransactionCreate(BaseModel):
     financial_account_id: UUID
-    source_type: FinancialTransactionSourceType
+    source_type: str
     source_id: Optional[UUID] = None
 
     transaction_date: date
@@ -29,7 +24,7 @@ class FinancialTransactionCreate(BaseModel):
 
 class FinancialTransactionUpdate(BaseModel):
     financial_account_id: Optional[UUID] = None
-    source_type: Optional[FinancialTransactionSourceType] = None
+    source_type: Optional[str] = None
     source_id: Optional[UUID] = None
 
     transaction_date: Optional[date] = None
@@ -48,7 +43,7 @@ class FinancialTransactionRead(BaseModel):
     id: UUID
 
     financial_account_id: UUID
-    source_type: FinancialTransactionSourceType
+    source_type: str
     source_id: Optional[UUID]
 
     transaction_date: date
@@ -64,6 +59,10 @@ class FinancialTransactionRead(BaseModel):
 
     created_at: datetime
     updated_at: Optional[datetime]
+
+    is_deleted: bool
+    deleted_at: Optional[datetime]
+    deleted_by: Optional[UUID]
 
     class Config:
         from_attributes = True

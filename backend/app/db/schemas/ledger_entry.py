@@ -5,14 +5,10 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.enums.ledger_entry_type import LedgerEntryType
-from app.db.models.enums.document_object_type import DocumentObjectType
-
-
 class LedgerEntryCreate(BaseModel):
     property_id: UUID
 
-    entry_type: LedgerEntryType
+    entry_type: str
     entry_date: date
 
     amount: Decimal
@@ -20,7 +16,7 @@ class LedgerEntryCreate(BaseModel):
 
     is_income: bool = False
 
-    source_type: Optional[DocumentObjectType] = None
+    source_type: Optional[str] = None
     source_id: Optional[UUID] = None
 
     notes: Optional[str] = None
@@ -29,7 +25,7 @@ class LedgerEntryCreate(BaseModel):
 class LedgerEntryUpdate(BaseModel):
     property_id: Optional[UUID] = None
 
-    entry_type: Optional[LedgerEntryType] = None
+    entry_type: Optional[str] = None
     entry_date: Optional[date] = None
 
     amount: Optional[Decimal] = None
@@ -37,7 +33,7 @@ class LedgerEntryUpdate(BaseModel):
 
     is_income: Optional[bool] = None
 
-    source_type: Optional[DocumentObjectType] = None
+    source_type: Optional[str] = None
     source_id: Optional[UUID] = None
 
     notes: Optional[str] = None
@@ -48,7 +44,7 @@ class LedgerEntryRead(BaseModel):
 
     property_id: UUID
 
-    entry_type: LedgerEntryType
+    entry_type: str
     entry_date: date
 
     amount: Decimal
@@ -56,13 +52,17 @@ class LedgerEntryRead(BaseModel):
 
     is_income: bool
 
-    source_type: Optional[DocumentObjectType]
+    source_type: Optional[str]
     source_id: Optional[UUID]
 
     notes: Optional[str]
 
     created_at: datetime
     updated_at: Optional[datetime]
+
+    is_deleted: bool
+    deleted_at: Optional[datetime]
+    deleted_by: Optional[UUID]
 
     class Config:
         from_attributes = True

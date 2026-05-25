@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_current_user
 from app.db.schemas.ledger_entry import (
     LedgerEntryCreate,
     LedgerEntryUpdate,
@@ -20,7 +21,8 @@ from app.services.ledger_entry_service import (
 
 router = APIRouter(
     prefix="/ledger-entries",
-    tags=["Ledger Entries"]
+    tags=["Ledger Entries"],
+    dependencies=[Depends(require_current_user)]
 )
 
 
@@ -81,9 +83,10 @@ def update(
 @router.delete("/{ledger_entry_id}")
 def delete(
     ledger_entry_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_ledger_entry(db, ledger_entry_id)
+    deleted = delete_ledger_entry(db, ledger_entry_id, current_user.id)
 
     if not deleted:
         raise HTTPException(

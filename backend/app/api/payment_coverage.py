@@ -1,10 +1,11 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.api.dependencies import require_current_user
 
 from app.db.schemas.payment_coverage import (
     PaymentCoverageCreate,
@@ -22,7 +23,8 @@ from app.services.payment_coverage_service import (
 
 router = APIRouter(
     prefix="/payment-coverages",
-    tags=["Payment Coverages"]
+    tags=["Payment Coverages"],
+    dependencies=[Depends(require_current_user)]
 )
 
 
@@ -83,9 +85,10 @@ def update(
 @router.delete("/{payment_coverage_id}")
 def delete(
     payment_coverage_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_payment_coverage(db, payment_coverage_id)
+    deleted = delete_payment_coverage(db, payment_coverage_id, current_user.id)
 
     if not deleted:
         raise HTTPException(

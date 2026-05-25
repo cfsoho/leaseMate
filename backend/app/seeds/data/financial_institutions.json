@@ -1,0 +1,222 @@
+[
+  {
+    "country_code": "JPN",
+    "name": "Sumitomo Mitsui Banking Corporation",
+    "swift_code": "SMBCJPJT",
+    "website": "https://www.smbc.co.jp/",
+    "branches": [
+      {
+        "branch_name": "Ikebukuro Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "JPN",
+    "name": "Mizuho Bank",
+    "swift_code": "MHCBJPJT",
+    "website": "https://www.mizuhobank.co.jp/",
+    "branches": [
+      {
+        "branch_name": "Ikebukuro Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "JPN",
+    "name": "MUFG Bank",
+    "swift_code": "BOTKJPJT",
+    "website": "https://www.bk.mufg.jp/",
+    "branches": [
+      {
+        "branch_name": "Ikebukuro Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "JPN",
+    "name": "Japan Post Bank",
+    "swift_code": "JPPSJPJ1",
+    "website": "https://www.jp-bank.japanpost.jp/",
+    "branches": [
+      {
+        "branch_name": "Ikebukuro Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "JPN",
+    "name": "Resona Bank",
+    "swift_code": "DIWAJPJT",
+    "website": "https://www.resonabank.co.jp/",
+    "branches": [
+      {
+        "branch_name": "Ikebukuro Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "THA",
+    "name": "Bangkok Bank",
+    "swift_code": "BKKBTHBK",
+    "website": "https://www.bangkokbank.com/",
+    "branches": [
+      {
+        "branch_name": "Hua Mak Station Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "THA",
+    "name": "Kasikornbank",
+    "swift_code": "KASITHBK",
+    "website": "https://www.kasikornbank.com/",
+    "branches": [
+      {
+        "branch_name": "Hua Mak Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "THA",
+    "name": "Siam Commercial Bank",
+    "swift_code": "SICOTHBK",
+    "website": "https://www.scb.co.th/",
+    "branches": [
+      {
+        "branch_name": "Hua Mak Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "THA",
+    "name": "Krungthai Bank",
+    "swift_code": "KRTHTHBK",
+    "website": "https://krungthai.com/",
+    "branches": [
+      {
+        "branch_name": "Hua Mak Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "HKG",
+    "name": "HSBC",
+    "swift_code": "HSBCHKHHHKH",
+    "website": "https://www.hsbc.com.hk/",
+    "branches": [
+      {
+        "branch_name": "Wan Chai Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "HKG",
+    "name": "Hang Seng Bank",
+    "swift_code": "HASEHKHH",
+    "website": "https://www.hangseng.com/",
+    "branches": [
+      {
+        "branch_name": "Wan Chai Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "HKG",
+    "name": "Bank of China Hong Kong",
+    "swift_code": "BKCHHKHH",
+    "website": "https://www.bochk.com/",
+    "branches": [
+      {
+        "branch_name": "Wan Chai Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "HKG",
+    "name": "Standard Chartered Hong Kong",
+    "swift_code": "SCBLHKHH",
+    "website": "https://www.sc.com/hk/",
+    "branches": [
+      {
+        "branch_name": "Wan Chai Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "TWN",
+    "name": "DBS Bank Taiwan",
+    "swift_code": "DBSSTWTW",
+    "website": "https://www.dbs.com.tw/",
+    "branches": [
+      {
+        "branch_name": "Taipei Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "TWN",
+    "name": "Cathay United Bank",
+    "swift_code": "UWCBTWTP",
+    "website": "https://www.cathaybk.com.tw/",
+    "branches": [
+      {
+        "branch_name": "Taipei Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "TWN",
+    "name": "CTBC Bank",
+    "swift_code": "CTCBTWTP",
+    "website": "https://www.ctbcbank.com/",
+    "branches": [
+      {
+        "branch_name": "Taipei Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "TWN",
+    "name": "E.SUN Bank",
+    "swift_code": "ESUNTWTP",
+    "website": "https://www.esunbank.com/",
+    "branches": [
+      {
+        "branch_name": "Taipei Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "USA",
+    "name": "Chase",
+    "swift_code": "CHASUS33",
+    "website": "https://www.chase.com/",
+    "branches": [
+      {
+        "branch_name": "Main Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "USA",
+    "name": "Bank of America",
+    "swift_code": "BOFAUS3N",
+    "website": "https://www.bankofamerica.com/",
+    "branches": [
+      {
+        "branch_name": "Main Branch"
+      }
+    ]
+  },
+  {
+    "country_code": "USA",
+    "name": "Wells Fargo",
+    "swift_code": "WFBIUS6S",
+    "website": "https://www.wellsfargo.com/",
+    "branches": [
+      {
+        "branch_name": "Main Branch"
+      }
+    ]
+  }
+]

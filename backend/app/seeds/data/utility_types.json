@@ -123,5 +123,230 @@
         "description": "ค่าบำรุงรักษาอาคารหรือพื้นที่ส่วนกลาง"
       }
     }
+  },
+  {
+    "code": "SEWER",
+    "translations": {
+      "en": {
+        "name": "Sewer",
+        "description": "Sewer utility charge"
+      },
+      "ja": {
+        "name": "下水道",
+        "description": "下水道料金"
+      },
+      "zh-TW": {
+        "name": "污水",
+        "description": "污水處理費"
+      },
+      "zh-HK": {
+        "name": "排污",
+        "description": "排污費"
+      },
+      "th": {
+        "name": "ค่าน้ำเสีย",
+        "description": "ค่าบริการน้ำเสีย"
+      }
+    }
+  },
+  {
+    "code": "TRASH",
+    "translations": {
+      "en": {
+        "name": "Trash",
+        "description": "Trash collection charge"
+      },
+      "ja": {
+        "name": "ごみ収集",
+        "description": "ごみ収集料金"
+      },
+      "zh-TW": {
+        "name": "垃圾清運",
+        "description": "垃圾清運費"
+      },
+      "zh-HK": {
+        "name": "垃圾收集",
+        "description": "垃圾收集費"
+      },
+      "th": {
+        "name": "ค่าขยะ",
+        "description": "ค่าบริการเก็บขยะ"
+      }
+    }
+  },
+  {
+    "code": "PARKING",
+    "translations": {
+      "en": {
+        "name": "Parking",
+        "description": "Parking fee"
+      },
+      "ja": {
+        "name": "駐車場",
+        "description": "駐車場料金"
+      },
+      "zh-TW": {
+        "name": "停車費",
+        "description": "停車費用"
+      },
+      "zh-HK": {
+        "name": "泊車費",
+        "description": "泊車費用"
+      },
+      "th": {
+        "name": "ค่าที่จอดรถ",
+        "description": "ค่าที่จอดรถ"
+      }
+    }
+  },
+  {
+    "code": "SECURITY",
+    "translations": {
+      "en": {
+        "name": "Security",
+        "description": "Security service charge"
+      },
+      "ja": {
+        "name": "セキュリティ",
+        "description": "警備サービス料金"
+      },
+      "zh-TW": {
+        "name": "保全",
+        "description": "保全服務費"
+      },
+      "zh-HK": {
+        "name": "保安",
+        "description": "保安服務費"
+      },
+      "th": {
+        "name": "ค่ารักษาความปลอดภัย",
+        "description": "ค่าบริการรักษาความปลอดภัย"
+      }
+    }
+  },
+  {
+    "code": "CABLE_TV",
+    "translations": {
+      "en": {
+        "name": "Cable TV",
+        "description": "Cable television charge"
+      },
+      "ja": {
+        "name": "ケーブルテレビ",
+        "description": "ケーブルテレビ料金"
+      },
+      "zh-TW": {
+        "name": "有線電視",
+        "description": "有線電視費"
+      },
+      "zh-HK": {
+        "name": "有線電視",
+        "description": "有線電視費"
+      },
+      "th": {
+        "name": "เคเบิลทีวี",
+        "description": "ค่าบริการเคเบิลทีวี"
+      }
+    }
+  },
+  {
+    "code": "PHONE",
+    "translations": {
+      "en": {
+        "name": "Phone",
+        "description": "Telephone service charge"
+      },
+      "ja": {
+        "name": "電話",
+        "description": "電話サービス料金"
+      },
+      "zh-TW": {
+        "name": "電話",
+        "description": "電話服務費"
+      },
+      "zh-HK": {
+        "name": "電話",
+        "description": "電話服務費"
+      },
+      "th": {
+        "name": "โทรศัพท์",
+        "description": "ค่าบริการโทรศัพท์"
+      }
+    }
+  },
+  {
+    "code": "MANAGEMENT_FEE",
+    "translations": {
+      "en": {
+        "name": "Management Fee",
+        "description": "Building or property management fee"
+      },
+      "ja": {
+        "name": "管理費",
+        "description": "建物または物件管理費"
+      },
+      "zh-TW": {
+        "name": "管理費",
+        "description": "大樓或物業管理費"
+      },
+      "zh-HK": {
+        "name": "管理費",
+        "description": "大廈或物業管理費"
+      },
+      "th": {
+        "name": "ค่าบริหาร",
+        "description": "ค่าบริหารอาคารหรือทรัพย์สิน"
+      }
+    }
+  },
+  {
+    "code": "SINKING_FUND",
+    "translations": {
+      "en": {
+        "name": "Sinking Fund",
+        "description": "Building sinking fund contribution"
+      },
+      "ja": {
+        "name": "修繕積立金",
+        "description": "建物修繕積立金"
+      },
+      "zh-TW": {
+        "name": "公共基金",
+        "description": "大樓修繕基金"
+      },
+      "zh-HK": {
+        "name": "維修基金",
+        "description": "大廈維修基金"
+      },
+      "th": {
+        "name": "กองทุนซ่อมบำรุง",
+        "description": "เงินสมทบกองทุนซ่อมบำรุงอาคาร"
+      }
+    }
+  },
+  {
+    "code": "PROPERTY_TAX",
+    "translations": {
+      "en": {
+        "name": "Property Tax",
+        "description": "Property tax charge"
+      },
+      "ja": {
+        "name": "固定資産税",
+        "description": "固定資産税料金"
+      },
+      "zh-TW": {
+        "name": "房屋稅",
+        "description": "房產稅費"
+      },
+      "zh-HK": {
+        "name": "物業稅",
+        "description": "物業稅費"
+      },
+      "th": {
+        "name": "ภาษีทรัพย์สิน",
+        "description": "ค่าภาษีทรัพย์สิน"
+      }
+    }
   }
 ]

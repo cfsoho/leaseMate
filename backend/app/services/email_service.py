@@ -1,8 +1,15 @@
 import os
 import smtplib
+import logging
 from email.message import EmailMessage
 
+from app.services.email_templates.email_confirmation import (
+    EMAIL_CONFIRMATION_TEMPLATES,
+    USER_INVITATION_TEMPLATES,
+)
 
+
+logger = logging.getLogger(__name__)
 SMTP_HOST = os.getenv("SMTP_HOST")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
@@ -50,23 +57,49 @@ def send_email(
     message["Subject"] = subject
     message.set_content(body)
 
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
-        if SMTP_USE_TLS:
-            smtp.starttls()
-        smtp.login(smtp_user, smtp_password)
-        smtp.send_message(message)
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
+            if SMTP_USE_TLS:
+                smtp.starttls()
+            smtp.login(smtp_user, smtp_password.replace(" ", ""))
+            smtp.send_message(message)
+    except smtplib.SMTPException:
+        logger.exception("SMTP email delivery failed")
+        return False
 
     return True
 
 
-def send_email_confirmation(to_email: str, verification_url: str) -> bool:
+def send_email_confirmation(
+    to_email: str,
+    verification_url: str,
+    locale_code: str | None = None,
+) -> bool:
+    message = EMAIL_CONFIRMATION_TEMPLATES.get(
+        locale_code or "",
+        EMAIL_CONFIRMATION_TEMPLATES["en"],
+    )
+
     return send_email(
         to_email=to_email,
-        subject="Verify your LeaseMate admin account",
-        body=(
-            "Welcome to LeaseMate.\n\n"
-            "Please verify your admin account using this link:\n"
-            f"{verification_url}\n\n"
-            "If you did not create this account, you can ignore this email."
-        ),
+        subject=message["subject"],
+        body=message["body"].format(verification_url=verification_url),
+    )
+
+
+def send_user_invitation(
+    to_email: str,
+    verification_url: str,
+    locale_code: str | None = None,
+) -> bool:
+    message = USER_INVITATION_TEMPLATES.get(
+        locale_code or "",
+        USER_INVITATION_TEMPLATES["en"],
+    )
+
+    return send_email(
+        to_email=to_email,
+        subject=message["subject"],
+        body=message["body"].format(verification_url=verification_url),
+        identity="system",
     )

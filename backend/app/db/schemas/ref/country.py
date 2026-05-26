@@ -15,7 +15,7 @@ class CountryBase(BaseModel):
     phone_prefix: Optional[str] = Field(None, max_length=6)
     mobile_phone_format: Optional[str] = Field(None, max_length=50)
     landline_phone_format: Optional[str] = Field(None, max_length=50)
-    region: Optional[str] = Field(None, max_length=50)
+    region_id: Optional[UUID] = None
 
     currency_code: str = Field(..., max_length=3)
 
@@ -36,7 +36,7 @@ class CountryUpdate(BaseModel):
     phone_prefix: Optional[str] = Field(None, max_length=6)
     mobile_phone_format: Optional[str] = Field(None, max_length=50)
     landline_phone_format: Optional[str] = Field(None, max_length=50)
-    region: Optional[str] = Field(None, max_length=50)
+    region_id: Optional[UUID] = None
 
     currency_code: Optional[str] = Field(None, max_length=3)
 

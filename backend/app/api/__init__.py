@@ -23,6 +23,7 @@ from app.api.recurring_expense_schedule import router as recurring_expense_sched
 from app.api.ref.property_access_level import router as property_access_level_router
 from app.api.ref.role import router as role_router
 from app.api.ref.ref_code import router as ref_code_router
+from app.api.ref.region import router as region_router
 from app.api.reminder import router as reminder_router
 from app.api.ref.status_code import router as status_code_router
 from app.api.tax_record import router as tax_record_router
@@ -58,6 +59,7 @@ all_routers = [
     recurring_expense_schedule_router,
     property_access_level_router,
     ref_code_router,
+    region_router,
     reminder_router,
     role_router,
     status_code_router,

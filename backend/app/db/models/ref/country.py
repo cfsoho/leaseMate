@@ -145,13 +145,15 @@ class Country(Base):
     # Geographical region / continent grouping
     #
     # Examples:
-    # Asia
-    # Europe
-    # North America
-    region = Column(
-        String(50),
+    # ref.regions -> Asia
+    # ref.regions -> Europe
+    # ref.regions -> Americas
+    region_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("ref.regions.id"),
         nullable=True,
-        comment="Geographical region or continent"
+        index=True,
+        comment="Reference region ID for geographical grouping"
     )
 
     # ISO 4217 currency code
@@ -192,6 +194,8 @@ class Country(Base):
     # Relationships
 
     default_locale = relationship("Locale")
+
+    region = relationship("Region", back_populates="countries")
 
     properties = relationship(
         "Property",

@@ -9,6 +9,8 @@ class LocaleCreate(BaseModel):
     code: str
     name: str
     native_name: Optional[str] = None
+    name_order: str = "GIVEN_FAMILY"
+    name_format_mask: str = "{given_name} {family_name}"
     is_active: bool = True
     sort_order: int = 0
     is_default: bool = False
@@ -17,6 +19,8 @@ class LocaleCreate(BaseModel):
 class LocaleUpdate(BaseModel):
     name: Optional[str] = None
     native_name: Optional[str] = None
+    name_order: Optional[str] = None
+    name_format_mask: Optional[str] = None
     is_active: Optional[bool] = None
     sort_order: Optional[int] = None
     is_default: Optional[bool] = None
@@ -26,6 +30,8 @@ class LocaleRead(BaseModel):
     code: str
     name: str
     native_name: Optional[str]
+    name_order: str
+    name_format_mask: str
     is_active: bool
     sort_order: int
     is_default: bool

@@ -14,6 +14,7 @@ from app.services.ref.role_service import seed_roles_from_enum
 from app.services.ref.property_access_level_service import (
     upsert_property_access_levels_from_list
 )
+from app.services.ref.region_service import upsert_regions_from_list
 from app.services.ref.utility_type_service import upsert_utility_types_from_list
 from app.services.ref.expense_type_service import (
     upsert_expense_types_from_list
@@ -32,6 +33,102 @@ from app.services.ref.status_code_service import upsert_status_codes_from_list
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
+
+REGION_SEEDS = [
+    {
+        "id": "11111111-2222-4000-8000-000000000001",
+        "code": "AFRICA",
+        "name": "Africa",
+        "description": "Countries and territories in Africa.",
+        "sort_order": 10,
+    },
+    {
+        "id": "11111111-2222-4000-8000-000000000002",
+        "code": "AMERICAS",
+        "name": "Americas",
+        "description": "Countries and territories in North, Central, South America, and the Caribbean.",
+        "sort_order": 20,
+    },
+    {
+        "id": "11111111-2222-4000-8000-000000000003",
+        "code": "ANTARCTICA",
+        "name": "Antarctica",
+        "description": "Antarctic countries and territories.",
+        "sort_order": 30,
+    },
+    {
+        "id": "11111111-2222-4000-8000-000000000004",
+        "code": "ASIA",
+        "name": "Asia",
+        "description": "Countries and territories in Asia.",
+        "sort_order": 40,
+    },
+    {
+        "id": "11111111-2222-4000-8000-000000000005",
+        "code": "EUROPE",
+        "name": "Europe",
+        "description": "Countries and territories in Europe.",
+        "sort_order": 50,
+    },
+    {
+        "id": "11111111-2222-4000-8000-000000000006",
+        "code": "OCEANIA",
+        "name": "Oceania",
+        "description": "Countries and territories in Oceania.",
+        "sort_order": 60,
+    },
+]
+
+REGION_ID_BY_NAME = {
+    region["name"]: region["id"]
+    for region in REGION_SEEDS
+}
+
+REGION_ALPHA2_CODES = {
+    REGION_ID_BY_NAME["Africa"]: {
+        "AO", "BF", "BI", "BJ", "BW", "CD", "CF", "CG", "CI", "CM", "CV",
+        "DJ", "DZ", "EG", "EH", "ER", "ET", "GA", "GH", "GM", "GN", "GQ",
+        "GW", "KE", "KM", "LR", "LS", "LY", "MA", "MG", "ML", "MR", "MU",
+        "MW", "MZ", "NA", "NE", "NG", "RE", "RW", "SC", "SD", "SH", "SL",
+        "SN", "SO", "SS", "ST", "SZ", "TD", "TG", "TN", "TZ", "UG", "YT",
+        "ZA", "ZM", "ZW",
+    },
+    REGION_ID_BY_NAME["Americas"]: {
+        "AG", "AI", "AR", "AW", "BB", "BL", "BM", "BO", "BQ", "BR", "BS",
+        "BZ", "CA", "CL", "CO", "CR", "CU", "CW", "DM", "DO", "EC", "FK",
+        "GD", "GF", "GL", "GP", "GT", "GY", "HN", "HT", "JM", "KN", "KY",
+        "LC", "MF", "MQ", "MS", "MX", "NI", "PA", "PE", "PM", "PR", "PY",
+        "SR", "SV", "SX", "TC", "TT", "US", "UY", "VC", "VE", "VG", "VI",
+    },
+    REGION_ID_BY_NAME["Antarctica"]: {
+        "AQ", "BV", "GS", "HM", "TF",
+    },
+    REGION_ID_BY_NAME["Asia"]: {
+        "AE", "AF", "AM", "AZ", "BD", "BH", "BN", "BT", "CC", "CN", "CX",
+        "CY", "GE", "HK", "ID", "IL", "IN", "IO", "IQ", "IR", "JO", "JP",
+        "KG", "KH", "KP", "KR", "KW", "KZ", "LA", "LB", "LK", "MM", "MN",
+        "MO", "MV", "MY", "NP", "OM", "PH", "PK", "PS", "QA", "SA", "SG",
+        "SY", "TH", "TJ", "TL", "TM", "TR", "TW", "UZ", "VN", "YE",
+    },
+    REGION_ID_BY_NAME["Europe"]: {
+        "AD", "AL", "AT", "AX", "BA", "BE", "BG", "BY", "CH", "CZ", "DE",
+        "DK", "EE", "ES", "FI", "FO", "FR", "GB", "GG", "GI", "GR", "HR",
+        "HU", "IE", "IM", "IS", "IT", "JE", "LI", "LT", "LU", "LV", "MC",
+        "MD", "ME", "MK", "MT", "NL", "NO", "PL", "PT", "RO", "RS", "RU",
+        "SE", "SI", "SJ", "SK", "SM", "UA", "VA",
+    },
+    REGION_ID_BY_NAME["Oceania"]: {
+        "AS", "AU", "CK", "FJ", "FM", "GU", "KI", "MH", "MP", "NC", "NF",
+        "NR", "NU", "NZ", "PF", "PG", "PN", "PW", "SB", "TK", "TO", "TV",
+        "UM", "VU", "WF", "WS",
+    },
+}
+
+REGION_BY_ALPHA2 = {
+    alpha2: region_id
+    for region_id, alpha2_codes in REGION_ALPHA2_CODES.items()
+    for alpha2 in alpha2_codes
+}
 
 
 def load_json(file_name: str):
@@ -66,7 +163,9 @@ def build_all_locales() -> list[dict]:
             "code": code,
             "name": english_name,
             "native_name": native_name,
-            "is_active": code in {"en", "zh-TW", "zh-HK", "th", "ja"},
+            "name_order": get_name_order(code),
+            "name_format_mask": get_name_format_mask(code),
+            "is_active": code in {"en", "zh-Hant-TW", "zh-Hant-HK", "th", "ja"},
             "sort_order": index,
             "is_default": code == "en",
         })
@@ -74,7 +173,31 @@ def build_all_locales() -> list[dict]:
     return locales
 
 
+def get_name_order(code: str) -> str:
+    language = code.split("-")[0]
+    return "FAMILY_GIVEN" if language in {"ja", "ko", "zh"} else "GIVEN_FAMILY"
+
+
+def get_name_format_mask(code: str) -> str:
+    return (
+        "{family_name}{given_name}"
+        if get_name_order(code) == "FAMILY_GIVEN"
+        else "{given_name} {family_name}"
+    )
+
+
 def get_default_locale_code(alpha2: str) -> str | None:
+    supported_locale_by_territory = {
+        "HK": "zh-Hant-HK",
+        "JP": "ja",
+        "TH": "th",
+        "TW": "zh-Hant-TW",
+        "US": "en",
+    }
+
+    if alpha2 in supported_locale_by_territory:
+        return supported_locale_by_territory[alpha2]
+
     territory_languages = get_global("territory_languages")
     languages = territory_languages.get(alpha2, {})
 
@@ -150,20 +273,25 @@ def get_phone_format(alpha2: str, phone_type: PhoneNumberType) -> str | None:
     return "".join("X" if character.isdigit() else character for character in formatted)
 
 
+def get_country_region_id(alpha2: str) -> str | None:
+    return REGION_BY_ALPHA2.get(alpha2)
+
+
 def build_all_countries() -> list[dict]:
     countries = []
 
     for country in sorted(pycountry.countries, key=lambda item: item.alpha_3):
         default_locale_code = get_default_locale_code(country.alpha_2)
+        display_name = getattr(country, "common_name", country.name)
 
         countries.append({
             "code": country.alpha_3,
             "alpha2": country.alpha_2,
-            "name": country.name,
+            "name": display_name,
             "native_name": get_country_native_name(
                 country.alpha_2,
                 default_locale_code,
-                country.name,
+                display_name,
             ),
             "phone_prefix": get_phone_prefix(country.alpha_2),
             "mobile_phone_format": get_phone_format(
@@ -174,7 +302,7 @@ def build_all_countries() -> list[dict]:
                 country.alpha_2,
                 PhoneNumberType.FIXED_LINE,
             ),
-            "region": None,
+            "region_id": get_country_region_id(country.alpha_2),
             "currency_code": get_country_currency_code(country.alpha_2),
             "default_locale_code": default_locale_code,
         })
@@ -191,6 +319,9 @@ def seed_master_data() -> None:
         locales = build_all_locales()
         upsert_locales_from_list(db, locales)
         print(f"{len(locales)} locales seeded into database.")
+
+        upsert_regions_from_list(db, REGION_SEEDS)
+        print(f"{len(REGION_SEEDS)} regions seeded into database.")
 
         countries = build_all_countries()
         upsert_countries_from_list(db, countries)

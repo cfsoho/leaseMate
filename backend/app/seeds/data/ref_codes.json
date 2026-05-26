@@ -4,7 +4,7 @@
     { "code": "USER", "name": "User", "description": "Standard application user" }
   ],
   "user_statuses": [
-    { "code": "PENDING_EMAIL_VERIFICATION", "name": "Pending email verification" },
+    { "code": "NEEDS_EMAIL_VERIFICATION", "name": "Needs email verification" },
     { "code": "ACTIVE", "name": "Active" },
     { "code": "INACTIVE", "name": "Inactive" },
     { "code": "LOCKED", "name": "Locked" }

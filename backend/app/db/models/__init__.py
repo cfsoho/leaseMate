@@ -3,6 +3,7 @@ from app.db.models.user_verification_token import UserVerificationToken
 from app.db.models.user_refresh_token import UserRefreshToken
 from app.db.models.user_legal_name import UserLegalName
 from app.db.models.ref.role import Role
+from app.db.models.ref.region import Region
 from app.db.models.ref.status_code import StatusCode
 from app.db.models.property import Property
 from app.db.models.property_access import PropertyAccess

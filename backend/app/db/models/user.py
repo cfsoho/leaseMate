@@ -5,6 +5,7 @@ from sqlalchemy import (
     String,
     DateTime,
     ForeignKey,
+    Boolean,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
@@ -27,11 +28,25 @@ class User(Base):
     # Login email. Unique account identifier.
     email = Column(String(254), unique=True, nullable=False, index=True)
 
+    # Timestamp when the user confirmed ownership of the login email.
+    email_verified_at = Column(DateTime(timezone=True), nullable=True)
+
     # Hashed password only. Never store plain text password.
     password_hash = Column(String(255), nullable=False)
 
+    # Temporary-password accounts must set their own password after first login.
+    password_must_change = Column(Boolean, nullable=False, default=False)
+
     # Contact phone number.
     phone = Column(String(20), nullable=True)
+
+    # Country whose dialing prefix and phone mask apply to this phone number.
+    phone_country_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("ref.countries.id"),
+        nullable=True,
+        index=True
+    )
 
     # System role.
     role_id = Column(
@@ -54,7 +69,7 @@ class User(Base):
         String(50),
         ForeignKey("ref.user_statuses.code"),
         nullable=False,
-        default="PENDING_EMAIL_VERIFICATION",
+        default="NEEDS_EMAIL_VERIFICATION",
         index=True
     )
 
@@ -68,6 +83,7 @@ class User(Base):
 
     role = relationship("Role", back_populates="users")
     preferred_locale = relationship("Locale")
+    phone_country = relationship("Country")
 
     properties_owned = relationship("Property", back_populates="owner_user")
 

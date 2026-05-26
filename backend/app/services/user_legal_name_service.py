@@ -48,6 +48,18 @@ def get_user_legal_names(
     )
 
 
+def get_user_legal_names_for_user(
+    db: Session,
+    user_id: UUID
+):
+    return (
+        db.query(UserLegalName)
+        .filter(UserLegalName.user_id == user_id)
+        .order_by(UserLegalName.created_at, UserLegalName.id)
+        .all()
+    )
+
+
 def update_user_legal_name(
     db: Session,
     legal_name_id: UUID,

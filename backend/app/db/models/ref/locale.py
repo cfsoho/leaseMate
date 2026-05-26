@@ -67,6 +67,30 @@ class Locale(Base):
         nullable=True
     )
 
+    # Name display/input order for personal names in this locale.
+    #
+    # Values:
+    # - GIVEN_FAMILY = given name first, then family name
+    # - FAMILY_GIVEN = family name first, then given name
+    name_order = Column(
+        String(20),
+        nullable=False,
+        default="GIVEN_FAMILY"
+    )
+
+    # Name display mask using placeholders.
+    #
+    # Supported placeholders:
+    # - {given_name}
+    # - {family_name}
+    #
+    # Literal spaces and punctuation are preserved.
+    name_format_mask = Column(
+        String(100),
+        nullable=False,
+        default="{given_name} {family_name}"
+    )
+
     # Whether this locale is active/selectable.
     #
     # Can be disabled temporarily if:

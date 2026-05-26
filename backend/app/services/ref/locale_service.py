@@ -81,6 +81,11 @@ def upsert_locales_from_list(
         if locale:
             locale.name = item["name"]
             locale.native_name = item.get("native_name")
+            locale.name_order = item.get("name_order", "GIVEN_FAMILY")
+            locale.name_format_mask = item.get(
+                "name_format_mask",
+                "{given_name} {family_name}",
+            )
             locale.is_active = item.get("is_active", True)
             locale.sort_order = item.get("sort_order", 0)
             locale.is_default = item.get("is_default", False)

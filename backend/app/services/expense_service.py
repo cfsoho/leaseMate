@@ -7,9 +7,16 @@ from app.db.models.expense import Expense
 from app.db.schemas.expense import ExpenseCreate, ExpenseUpdate
 
 from app.services.soft_delete import soft_delete
+from app.services.status_defaults import apply_default_status
 
 def create_expense(db: Session, payload: ExpenseCreate) -> Expense:
-    expense = Expense(**payload.model_dump())
+    data = apply_default_status(
+        db,
+        payload.model_dump(),
+        group_code="EXPENSE",
+        code="PENDING",
+    )
+    expense = Expense(**data)
 
     db.add(expense)
     db.commit()

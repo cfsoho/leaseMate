@@ -229,6 +229,15 @@ def change_user_password(
     return user, None
 
 
+def list_user_login_sessions(db: Session, user_id: UUID) -> list[UserRefreshToken]:
+    return (
+        db.query(UserRefreshToken)
+        .filter(UserRefreshToken.user_id == user_id)
+        .order_by(UserRefreshToken.created_at.desc())
+        .all()
+    )
+
+
 def create_email_confirmation_token(
     db: Session,
     user: User,

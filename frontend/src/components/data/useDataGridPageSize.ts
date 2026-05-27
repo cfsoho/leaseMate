@@ -6,18 +6,22 @@ const GRID_ROW_HEIGHT_PX = 45;
 const MIN_PAGE_SIZE = 10;
 
 export function useDataGridPageSize() {
-  const [pageSize, setPageSize] = useState(calculatePageSize);
+  const [calculatedPageSize, setCalculatedPageSize] = useState(calculatePageSize);
+  const [selectedPageSize, setSelectedPageSize] = useState<number | null>(null);
 
   useEffect(() => {
     function handleResize() {
-      setPageSize(calculatePageSize());
+      setCalculatedPageSize(calculatePageSize());
     }
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return pageSize;
+  return {
+    pageSize: selectedPageSize ?? calculatedPageSize,
+    setPageSize: setSelectedPageSize,
+  };
 }
 
 function calculatePageSize() {

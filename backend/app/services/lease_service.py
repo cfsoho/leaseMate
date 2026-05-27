@@ -7,9 +7,16 @@ from app.db.models.lease import Lease
 from app.db.schemas.lease import LeaseCreate, LeaseUpdate
 
 from app.services.soft_delete import soft_delete
+from app.services.status_defaults import apply_default_status
 
 def create_lease(db: Session, payload: LeaseCreate) -> Lease:
-    lease = Lease(**payload.model_dump())
+    data = apply_default_status(
+        db,
+        payload.model_dump(),
+        group_code="LEASE",
+        code="DRAFT",
+    )
+    lease = Lease(**data)
 
     db.add(lease)
     db.commit()

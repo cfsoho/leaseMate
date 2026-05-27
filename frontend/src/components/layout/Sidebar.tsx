@@ -1,22 +1,20 @@
-import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 import { useTranslation } from "../../lib/i18n/useTranslation";
-import {
-  adminNavItems,
-  mainNavItems,
-  referenceNavItem,
-  referenceNavItems,
-} from "./navigation";
-import type { NavItem } from "./navigation";
+import { NavigationSections } from "./NavigationSections";
 
 type SidebarProps = {
   isCollapsed: boolean;
+  onExpandCollapsed: () => void;
   onToggleCollapsed: () => void;
 };
 
-export function Sidebar({ isCollapsed, onToggleCollapsed }: SidebarProps) {
+export function Sidebar({
+  isCollapsed,
+  onExpandCollapsed,
+  onToggleCollapsed,
+}: SidebarProps) {
   const { t } = useTranslation();
 
   return (
@@ -58,15 +56,9 @@ export function Sidebar({ isCollapsed, onToggleCollapsed }: SidebarProps) {
           isCollapsed ? "px-2" : "px-3",
         ].join(" ")}
       >
-        <NavSection
+        <NavigationSections
           isCollapsed={isCollapsed}
-          items={mainNavItems}
-          title={t("nav.workspace")}
-        />
-        <AdminNavSection
-          isCollapsed={isCollapsed}
-          items={adminNavItems}
-          title={t("nav.admin")}
+          onExpandCollapsed={onExpandCollapsed}
         />
       </div>
 
@@ -91,145 +83,5 @@ export function Sidebar({ isCollapsed, onToggleCollapsed }: SidebarProps) {
         </button>
       </div>
     </aside>
-  );
-}
-
-type NavSectionProps = {
-  title: string;
-  items: NavItem[];
-  isCollapsed: boolean;
-};
-
-function NavSection({ title, items, isCollapsed }: NavSectionProps) {
-  const { t } = useTranslation();
-
-  return (
-    <section className="grid gap-1">
-      {!isCollapsed && (
-        <p className="px-2.5 pb-1 text-xs font-bold uppercase tracking-wide text-slate-400">
-          {title}
-        </p>
-      )}
-      {items.map((item) => (
-        <NavLink
-          key={item.href}
-          title={isCollapsed ? t(item.labelKey) : undefined}
-          className={({ isActive }) =>
-            [
-              "flex min-h-10 items-center rounded-lg text-sm font-semibold",
-              isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5",
-              isActive
-                ? "bg-slate-950 text-white"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
-            ].join(" ")
-          }
-          to={item.href}
-        >
-          <item.icon aria-hidden="true" size={18} />
-          {!isCollapsed && <span>{t(item.labelKey)}</span>}
-        </NavLink>
-      ))}
-    </section>
-  );
-}
-
-function AdminNavSection({ title, items, isCollapsed }: NavSectionProps) {
-  const { pathname } = useLocation();
-  const { t } = useTranslation();
-  const isReferenceActive =
-    pathname === referenceNavItem.href ||
-    pathname.startsWith(`${referenceNavItem.href}/`);
-  const [isReferenceOpen, setIsReferenceOpen] = useState(isReferenceActive);
-
-  useEffect(() => {
-    if (isReferenceActive) {
-      setIsReferenceOpen(true);
-    }
-  }, [isReferenceActive]);
-
-  return (
-    <section className="grid gap-1">
-      {!isCollapsed && (
-        <p className="px-2.5 pb-1 text-xs font-bold uppercase tracking-wide text-slate-400">
-          {title}
-        </p>
-      )}
-
-      <div className="grid gap-1">
-        <button
-          aria-expanded={isReferenceOpen}
-          title={isCollapsed ? t(referenceNavItem.labelKey) : undefined}
-          className={[
-            "flex min-h-10 w-full items-center rounded-lg text-sm font-semibold",
-            isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5",
-            isReferenceActive
-              ? "bg-slate-950 text-white"
-              : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
-          ].join(" ")}
-          type="button"
-          onClick={() => setIsReferenceOpen((current) => !current)}
-        >
-          <referenceNavItem.icon aria-hidden="true" size={18} />
-          {!isCollapsed && (
-            <>
-              <span className="min-w-0 flex-1 truncate text-left whitespace-nowrap">
-                {t(referenceNavItem.labelKey)}
-              </span>
-              <ChevronDown
-                aria-hidden="true"
-                className={[
-                  "shrink-0 transition-transform",
-                  isReferenceOpen ? "rotate-180" : "",
-                ].join(" ")}
-                size={16}
-              />
-            </>
-          )}
-        </button>
-
-        {!isCollapsed && isReferenceOpen && (
-          <div className="grid gap-1 pl-7">
-            {referenceNavItems.map((item) => (
-              <NavLink
-                key={item.href}
-                className={({ isActive }) =>
-                  [
-                    "flex min-h-9 items-center rounded-lg px-2.5 text-sm font-semibold whitespace-nowrap",
-                    isActive
-                      ? "bg-slate-950 text-white"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
-                  ].join(" ")
-                }
-                to={item.href}
-              >
-                <span className="truncate">{t(item.labelKey)}</span>
-              </NavLink>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {items.map((item) => (
-        <NavLink
-          key={item.href}
-          title={isCollapsed ? t(item.labelKey) : undefined}
-          className={({ isActive }) =>
-            [
-              "flex min-h-10 items-center rounded-lg text-sm font-semibold",
-              isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5",
-              isActive
-                ? "bg-slate-950 text-white"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
-            ].join(" ")
-          }
-          to={item.href}
-        >
-          <item.icon aria-hidden="true" size={18} />
-          {!isCollapsed && (
-            <span className="truncate whitespace-nowrap">{t(item.labelKey)}</span>
-          )}
-        </NavLink>
-      ))}
-    </section>
   );
 }

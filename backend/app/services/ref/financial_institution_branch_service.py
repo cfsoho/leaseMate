@@ -116,6 +116,20 @@ def upsert_financial_institution_branches_from_list(
                 f"{item['name']}"
             )
 
+        seeded_branch_names = {
+            branch_item["branch_name"]
+            for branch_item in item.get("branches", [])
+        }
+
+        (
+            db.query(FinancialInstitutionBranch)
+            .filter(
+                FinancialInstitutionBranch.financial_institution_id == institution.id,
+                ~FinancialInstitutionBranch.branch_name.in_(seeded_branch_names),
+            )
+            .update({"is_active": False}, synchronize_session=False)
+        )
+
         for branch_item in item.get("branches", []):
             branch = (
                 db.query(FinancialInstitutionBranch)

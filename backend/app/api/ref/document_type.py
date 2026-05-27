@@ -34,7 +34,10 @@ def create(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    return create_document_type(db, payload)
+    try:
+        return create_document_type(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.get("", response_model=List[DocumentTypeRead])
@@ -82,13 +85,15 @@ def update(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-
-    document_type = update_document_type(
-        db,
-        document_type_id,
-        locale,
-        payload
-    )
+    try:
+        document_type = update_document_type(
+            db,
+            document_type_id,
+            locale,
+            payload
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
     if not document_type:
         raise HTTPException(

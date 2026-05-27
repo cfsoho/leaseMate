@@ -13,6 +13,14 @@ from app.db.schemas.ref.document_type import (
 )
 
 from app.services.soft_delete import soft_delete
+from app.services.ref.localized_shared_fields import (
+    inherit_master_shared_fields,
+    propagate_master_shared_fields,
+)
+from app.services.ref.translation_validation import ensure_translation_locale_available
+
+
+DOCUMENT_TYPE_SHARED_FIELDS = {"code", "is_active"}
 
 def create_document_type(
     db: Session,
@@ -23,6 +31,19 @@ def create_document_type(
 
     if data.get("id") is None:
         data["id"] = uuid.uuid4()
+
+    ensure_translation_locale_available(
+        db,
+        DocumentType,
+        data["id"],
+        data["locale"],
+    )
+    inherit_master_shared_fields(
+        db,
+        DocumentType,
+        data,
+        DOCUMENT_TYPE_SHARED_FIELDS,
+    )
 
     document_type = DocumentType(**data)
 
@@ -82,9 +103,25 @@ def update_document_type(
         return None
 
     update_data = payload.model_dump(exclude_unset=True)
+    ensure_translation_locale_available(
+        db,
+        DocumentType,
+        document_type_id,
+        update_data.get("locale"),
+        locale,
+    )
 
     for field, value in update_data.items():
         setattr(document_type, field, value)
+
+    propagate_master_shared_fields(
+        db,
+        DocumentType,
+        document_type_id,
+        locale,
+        update_data,
+        DOCUMENT_TYPE_SHARED_FIELDS,
+    )
 
     db.commit()
     db.refresh(document_type)

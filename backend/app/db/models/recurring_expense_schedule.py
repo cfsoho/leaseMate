@@ -15,7 +15,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
-from app.db.models.ref.status_code import STATUS_CODE_IDS
 
 
 class RecurringExpenseSchedule(Base):
@@ -53,7 +52,6 @@ class RecurringExpenseSchedule(Base):
     status_id = Column(
         UUID(as_uuid=True),
         nullable=False,
-        default=STATUS_CODE_IDS["RECURRING_SCHEDULE_ACTIVE"],
         index=True,
         comment="Current recurring expense schedule status."
     )

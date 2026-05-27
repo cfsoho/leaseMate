@@ -12,6 +12,14 @@ from app.db.schemas.ref.utility_type import (
 )
 
 from app.services.soft_delete import soft_delete
+from app.services.ref.localized_shared_fields import (
+    inherit_master_shared_fields,
+    propagate_master_shared_fields,
+)
+from app.services.ref.translation_validation import ensure_translation_locale_available
+
+
+UTILITY_TYPE_SHARED_FIELDS = {"code", "is_active"}
 
 def create_utility_type(
     db: Session,
@@ -21,6 +29,19 @@ def create_utility_type(
 
     if data.get("id") is None:
         data["id"] = uuid.uuid4()
+
+    ensure_translation_locale_available(
+        db,
+        UtilityType,
+        data["id"],
+        data["locale"],
+    )
+    inherit_master_shared_fields(
+        db,
+        UtilityType,
+        data,
+        UTILITY_TYPE_SHARED_FIELDS,
+    )
 
     utility_type = UtilityType(**data)
 
@@ -72,8 +93,26 @@ def update_utility_type(
     if not utility_type:
         return None
 
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    update_data = payload.model_dump(exclude_unset=True)
+    ensure_translation_locale_available(
+        db,
+        UtilityType,
+        utility_type_id,
+        update_data.get("locale"),
+        locale,
+    )
+
+    for field, value in update_data.items():
         setattr(utility_type, field, value)
+
+    propagate_master_shared_fields(
+        db,
+        UtilityType,
+        utility_type_id,
+        locale,
+        update_data,
+        UTILITY_TYPE_SHARED_FIELDS,
+    )
 
     db.commit()
     db.refresh(utility_type)

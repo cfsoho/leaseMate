@@ -10,9 +10,16 @@ from app.db.schemas.lease_rent_period import (
 )
 
 from app.services.soft_delete import soft_delete
+from app.services.status_defaults import apply_default_status
 
 def create_lease_rent_period(db: Session, payload: LeaseRentPeriodCreate) -> LeaseRentPeriod:
-    rent_period = LeaseRentPeriod(**payload.model_dump())
+    data = apply_default_status(
+        db,
+        payload.model_dump(),
+        group_code="RENT_PERIOD",
+        code="PENDING",
+    )
+    rent_period = LeaseRentPeriod(**data)
     db.add(rent_period)
     db.commit()
     db.refresh(rent_period)

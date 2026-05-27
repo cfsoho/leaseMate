@@ -5,8 +5,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.ref.status_code import STATUS_CODE_IDS
-
 
 class LeaseRentPeriodCreate(BaseModel):
     lease_id: UUID
@@ -15,7 +13,7 @@ class LeaseRentPeriodCreate(BaseModel):
     due_date: date
     rent_amount: Decimal
     currency_code: str = "THB"
-    status_id: UUID = STATUS_CODE_IDS["RENT_PERIOD_PENDING"]
+    status_id: Optional[UUID] = None
     notes: Optional[str] = None
 
 

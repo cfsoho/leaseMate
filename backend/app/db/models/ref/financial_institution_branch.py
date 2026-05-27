@@ -27,38 +27,73 @@ class FinancialInstitutionBranch(Base):
     )
 
     # Branch-level UUID.
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        comment="Financial institution branch UUID."
+    )
 
     # Parent financial institution.
     financial_institution_id = Column(
         UUID(as_uuid=True),
         ForeignKey("ref.financial_institutions.id", ondelete="CASCADE"),
         nullable=False,
-        index=True
+        index=True,
+        comment="Parent financial institution UUID."
     )
 
     # Branch display name.
     # Examples: Asoke Branch, Shinjuku Branch
-    branch_name = Column(String(100), nullable=False, index=True)
+    branch_name = Column(
+        String(100),
+        nullable=False,
+        index=True,
+        comment="Branch display name."
+    )
 
     # Local branch code used by bank.
-    branch_code = Column(String(50), nullable=True, index=True)
+    branch_code = Column(
+        String(50),
+        nullable=True,
+        index=True,
+        comment="Local branch code used by the bank."
+    )
 
     # Branch address.
-    address = Column(String(255), nullable=True)
+    address = Column(
+        String(255),
+        nullable=True,
+        comment="Branch address."
+    )
 
     # Branch phone number.
-    phone = Column(String(50), nullable=True)
+    phone = Column(
+        String(50),
+        nullable=True,
+        comment="Branch phone number."
+    )
 
     # Whether this branch is selectable.
-    is_active = Column(Boolean, nullable=False, default=True, index=True)
+    is_active = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        index=True,
+        comment="Whether this branch can be selected in forms."
+    )
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        comment="Timestamp when the branch row was created."
+    )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
+        comment="Timestamp when the branch row was last updated."
     )
 
     financial_institution = relationship(

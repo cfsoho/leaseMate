@@ -3,6 +3,7 @@
 import uuid
 
 from sqlalchemy import (
+    Boolean,
     Column,
     String,
     ForeignKey,
@@ -25,7 +26,8 @@ class Country(Base):
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,
-        default=uuid.uuid4
+        default=uuid.uuid4,
+        comment="Country UUID used by records that reference a country"
     )
 
     # ISO 3166-1 alpha-3 country code
@@ -189,6 +191,14 @@ class Country(Base):
         nullable=True,
         index=True,
         comment="Default locale code for this country"
+    )
+
+    # Whether this country can be selected in forms.
+    is_active = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        comment="Whether this country can be selected in forms"
     )
 
     # Relationships

@@ -1,6 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { AlertTriangle, ArrowRight, MailCheck, ShieldCheck } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  Building2,
+  CheckCircle2,
+  MailCheck,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import { EmailVerificationPrompt } from "../components/auth/EmailVerificationPrompt";
@@ -8,12 +17,15 @@ import { PageHeader } from "../components/layout/PageHeader";
 import {
   getBootstrapStatus,
   getCurrentUser,
+  getCurrentUserReadiness,
 } from "../features/auth/authApi";
+import type { CurrentUserReadiness } from "../features/auth/authTypes";
 import { getEmailLinkDashboardStats } from "../features/users/usersApi";
 import { getAccessToken } from "../lib/auth/tokenStorage";
 import { useTranslation } from "../lib/i18n/useTranslation";
 
 const SETUP_COMPLETED_CARD_SEEN_KEY = "leasemate.dashboard.setupCompletedCardSeen";
+const READINESS_COMPLETED_KEY_PREFIX = "leasemate.dashboard.readinessComplete";
 
 export function DashboardPage() {
   const location = useLocation();
@@ -21,6 +33,9 @@ export function DashboardPage() {
   const [hasSeenCompletedSetupCard] = useState(
     () => localStorage.getItem(SETUP_COMPLETED_CARD_SEEN_KEY) === "true",
   );
+  const [readinessReminderComplete, setReadinessReminderComplete] = useState<
+    boolean | null
+  >(null);
   const routeState = location.state as { setupWarning?: string } | null;
   const showSmtpWarning = routeState?.setupWarning === "smtp";
   const hasToken = Boolean(getAccessToken());
@@ -32,6 +47,15 @@ export function DashboardPage() {
     queryKey: ["current-user"],
     queryFn: getCurrentUser,
     enabled: hasToken,
+    retry: false,
+  });
+  const readiness = useQuery({
+    queryKey: ["current-user", "readiness"],
+    queryFn: getCurrentUserReadiness,
+    enabled:
+      hasToken &&
+      currentUser.isSuccess &&
+      readinessReminderComplete === false,
     retry: false,
   });
   const emailLinkStats = useQuery({
@@ -58,6 +82,11 @@ export function DashboardPage() {
     Boolean(backendStatusMessage) &&
     (!hasToken || (currentUser.isSuccess && !emailNeedsVerification)) &&
     !(hasToken && adminSetupCompleted && hasSeenCompletedSetupCard);
+  const readinessIsComplete = Boolean(
+    readiness.data &&
+      readiness.data.legal_name_count > 0 &&
+      readiness.data.property_count > 0,
+  );
 
   useEffect(() => {
     if (
@@ -76,6 +105,30 @@ export function DashboardPage() {
     hasToken,
     showBackendStatus,
   ]);
+
+  useEffect(() => {
+    if (!currentUser.data?.id) {
+      setReadinessReminderComplete(null);
+      return;
+    }
+
+    setReadinessReminderComplete(
+      localStorage.getItem(`${READINESS_COMPLETED_KEY_PREFIX}.${currentUser.data.id}`) ===
+        "true",
+    );
+  }, [currentUser.data?.id]);
+
+  useEffect(() => {
+    if (!currentUser.data?.id || !readinessIsComplete) {
+      return;
+    }
+
+    localStorage.setItem(
+      `${READINESS_COMPLETED_KEY_PREFIX}.${currentUser.data.id}`,
+      "true",
+    );
+    setReadinessReminderComplete(true);
+  }, [currentUser.data?.id, readinessIsComplete]);
 
   return (
     <section className="grid gap-6">
@@ -98,6 +151,10 @@ export function DashboardPage() {
 
       {emailNeedsVerification && currentUser.data && (
         <EmailVerificationPrompt currentUser={currentUser.data} />
+      )}
+
+      {readiness.isSuccess && !readinessIsComplete && (
+        <DashboardReadiness readiness={readiness.data} />
       )}
 
       {showSmtpWarning && (
@@ -206,6 +263,105 @@ export function DashboardPage() {
       )}
     </section>
   );
+}
+
+function DashboardReadiness({
+  readiness,
+}: {
+  readiness: CurrentUserReadiness;
+}) {
+  const { t } = useTranslation();
+  const items = [
+    {
+      count: readiness.legal_name_count,
+      href: "/profile",
+      icon: UserRound,
+      label: t("dashboard.readinessLegalNames"),
+    },
+    {
+      count: readiness.property_count,
+      icon: Building2,
+      label: t("dashboard.readinessProperties"),
+    },
+  ];
+  const completedCount = items.filter((item) => item.count > 0).length;
+
+  return (
+    <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-[18px]">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="font-bold text-slate-950">
+            {t("dashboard.readinessTitle")}
+          </h2>
+          <p className="mt-1 text-sm leading-relaxed text-slate-500">
+            {t("dashboard.readinessDescription")}
+          </p>
+        </div>
+        <div className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+          {completedCount} / {items.length}
+        </div>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        {items.map((item) => (
+          <DashboardReadinessItem key={item.label} {...item} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DashboardReadinessItem({
+  count,
+  href,
+  icon: Icon,
+  label,
+}: {
+  count: number;
+  href?: string;
+  icon: LucideIcon;
+  label: string;
+}) {
+  const { t } = useTranslation();
+  const isReady = count > 0;
+  const content = (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <Icon aria-hidden="true" className="mt-0.5 shrink-0" size={20} />
+        {isReady ? (
+          <CheckCircle2 aria-hidden="true" className="text-emerald-600" size={20} />
+        ) : (
+          <span className="h-5 w-5 rounded-full border border-slate-300" />
+        )}
+      </div>
+      <div>
+        <h3 className="font-semibold text-slate-950">{label}</h3>
+        <p className="mt-1 text-sm text-slate-500">
+          {isReady
+            ? t("dashboard.readinessReady")
+            : t("dashboard.readinessMissing")}
+        </p>
+      </div>
+    </>
+  );
+
+  const className = [
+    "grid min-h-[120px] gap-4 rounded-lg border p-4 text-left transition",
+    isReady
+      ? "border-slate-200 bg-slate-50"
+      : "border-rose-200 bg-rose-50 text-rose-950",
+    href ? "hover:border-slate-400 hover:bg-white" : "",
+  ].join(" ");
+
+  if (href) {
+    return (
+      <Link className={className} to={href}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <article className={className}>{content}</article>;
 }
 
 function DashboardStat({

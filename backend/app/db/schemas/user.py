@@ -88,3 +88,17 @@ class EmailLinkDashboardStats(BaseModel):
     active_link_count: int
     attention_required_count: int
     expiring_today_count: int
+
+
+class UserLoginSessionRead(BaseModel):
+    id: UUID
+    user_id: UUID
+    device_info: Optional[str]
+    ip_address: Optional[str]
+    created_at: Optional[datetime]
+    last_used_at: Optional[datetime]
+    expires_at: datetime
+    revoked_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True

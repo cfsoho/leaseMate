@@ -15,6 +15,7 @@ class ContractorTypeCreate(BaseModel):
 
 
 class ContractorTypeUpdate(BaseModel):
+    locale: Optional[str] = None
     code: Optional[str] = None
     name: Optional[str] = None
     description: Optional[str] = None

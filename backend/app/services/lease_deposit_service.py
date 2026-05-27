@@ -7,9 +7,16 @@ from app.db.models.lease_deposit import LeaseDeposit
 from app.db.schemas.lease_deposit import LeaseDepositCreate, LeaseDepositUpdate
 
 from app.services.soft_delete import soft_delete
+from app.services.status_defaults import apply_default_status
 
 def create_lease_deposit(db: Session, payload: LeaseDepositCreate) -> LeaseDeposit:
-    deposit = LeaseDeposit(**payload.model_dump())
+    data = apply_default_status(
+        db,
+        payload.model_dump(),
+        group_code="DEPOSIT",
+        code="PENDING",
+    )
+    deposit = LeaseDeposit(**data)
     db.add(deposit)
     db.commit()
     db.refresh(deposit)

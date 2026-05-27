@@ -7,16 +7,49 @@ from sqlalchemy.orm import Session
 from app.db.models.ref.status_code import StatusCode
 from app.db.schemas.ref.status_code import StatusCodeCreate, StatusCodeUpdate
 from app.services.soft_delete import soft_delete
+from app.services.ref.localized_shared_fields import (
+    inherit_master_shared_fields,
+    propagate_master_shared_fields,
+)
+from app.services.ref.translation_validation import ensure_translation_locale_available
+
+
+STATUS_SHARED_FIELDS = {
+    "group_code",
+    "code",
+    "is_terminal",
+    "is_success",
+    "is_active",
+}
+STATUS_INHERITED_FIELDS = {*STATUS_SHARED_FIELDS, "sort_order"}
 
 
 def create_status_code(db: Session, payload: StatusCodeCreate) -> StatusCode:
     data = payload.model_dump()
+    should_rebalance_sort = "sort_order" in payload.model_fields_set
+    requested_sort_order = data.get("sort_order", 0)
 
     if data.get("id") is None:
         data["id"] = uuid.uuid4()
 
+    ensure_translation_locale_available(
+        db,
+        StatusCode,
+        data["id"],
+        data["locale"],
+    )
+    inherit_master_shared_fields(
+        db,
+        StatusCode,
+        data,
+        STATUS_INHERITED_FIELDS,
+    )
+
     status_code = StatusCode(**data)
     db.add(status_code)
+    if should_rebalance_sort:
+        db.flush()
+        _rebalance_status_group(db, status_code, requested_sort_order)
     db.commit()
     db.refresh(status_code)
     return status_code
@@ -46,7 +79,17 @@ def get_status_codes(
     if group_code is not None:
         query = query.filter(StatusCode.group_code == group_code)
 
-    return query.order_by(StatusCode.group_code, StatusCode.sort_order).offset(skip).limit(limit).all()
+    return (
+        query.order_by(
+            StatusCode.is_active.desc(),
+            StatusCode.group_code,
+            StatusCode.sort_order,
+            StatusCode.code,
+        )
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def update_status_code(
@@ -59,12 +102,81 @@ def update_status_code(
     if not status_code:
         return None
 
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    update_data = payload.model_dump(exclude_unset=True)
+    current_sort_order = status_code.sort_order
+    requested_sort_order = update_data.get("sort_order")
+    ensure_translation_locale_available(
+        db,
+        StatusCode,
+        status_code_id,
+        update_data.get("locale"),
+        locale,
+    )
+
+    for field, value in update_data.items():
         setattr(status_code, field, value)
+
+    should_rebalance_sort = (
+        requested_sort_order is not None
+        and requested_sort_order != current_sort_order
+    )
+
+    if should_rebalance_sort:
+        db.flush()
+        _rebalance_status_group(db, status_code, requested_sort_order)
+
+    propagate_master_shared_fields(
+        db,
+        StatusCode,
+        status_code_id,
+        locale,
+        update_data,
+        STATUS_SHARED_FIELDS,
+    )
 
     db.commit()
     db.refresh(status_code)
     return status_code
+
+
+def _rebalance_status_group(
+    db: Session,
+    status_code: StatusCode,
+    requested_sort_order: int,
+) -> None:
+    group_records = (
+        db.query(StatusCode)
+        .filter(
+            StatusCode.locale == status_code.locale,
+            StatusCode.group_code == status_code.group_code,
+        )
+        .order_by(StatusCode.sort_order, StatusCode.name)
+        .all()
+    )
+    moving_record = next(
+        (record for record in group_records if record.id == status_code.id),
+        status_code,
+    )
+    remaining_records = [
+        record for record in group_records if record.id != status_code.id
+    ]
+    insert_index = sum(
+        1
+        for record in remaining_records
+        if record.sort_order <= requested_sort_order
+    )
+    ordered_records = [
+        *remaining_records[:insert_index],
+        moving_record,
+        *remaining_records[insert_index:],
+    ]
+
+    for index, record in enumerate(ordered_records, start=1):
+        normalized_sort_order = index * 10
+        db.query(StatusCode).filter(StatusCode.id == record.id).update(
+            {"sort_order": normalized_sort_order},
+            synchronize_session=False,
+        )
 
 
 def delete_status_code(

@@ -90,8 +90,12 @@ export function formatPhoneCountryLabel(country: ProfileCountry) {
 export function formatPhoneForCountry(
   value: string,
   country: ProfileCountry | undefined,
+  preferredFormat: "mobile" | "landline" = "mobile",
 ) {
-  const mask = country?.mobile_phone_format || country?.landline_phone_format;
+  const mask =
+    preferredFormat === "landline"
+      ? country?.landline_phone_format || country?.mobile_phone_format
+      : country?.mobile_phone_format || country?.landline_phone_format;
 
   if (!mask) {
     return value;

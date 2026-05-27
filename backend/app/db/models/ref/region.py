@@ -11,7 +11,12 @@ class Region(Base):
     __tablename__ = "regions"
     __table_args__ = {"schema": "ref"}
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        comment="Region UUID used by country records.",
+    )
 
     code = Column(
         String(50),
@@ -42,11 +47,16 @@ class Region(Base):
         default=0,
         comment="Display order for region selectors.",
     )
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        comment="Timestamp when the region row was created.",
+    )
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),
+        comment="Timestamp when the region row was last updated.",
     )
 
     countries = relationship("Country", back_populates="region")

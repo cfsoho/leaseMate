@@ -64,6 +64,12 @@ export type CurrentUser = {
   deleted_by?: string | null;
 };
 
+export type CurrentUserReadiness = {
+  legal_name_count: number;
+  property_count: number;
+  financial_account_count: number;
+};
+
 export type EmailVerificationResendResponse = {
   already_verified: boolean;
   email_sent: boolean;

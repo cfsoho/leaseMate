@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  ArrowLeft,
   Edit2,
+  History,
   Mail,
   Plus,
   RefreshCw,
@@ -27,9 +29,11 @@ import {
   createUser,
   deactivateUser,
   deleteUser,
+  listUserLoginSessions,
   listUsers,
   sendUserVerificationEmail,
   updateUser,
+  type UserLoginSession,
 } from "../features/users/usersApi";
 import { formatPersonName } from "../lib/i18n/nameFormat";
 import { useTranslation } from "../lib/i18n/useTranslation";
@@ -75,7 +79,10 @@ export function UsersPage() {
   const [verificationUser, setVerificationUser] = useState<CurrentUser | null>(
     null,
   );
-  const pageSize = useDataGridPageSize();
+  const [loginSessionUser, setLoginSessionUser] = useState<CurrentUser | null>(
+    null,
+  );
+  const { pageSize, setPageSize } = useDataGridPageSize();
   const { pageIndex, setPageIndex, setSortState, sortState } =
     useUrlDataGridState();
   const users = useQuery({
@@ -104,6 +111,11 @@ export function UsersPage() {
         sortBy: toUserSortBy(sortState?.columnKey),
         sortDirection: sortState?.direction ?? "asc",
       }),
+  });
+  const loginSessions = useQuery({
+    queryKey: ["users", loginSessionUser?.id, "login-sessions"],
+    enabled: Boolean(loginSessionUser),
+    queryFn: () => listUserLoginSessions(loginSessionUser!.id),
   });
   const locales = useQuery({
     queryKey: ["bootstrap-locales"],
@@ -140,6 +152,7 @@ export function UsersPage() {
     deactivationUser?.id ||
     deletionUser?.id ||
     verificationUser?.id ||
+    loginSessionUser?.id ||
     null;
   const isEditing = selectedUser !== null;
   const isEmailChanged = isEditing && form.email !== selectedUser.email;
@@ -249,9 +262,73 @@ export function UsersPage() {
     createUserMutation.mutate(value);
   }
 
+  if (loginSessionUser) {
+    return (
+      <GridManagementPage<UserLoginSession>
+        actions={
+          <>
+            <IconButton
+              label={t("users.backToUsers")}
+              tone="primary"
+              onClick={() => setLoginSessionUser(null)}
+            >
+              <ArrowLeft aria-hidden="true" size={16} />
+            </IconButton>
+            <IconButton
+              disabled={loginSessions.isFetching}
+              label={t("users.reload")}
+              tone="primary"
+              onClick={() => loginSessions.refetch()}
+            >
+              <RefreshCw
+                aria-hidden="true"
+                className={loginSessions.isFetching ? "animate-spin" : ""}
+                size={16}
+              />
+            </IconButton>
+          </>
+        }
+        actionsClassName="md:self-end"
+        columnSelectionStorageKey="user-login-sessions"
+        columns={buildLoginSessionColumns(t, locale)}
+        description={t("users.loginSessionsDescription")}
+        emptyMessage={
+          loginSessions.isLoading
+            ? t("users.loading")
+            : t("users.noLoginSessions")
+        }
+        errorMessage={
+          loginSessions.isError ? loginSessions.error.message : undefined
+        }
+        eyebrow={`${t("nav.admin")} > ${t("nav.users")}`}
+        heightClassName="h-[calc(100vh-260px)] min-h-[560px]"
+        pageIndex={0}
+        paginationLabels={{
+          firstPage: t("grid.firstPage"),
+          lastPage: t("grid.lastPage"),
+          nextPage: t("grid.nextPage"),
+          previousPage: t("grid.previousPage"),
+          rows: t("grid.rows"),
+        }}
+        pageSize={pageSize}
+        records={loginSessions.data ?? []}
+        sortState={sortState}
+        title={formatPersonName(
+          loginSessionUser.family_name,
+          loginSessionUser.given_name,
+          loginSessionUser.preferred_locale_code
+            ? localeByCode.get(loginSessionUser.preferred_locale_code)
+            : undefined,
+        )}
+        totalRecords={loginSessions.data?.length ?? 0}
+        onSortChange={setSortState}
+      />
+    );
+  }
+
   return (
     <>
-      <GridManagementPage
+      <GridManagementPage<CurrentUser>
         actions={
           <>
             <IconButton
@@ -283,6 +360,7 @@ export function UsersPage() {
           </>
         }
         actionsClassName="md:self-end"
+        columnSelectionStorageKey="users"
         columns={[
             {
               key: "name",
@@ -351,6 +429,12 @@ export function UsersPage() {
                 user.status === "INACTIVE" ? (
                   <div className="flex justify-end gap-1">
                     <IconButton
+                      label={t("users.viewLoginSessions")}
+                      onClick={() => setLoginSessionUser(user)}
+                    >
+                      <History aria-hidden="true" size={16} />
+                    </IconButton>
+                    <IconButton
                       disabled={activateUserMutation.isPending}
                       label={t("users.activateUser")}
                       onClick={() => setActivationUser(user)}
@@ -374,6 +458,12 @@ export function UsersPage() {
                       <Edit2 aria-hidden="true" size={16} />
                     </IconButton>
                     <IconButton
+                      label={t("users.viewLoginSessions")}
+                      onClick={() => setLoginSessionUser(user)}
+                    >
+                      <History aria-hidden="true" size={16} />
+                    </IconButton>
+                    <IconButton
                       disabled={
                         Boolean(user.email_verified_at) ||
                         sendVerificationMutation.isPending
@@ -394,27 +484,32 @@ export function UsersPage() {
                 ),
             },
         ]}
+        activeRecordId={activeActionUserId}
         description={t("users.description")}
-        emptyMessage={users.isLoading ? t("users.loading") : t("users.empty")}
-        errorMessage={users.isError ? users.error.message : undefined}
+        emptyMessage={
+          users.isLoading ? t("users.loading") : t("users.empty")
+        }
+        errorMessage={
+          users.isError ? users.error.message : undefined
+        }
         eyebrow={t("nav.admin")}
-        getRowClassName={(user) => {
-          if (user.id === activeActionUserId) {
-            return "!bg-slate-700 hover:!bg-slate-700 [&>td]:!bg-slate-700 [&>td]:!text-white [&_button]:!border-slate-500 [&_button]:!bg-slate-800 [&_button]:!text-white [&_button:hover]:!bg-slate-900";
-          }
-
-          return user.status === "INACTIVE"
-            ? "[&>td:not(:last-child)]:text-slate-400 [&>td:not(:last-child)]:line-through"
-            : "";
-        }}
         heightClassName="h-[calc(100vh-260px)] min-h-[560px]"
+        isRecordInactive={(user) => user.status === "INACTIVE"}
         pageIndex={pageIndex}
+        paginationLabels={{
+          firstPage: t("grid.firstPage"),
+          lastPage: t("grid.lastPage"),
+          nextPage: t("grid.nextPage"),
+          previousPage: t("grid.previousPage"),
+          rows: t("grid.rows"),
+        }}
         pageSize={pageSize}
         records={visibleUsers}
         sortState={sortState}
         title={t("nav.users")}
         totalRecords={users.data?.total ?? 0}
         onPageIndexChange={setPageIndex}
+        onPageSizeChange={setPageSize}
         onSortChange={setSortState}
       />
 
@@ -647,6 +742,89 @@ function toUserSortBy(columnKey?: string) {
   };
 
   return columnKey ? sortFields[columnKey] ?? "created_at" : "created_at";
+}
+
+function buildLoginSessionColumns(
+  t: ReturnType<typeof useTranslation>["t"],
+  locale: string,
+) {
+  return [
+    {
+      key: "createdAt",
+      header: t("users.loginAt"),
+      render: (session: UserLoginSession) => formatDateTime(session.created_at, locale),
+      sortable: true,
+      sortValue: (session: UserLoginSession) => session.created_at ?? "",
+    },
+    {
+      key: "lastUsedAt",
+      header: t("users.lastUsedAt"),
+      render: (session: UserLoginSession) => formatDateTime(session.last_used_at, locale),
+      sortable: true,
+      sortValue: (session: UserLoginSession) => session.last_used_at ?? "",
+    },
+    {
+      key: "status",
+      header: t("users.sessionStatus"),
+      render: (session: UserLoginSession) => getSessionStatus(session, t),
+      sortable: true,
+      sortValue: (session: UserLoginSession) => getSessionStatus(session, t),
+    },
+    {
+      key: "expiresAt",
+      header: t("users.expiresAt"),
+      render: (session: UserLoginSession) => formatDateTime(session.expires_at, locale),
+      sortable: true,
+      sortValue: (session: UserLoginSession) => session.expires_at,
+    },
+    {
+      key: "revokedAt",
+      header: t("users.revokedAt"),
+      render: (session: UserLoginSession) => formatDateTime(session.revoked_at, locale),
+      sortable: true,
+      sortValue: (session: UserLoginSession) => session.revoked_at ?? "",
+    },
+    {
+      key: "deviceInfo",
+      header: t("users.deviceInfo"),
+      render: (session: UserLoginSession) => session.device_info || "--",
+      sortable: true,
+      sortValue: (session: UserLoginSession) => session.device_info ?? "",
+    },
+    {
+      key: "ipAddress",
+      header: t("users.ipAddress"),
+      render: (session: UserLoginSession) => session.ip_address || "--",
+      sortable: true,
+      sortValue: (session: UserLoginSession) => session.ip_address ?? "",
+    },
+  ];
+}
+
+function getSessionStatus(
+  session: UserLoginSession,
+  t: ReturnType<typeof useTranslation>["t"],
+) {
+  if (session.revoked_at) {
+    return t("users.revokedSession");
+  }
+
+  if (new Date(session.expires_at).getTime() < Date.now()) {
+    return t("users.expiredSession");
+  }
+
+  return t("users.activeSession");
+}
+
+function formatDateTime(value: string | null | undefined, locale: string) {
+  if (!value) {
+    return "--";
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
 async function invalidateUserQueries(queryClient: ReturnType<typeof useQueryClient>) {

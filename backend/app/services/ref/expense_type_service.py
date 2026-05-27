@@ -8,12 +8,33 @@ from app.db.models.ref.expense_type import ExpenseType
 from app.db.schemas.ref.expense_type import ExpenseTypeCreate, ExpenseTypeUpdate
 
 from app.services.soft_delete import soft_delete
+from app.services.ref.localized_shared_fields import (
+    inherit_master_shared_fields,
+    propagate_master_shared_fields,
+)
+from app.services.ref.translation_validation import ensure_translation_locale_available
+
+
+EXPENSE_TYPE_SHARED_FIELDS = {"code", "is_active"}
 
 def create_expense_type(db: Session, payload: ExpenseTypeCreate) -> ExpenseType:
     data = payload.model_dump()
 
     if data.get("id") is None:
         data["id"] = uuid.uuid4()
+
+    ensure_translation_locale_available(
+        db,
+        ExpenseType,
+        data["id"],
+        data["locale"],
+    )
+    inherit_master_shared_fields(
+        db,
+        ExpenseType,
+        data,
+        EXPENSE_TYPE_SHARED_FIELDS,
+    )
 
     expense_type = ExpenseType(**data)
 
@@ -57,9 +78,25 @@ def update_expense_type(
         return None
 
     update_data = payload.model_dump(exclude_unset=True)
+    ensure_translation_locale_available(
+        db,
+        ExpenseType,
+        expense_type_id,
+        update_data.get("locale"),
+        locale,
+    )
 
     for field, value in update_data.items():
         setattr(expense_type, field, value)
+
+    propagate_master_shared_fields(
+        db,
+        ExpenseType,
+        expense_type_id,
+        locale,
+        update_data,
+        EXPENSE_TYPE_SHARED_FIELDS,
+    )
 
     db.commit()
     db.refresh(expense_type)

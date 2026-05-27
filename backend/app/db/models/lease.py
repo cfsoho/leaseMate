@@ -14,7 +14,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
-from app.db.models.ref.status_code import STATUS_CODE_IDS
 
 
 class Lease(Base):
@@ -134,7 +133,6 @@ class Lease(Base):
     status_id = Column(
         UUID(as_uuid=True),
         nullable=False,
-        default=STATUS_CODE_IDS["LEASE_DRAFT"],
         index=True,
         comment="Current lifecycle status for this lease."
     )

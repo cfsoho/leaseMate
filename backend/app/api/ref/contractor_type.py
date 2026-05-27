@@ -32,7 +32,10 @@ def create(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    return create_contractor_type(db, payload)
+    try:
+        return create_contractor_type(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.get("", response_model=List[ContractorTypeRead])
@@ -67,12 +70,15 @@ def update(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    contractor_type = update_contractor_type(
-        db,
-        contractor_type_id,
-        locale,
-        payload
-    )
+    try:
+        contractor_type = update_contractor_type(
+            db,
+            contractor_type_id,
+            locale,
+            payload
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
     if not contractor_type:
         raise HTTPException(status_code=404, detail="Contractor type not found")

@@ -102,7 +102,7 @@ def upsert_financial_institutions_from_list(
             "name": item["name"],
             "swift_code": item.get("swift_code"),
             "website": item.get("website"),
-            "is_active": item.get("is_active", True),
+            "is_active": item.get("is_active", bool(item.get("branches"))),
         }
 
         if institution:

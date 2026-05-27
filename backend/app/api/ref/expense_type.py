@@ -32,7 +32,10 @@ def create(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    return create_expense_type(db, payload)
+    try:
+        return create_expense_type(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.get("", response_model=List[ExpenseTypeRead])
@@ -67,7 +70,10 @@ def update(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    expense_type = update_expense_type(db, expense_type_id, locale, payload)
+    try:
+        expense_type = update_expense_type(db, expense_type_id, locale, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
     if not expense_type:
         raise HTTPException(status_code=404, detail="Expense type not found")

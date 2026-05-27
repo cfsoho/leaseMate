@@ -16,6 +16,87 @@ textarea {
   font-weight: 400;
 }
 
+:root[data-theme="dark"] body {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background-color: #111827;
+  border-color: #475569;
+  color: #e5e7eb;
+}
+
+:root[data-theme="dark"] option {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+:root[data-theme="dark"] .bg-white {
+  background-color: #111827 !important;
+}
+
+:root[data-theme="dark"] .bg-slate-50 {
+  background-color: #0f172a !important;
+}
+
+:root[data-theme="dark"] .bg-slate-100,
+:root[data-theme="dark"] .bg-slate-200 {
+  background-color: #1f2937 !important;
+}
+
+:root[data-theme="dark"] .bg-slate-900,
+:root[data-theme="dark"] .bg-slate-950 {
+  background-color: #020617 !important;
+}
+
+:root[data-theme="dark"] .border-slate-100,
+:root[data-theme="dark"] .border-slate-200 {
+  border-color: #334155 !important;
+}
+
+:root[data-theme="dark"] .border-slate-300 {
+  border-color: #475569 !important;
+}
+
+:root[data-theme="dark"] .text-slate-950,
+:root[data-theme="dark"] .text-slate-900,
+:root[data-theme="dark"] .text-slate-800 {
+  color: #e5e7eb !important;
+}
+
+:root[data-theme="dark"] .text-slate-700,
+:root[data-theme="dark"] .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+:root[data-theme="dark"] .text-slate-500,
+:root[data-theme="dark"] .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+:root[data-theme="dark"] .placeholder\:text-slate-400::placeholder {
+  color: #64748b !important;
+}
+
+:root[data-theme="dark"] .hover\:bg-slate-50:hover,
+:root[data-theme="dark"] .hover\:bg-slate-100:hover {
+  background-color: #1e293b !important;
+}
+
+:root[data-theme="dark"] .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+:root[data-theme="dark"] .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #334155 !important;
+}
+
+:root[data-theme="dark"] .shadow-lg,
+:root[data-theme="dark"] .shadow-xl,
+:root[data-theme="dark"] .shadow-2xl {
+  --tw-shadow-color: rgb(0 0 0 / 0.45);
+}
+
 @keyframes modal-backdrop-in {
   from {
     opacity: 0;

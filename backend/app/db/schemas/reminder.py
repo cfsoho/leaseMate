@@ -4,8 +4,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.ref.status_code import STATUS_CODE_IDS
-
 
 class ReminderCreate(BaseModel):
     user_id: Optional[UUID] = None
@@ -17,7 +15,7 @@ class ReminderCreate(BaseModel):
     message: Optional[str] = None
     due_at: datetime
     completed_at: Optional[datetime] = None
-    status_id: UUID = STATUS_CODE_IDS["REMINDER_PENDING"]
+    status_id: Optional[UUID] = None
 
 
 class ReminderUpdate(BaseModel):

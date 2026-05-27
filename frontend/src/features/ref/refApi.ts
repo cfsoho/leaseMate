@@ -1,4 +1,5 @@
-import { apiRequest } from "../../lib/api/client";
+import { API_BASE_URL, apiRequest } from "../../lib/api/client";
+import { getAccessToken } from "../../lib/auth/tokenStorage";
 
 export type ReferenceListSlug =
   | "contractor-types"
@@ -37,8 +38,6 @@ const referenceApiBySlug: Record<ReferenceListSlug, ReferenceApiConfig> = {
   "utility-types": { path: "/utility-types", isLocalized: true },
 };
 
-const translationLocales = ["ja", "zh-TW", "zh-HK", "th"];
-
 export type ReferenceRecord = {
   id: string;
   sharedId: string;
@@ -48,6 +47,8 @@ export type ReferenceRecord = {
   isActive?: boolean | null;
   raw: Record<string, unknown>;
 };
+
+const SETUP_LIST_FETCH_LIMIT = 10000;
 
 export function isReferenceListSlug(value: string): value is ReferenceListSlug {
   return value in referenceApiBySlug;
@@ -71,13 +72,58 @@ export async function listReferenceTranslations(
     return [];
   }
 
-  const recordsByLocale = await Promise.all(
-    translationLocales.map((locale) => listReferenceRecordsForLocale(slug, locale)),
+  const payload = await apiRequest<unknown[]>(
+    `/setup-list-translations/${slug}/${sharedId}`,
+    { auth: true },
   );
 
-  return recordsByLocale
-    .flat()
-    .filter((record) => record.sharedId === sharedId && record.locale !== "en");
+  return (Array.isArray(payload) ? payload : []).map(normalizeReferenceRecord);
+}
+
+export async function downloadReferenceTranslationTemplate(
+  slug: ReferenceListSlug,
+  sharedId: string,
+  fileName: string,
+) {
+  const token = getAccessToken();
+  const headers = new Headers();
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/setup-list-translations/${slug}/${sharedId}/template.csv`,
+    { headers },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+export async function uploadReferenceTranslations(
+  slug: ReferenceListSlug,
+  sharedId: string,
+  rows: Record<string, string | boolean>[],
+) {
+  return apiRequest<{
+    inserted_locales: string[];
+    skipped_locales: string[];
+  }>(`/setup-list-translations/${slug}/${sharedId}/upload`, {
+    auth: true,
+    body: { rows },
+    method: "POST",
+  });
 }
 
 export async function createReferenceRecord(
@@ -119,13 +165,32 @@ export async function updateReferenceRecord(
   );
 }
 
+export async function deleteReferenceRecord(
+  slug: ReferenceListSlug,
+  record: ReferenceRecord,
+) {
+  const config = referenceApiBySlug[slug];
+
+  if (config.isCatalogList) {
+    throw new Error("Catalog setup lists cannot be deleted from this view yet.");
+  }
+
+  await apiRequest<void>(buildRecordPath(slug, config, record), {
+    auth: true,
+    method: "DELETE",
+  });
+}
+
 async function listReferenceRecordsForLocale(
   slug: ReferenceListSlug,
   locale?: string,
 ) {
   const config = referenceApiBySlug[slug];
   const separator = config.path.includes("?") ? "&" : "?";
-  const query = new URLSearchParams({ skip: "0", limit: "500" });
+  const query = new URLSearchParams({
+    skip: "0",
+    limit: String(SETUP_LIST_FETCH_LIMIT),
+  });
 
   if (config.isLocalized && locale) {
     query.set("locale", locale);
@@ -205,6 +270,14 @@ function buildUpdatePath(
   }
 
   return `${config.path}/${record.sharedId}`;
+}
+
+function buildRecordPath(
+  slug: ReferenceListSlug,
+  config: ReferenceApiConfig,
+  record: ReferenceRecord,
+) {
+  return buildUpdatePath(slug, config, record);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

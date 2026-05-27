@@ -1,6 +1,11 @@
 [
   {
     "code": "OWNER",
+    "sort_order": 10,
+    "allow_multiple": true,
+    "record_readonly": true,
+    "record_writable": true,
+    "record_deletable": true,
     "translations": {
       "en": {
         "name": "Owner",
@@ -26,6 +31,11 @@
   },
   {
     "code": "MANAGER",
+    "sort_order": 20,
+    "allow_multiple": true,
+    "record_readonly": true,
+    "record_writable": true,
+    "record_deletable": false,
     "translations": {
       "en": {
         "name": "Manager",
@@ -51,6 +61,11 @@
   },
   {
     "code": "REAL_ESTATE_AGENT",
+    "sort_order": 40,
+    "allow_multiple": false,
+    "record_readonly": true,
+    "record_writable": true,
+    "record_deletable": false,
     "translations": {
       "en": {
         "name": "Real Estate Agent",
@@ -76,6 +91,11 @@
   },
   {
     "code": "ACCOUNTANT",
+    "sort_order": 50,
+    "allow_multiple": false,
+    "record_readonly": true,
+    "record_writable": false,
+    "record_deletable": false,
     "translations": {
       "en": {
         "name": "Accountant",
@@ -101,6 +121,11 @@
   },
   {
     "code": "VIEWER",
+    "sort_order": 90,
+    "allow_multiple": true,
+    "record_readonly": true,
+    "record_writable": false,
+    "record_deletable": false,
     "translations": {
       "en": {
         "name": "Viewer",
@@ -126,6 +151,11 @@
   },
   {
     "code": "TENANT",
+    "sort_order": 30,
+    "allow_multiple": true,
+    "record_readonly": true,
+    "record_writable": false,
+    "record_deletable": false,
     "translations": {
       "en": {
         "name": "Tenant",
@@ -151,6 +181,11 @@
   },
   {
     "code": "MAINTENANCE_VENDOR",
+    "sort_order": 70,
+    "allow_multiple": true,
+    "record_readonly": true,
+    "record_writable": false,
+    "record_deletable": false,
     "translations": {
       "en": {
         "name": "Maintenance Vendor",
@@ -176,6 +211,11 @@
   },
   {
     "code": "LEGAL_REPRESENTATIVE",
+    "sort_order": 60,
+    "allow_multiple": false,
+    "record_readonly": true,
+    "record_writable": false,
+    "record_deletable": false,
     "translations": {
       "en": {
         "name": "Legal Representative",
@@ -201,6 +241,11 @@
   },
   {
     "code": "FAMILY_MEMBER",
+    "sort_order": 80,
+    "allow_multiple": true,
+    "record_readonly": true,
+    "record_writable": false,
+    "record_deletable": false,
     "translations": {
       "en": {
         "name": "Family Member",

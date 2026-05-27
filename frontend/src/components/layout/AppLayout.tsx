@@ -79,6 +79,7 @@ export function AppLayout() {
     >
       <Sidebar
         isCollapsed={isSidebarCollapsed}
+        onExpandCollapsed={() => setIsSidebarCollapsed(false)}
         onToggleCollapsed={() => setIsSidebarCollapsed((current) => !current)}
       />
       <div className="min-w-0">

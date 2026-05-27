@@ -4,15 +4,37 @@ from app.db.database import Base
 
 
 class RefCodeMixin:
-    code = Column(String(50), primary_key=True)
-    name = Column(String(100), nullable=False)
-    description = Column(String(255), nullable=True)
-    is_active = Column(Boolean, nullable=False, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    code = Column(
+        String(50),
+        primary_key=True,
+        comment="Stable reference code used by backend logic."
+    )
+    name = Column(
+        String(100),
+        nullable=False,
+        comment="Human-readable reference name."
+    )
+    description = Column(
+        String(255),
+        nullable=True,
+        comment="Optional explanation of when this reference code is used."
+    )
+    is_active = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        comment="Whether this reference code can be selected in forms."
+    )
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        comment="Timestamp when the reference code row was created."
+    )
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
+        comment="Timestamp when the reference code row was last updated."
     )
 
 
@@ -60,4 +82,9 @@ class LedgerEntryTypeRef(RefCodeMixin, Base):
     __tablename__ = "ledger_entry_types"
     __table_args__ = {"schema": "ref"}
 
-    is_income = Column(Boolean, nullable=False, default=False)
+    is_income = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        comment="Whether this ledger entry type represents income instead of expense."
+    )

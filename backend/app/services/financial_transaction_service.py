@@ -51,6 +51,27 @@ def create_financial_transaction(
     return transaction
 
 
+def create_financial_transaction_for_user(
+    db: Session,
+    user_id: UUID,
+    payload: FinancialTransactionCreate
+) -> FinancialTransaction:
+    account = (
+        db.query(FinancialAccount)
+        .filter(
+            FinancialAccount.id == payload.financial_account_id,
+            FinancialAccount.user_id == user_id,
+            FinancialAccount.is_deleted.is_(False),
+        )
+        .first()
+    )
+
+    if not account:
+        raise ValueError("Financial account not found")
+
+    return create_financial_transaction(db, payload)
+
+
 def get_financial_transaction(
     db: Session,
     transaction_id: UUID
@@ -70,6 +91,37 @@ def get_financial_transactions(
     return (
         db.query(FinancialTransaction)
         .order_by(
+            FinancialTransaction.transaction_date.desc(),
+            FinancialTransaction.created_at.desc()
+        )
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
+def get_financial_transactions_for_user(
+    db: Session,
+    user_id: UUID,
+    skip: int = 0,
+    limit: int = 100,
+    financial_account_id: Optional[UUID] = None,
+):
+    query = (
+        db.query(FinancialTransaction)
+        .join(FinancialAccount)
+        .filter(
+            FinancialAccount.user_id == user_id,
+            FinancialAccount.is_deleted.is_(False),
+            FinancialTransaction.is_deleted.is_(False),
+        )
+    )
+
+    if financial_account_id:
+        query = query.filter(FinancialTransaction.financial_account_id == financial_account_id)
+
+    return (
+        query.order_by(
             FinancialTransaction.transaction_date.desc(),
             FinancialTransaction.created_at.desc()
         )

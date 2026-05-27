@@ -9,12 +9,12 @@ import {
   User,
   X,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { getCurrentUser } from "../../features/auth/authApi";
 import { clearTokens, getAccessToken } from "../../lib/auth/tokenStorage";
 import { useTranslation } from "../../lib/i18n/useTranslation";
-import { adminNavItems, mainNavItems } from "./navigation";
+import { NavigationSections } from "./NavigationSections";
 
 export function TopBar() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -172,28 +172,13 @@ export function TopBar() {
 
       <nav
         className={[
-          "gap-1 border-t border-slate-100 px-3 py-2 lg:hidden",
+          "absolute left-0 right-0 top-16 z-30 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-slate-100 bg-white px-3 py-4 shadow-xl lg:hidden",
           isMobileNavOpen ? "grid" : "hidden",
         ].join(" ")}
       >
-        {[...mainNavItems, ...adminNavItems].map((item) => (
-          <NavLink
-            key={item.href}
-            className={({ isActive }) =>
-              [
-                "flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold",
-                isActive
-                  ? "bg-slate-100 text-slate-950"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
-              ].join(" ")
-            }
-            to={item.href}
-            onClick={() => setIsMobileNavOpen(false)}
-          >
-            <item.icon aria-hidden="true" size={16} />
-            {t(item.labelKey)}
-          </NavLink>
-        ))}
+        <div className="grid gap-6">
+          <NavigationSections onNavigate={() => setIsMobileNavOpen(false)} />
+        </div>
       </nav>
     </header>
   );

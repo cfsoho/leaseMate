@@ -1,6 +1,7 @@
 import uuid
 
 from sqlalchemy import (
+    Boolean,
     Column,
     String,
     Numeric,
@@ -135,6 +136,10 @@ class FinancialTransaction(Base):
         server_default=func.now(),
         onupdate=func.now()
     )
+
+    is_deleted = Column(Boolean, nullable=False, default=False, index=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    deleted_by = Column(UUID(as_uuid=True), nullable=True, index=True)
 
     financial_account = relationship(
         "FinancialAccount",

@@ -7,9 +7,16 @@ from app.db.models.reminder import Reminder
 from app.db.schemas.reminder import ReminderCreate, ReminderUpdate
 
 from app.services.soft_delete import soft_delete
+from app.services.status_defaults import apply_default_status
 
 def create_reminder(db: Session, payload: ReminderCreate) -> Reminder:
-    reminder = Reminder(**payload.model_dump())
+    data = apply_default_status(
+        db,
+        payload.model_dump(),
+        group_code="REMINDER",
+        code="PENDING",
+    )
+    reminder = Reminder(**data)
     db.add(reminder)
     db.commit()
     db.refresh(reminder)

@@ -7,9 +7,16 @@ from app.db.models.property import Property
 from app.db.schemas.property import PropertyCreate, PropertyUpdate
 
 from app.services.soft_delete import soft_delete
+from app.services.status_defaults import apply_default_status
 
 def create_property(db: Session, payload: PropertyCreate) -> Property:
-    property_obj = Property(**payload.model_dump())
+    data = apply_default_status(
+        db,
+        payload.model_dump(),
+        group_code="PROPERTY",
+        code="ACTIVE",
+    )
+    property_obj = Property(**data)
 
     db.add(property_obj)
     db.commit()

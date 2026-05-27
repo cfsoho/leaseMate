@@ -6,6 +6,7 @@ from sqlalchemy import (
     Boolean,
     DateTime,
     ForeignKey,
+    Integer,
     func,
     UniqueConstraint,
 )
@@ -31,7 +32,12 @@ class PropertyAccessLevel(Base):
     # id=AAA + locale=en     -> Owner
     # id=AAA + locale=zh-TW  -> 所有人
     # id=AAA + locale=th     -> เจ้าของ
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        comment="Shared multilingual property access level UUID."
+    )
 
     # Locale code.
     #
@@ -39,7 +45,11 @@ class PropertyAccessLevel(Base):
     # en
     # zh-TW
     # th
-    locale = Column(String(35), primary_key=True)
+    locale = Column(
+        String(35),
+        primary_key=True,
+        comment="Locale code for this property access level translation."
+    )
 
     # System-controlled access level code.
     #
@@ -52,7 +62,8 @@ class PropertyAccessLevel(Base):
         String(50),
         ForeignKey("ref.property_access_level_codes.code"),
         nullable=False,
-        index=True
+        index=True,
+        comment="Stable access level code used by authorization and sharing logic."
     )
 
     # Localized display name.
@@ -61,17 +72,70 @@ class PropertyAccessLevel(Base):
     # Owner
     # 所有人
     # เจ้าของ
-    name = Column(String(50), nullable=False)
+    name = Column(
+        String(50),
+        nullable=False,
+        comment="Localized property access level display name."
+    )
 
     # Optional localized description/help text.
-    description = Column(String(255), nullable=True)
+    description = Column(
+        String(255),
+        nullable=True,
+        comment="Optional localized help text for this access level."
+    )
 
-    is_active = Column(Boolean, nullable=False, default=True)
+    allow_multiple = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        comment="Whether more than one person can have this access level on the same property."
+    )
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    record_readonly = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        comment="Whether this access level can read property records."
+    )
+
+    record_writable = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        comment="Whether this access level can create or update property records."
+    )
+
+    record_deletable = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        comment="Whether this access level can delete property records."
+    )
+
+    sort_order = Column(
+        Integer,
+        nullable=False,
+        default=0,
+        comment="Display order for property access levels when assigning people to a property."
+    )
+
+    is_active = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        comment="Whether this access level can be selected in forms."
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        comment="Timestamp when the access level row was created."
+    )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
+        comment="Timestamp when the access level row was last updated."
     )

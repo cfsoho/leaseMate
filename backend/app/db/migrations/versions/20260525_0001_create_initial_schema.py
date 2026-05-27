@@ -83,6 +83,7 @@ def upgrade():
         sa.Column("region", sa.String(length=50), nullable=True, comment="Geographical region or continent"),
         sa.Column("currency_code", sa.String(length=3), nullable=False, comment="ISO 4217 currency code"),
         sa.Column("default_locale_code", sa.String(length=35), nullable=True, comment="Default locale code for this country"),
+        sa.Column("is_active", sa.Boolean(), nullable=False, comment="Whether this country can be selected in forms"),
         sa.Column("is_deleted", sa.Boolean(), nullable=False),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("deleted_by", uuid, nullable=True),
@@ -95,6 +96,7 @@ def upgrade():
     op.create_index("ix_ref_countries_alpha2", "countries", ["alpha2"], unique=True, schema="ref")
     op.create_index("ix_ref_countries_code", "countries", ["code"], unique=True, schema="ref")
     op.create_index("ix_ref_countries_default_locale_code", "countries", ["default_locale_code"], unique=False, schema="ref")
+    op.create_index("ix_ref_countries_is_active", "countries", ["is_active"], unique=False, schema="ref")
 
     for table_name in REF_CODE_TABLES:
         create_ref_code_table(table_name)
@@ -253,6 +255,11 @@ def upgrade():
         sa.Column("code", sa.String(length=50), nullable=False),
         sa.Column("name", sa.String(length=50), nullable=False),
         sa.Column("description", sa.String(length=255), nullable=True),
+        sa.Column("allow_multiple", sa.Boolean(), nullable=False, comment="Whether more than one person can have this access level on the same property."),
+        sa.Column("record_readonly", sa.Boolean(), nullable=False, comment="Whether this access level can read property records."),
+        sa.Column("record_writable", sa.Boolean(), nullable=False, comment="Whether this access level can create or update property records."),
+        sa.Column("record_deletable", sa.Boolean(), nullable=False, comment="Whether this access level can delete property records."),
+        sa.Column("sort_order", sa.Integer(), nullable=False, comment="Display order for property access levels when assigning people to a property."),
         sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
@@ -414,7 +421,7 @@ def upgrade():
     op.create_table(
         "financial_institutions",
         sa.Column("id", uuid, nullable=False),
-        sa.Column("country_id", uuid, nullable=True),
+        sa.Column("country_id", uuid, nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("swift_code", sa.String(length=20), nullable=True),
         sa.Column("website", sa.String(length=255), nullable=True),
@@ -466,9 +473,9 @@ def upgrade():
         "financial_accounts",
         sa.Column("id", uuid, nullable=False),
         sa.Column("user_id", uuid, nullable=False),
-        sa.Column("legal_name_id", uuid, nullable=True),
-        sa.Column("financial_institution_branch_id", uuid, nullable=True),
-        sa.Column("account_number", sa.String(length=100), nullable=True),
+        sa.Column("legal_name_id", uuid, nullable=False),
+        sa.Column("financial_institution_branch_id", uuid, nullable=False),
+        sa.Column("account_number", sa.String(length=100), nullable=False),
         sa.Column("currency_code", sa.String(length=3), nullable=False),
         sa.Column("current_balance", sa.Numeric(12, 2), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=False),
@@ -488,7 +495,15 @@ def upgrade():
     op.create_index("ix_financial_accounts_financial_institution_branch_id", "financial_accounts", ["financial_institution_branch_id"], unique=False)
     op.create_index("ix_financial_accounts_is_active", "financial_accounts", ["is_active"], unique=False)
     op.create_index("ix_financial_accounts_legal_name_id", "financial_accounts", ["legal_name_id"], unique=False)
+    op.create_index("ix_financial_accounts_account_number", "financial_accounts", ["account_number"], unique=False)
     op.create_index("ix_financial_accounts_user_id", "financial_accounts", ["user_id"], unique=False)
+    op.create_index(
+        "uq_financial_accounts_user_branch_number_currency_active",
+        "financial_accounts",
+        ["user_id", "financial_institution_branch_id", "account_number", "currency_code"],
+        unique=True,
+        postgresql_where=sa.text("is_deleted = false"),
+    )
 
     op.create_table(
         "leases",

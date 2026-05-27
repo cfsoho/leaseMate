@@ -5,8 +5,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.ref.status_code import STATUS_CODE_IDS
-
 
 class PropertyCreate(BaseModel):
     name: str
@@ -30,7 +28,7 @@ class PropertyCreate(BaseModel):
     latitude: Optional[Decimal] = None
     longitude: Optional[Decimal] = None
 
-    status_id: UUID = STATUS_CODE_IDS["PROPERTY_ACTIVE"]
+    status_id: Optional[UUID] = None
 
 
 class PropertyUpdate(BaseModel):

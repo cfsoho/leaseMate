@@ -38,6 +38,43 @@ export type TranslationKey =
   | "auth.smtpWarningTitle"
   | "auth.useAnotherEmail"
   | "auth.welcomeBack"
+  | "bankAccounts.accountHolder"
+  | "bankAccounts.accountNumber"
+  | "bankAccounts.backToAccounts"
+  | "bankAccounts.balance"
+  | "bankAccounts.bank"
+  | "bankAccounts.bankBranch"
+  | "bankAccounts.branch"
+  | "bankAccounts.balanceAfter"
+  | "bankAccounts.counterparty"
+  | "bankAccounts.clear"
+  | "bankAccounts.create"
+  | "bankAccounts.createTransaction"
+  | "bankAccounts.currency"
+  | "bankAccounts.deactivateConfirmBody"
+  | "bankAccounts.deactivateConfirmTitle"
+  | "bankAccounts.deleteCannotRollback"
+  | "bankAccounts.deleteConfirmBody"
+  | "bankAccounts.deleteConfirmTitle"
+  | "bankAccounts.description"
+  | "bankAccounts.deposit"
+  | "bankAccounts.edit"
+  | "bankAccounts.empty"
+  | "bankAccounts.loading"
+  | "bankAccounts.loadingTransactions"
+  | "bankAccounts.notes"
+  | "bankAccounts.noTransactions"
+  | "bankAccounts.referenceNo"
+  | "bankAccounts.reload"
+  | "bankAccounts.reloadTransactions"
+  | "bankAccounts.search"
+  | "bankAccounts.sourceType"
+  | "bankAccounts.transactionDate"
+  | "bankAccounts.transactions"
+  | "bankAccounts.transactionsDescription"
+  | "bankAccounts.transactionsForTitle"
+  | "bankAccounts.transactionAmountRequired"
+  | "bankAccounts.withdrawal"
   | "dashboard.adminSetupCompleted"
   | "dashboard.adminSetupRequired"
   | "dashboard.backendConnection"
@@ -55,6 +92,13 @@ export type TranslationKey =
   | "dashboard.emailNotVerifiedMessage"
   | "dashboard.emailNotVerifiedTitle"
   | "dashboard.keepCurrentEmail"
+  | "dashboard.readinessAccounts"
+  | "dashboard.readinessDescription"
+  | "dashboard.readinessLegalNames"
+  | "dashboard.readinessMissing"
+  | "dashboard.readinessProperties"
+  | "dashboard.readinessReady"
+  | "dashboard.readinessTitle"
   | "dashboard.resendVerificationEmail"
   | "dashboard.sendingVerificationEmail"
   | "dashboard.stayOnDashboard"
@@ -86,7 +130,17 @@ export type TranslationKey =
   | "form.passwordWeak"
   | "form.preferredLocale"
   | "form.requiredMessage"
+  | "grid.columns"
+  | "grid.clearColumns"
+  | "grid.displayedColumns"
+  | "grid.firstPage"
+  | "grid.lastPage"
+  | "grid.nextPage"
+  | "grid.previousPage"
+  | "grid.rows"
+  | "grid.selectAllColumns"
   | "nav.admin"
+  | "nav.bankAccounts"
   | "nav.dashboard"
   | "nav.documents"
   | "nav.expenses"
@@ -106,12 +160,21 @@ export type TranslationKey =
   | "nav.ref.regions"
   | "nav.ref.roles"
   | "nav.ref.statusCodes"
+  | "nav.ref.translations"
   | "nav.ref.utilityTypes"
   | "nav.settings"
   | "nav.users"
   | "nav.workspace"
+  | "page.backToDashboard"
+  | "page.notFoundBody"
+  | "page.notFoundTitle"
+  | "page.underConstructionBody"
+  | "page.underConstructionDescription"
+  | "page.underConstructionEyebrow"
+  | "page.underConstructionTitle"
   | "profile.accountSection"
   | "profile.add"
+  | "profile.appearanceSection"
   | "profile.cancel"
   | "profile.changePassword"
   | "profile.close"
@@ -152,15 +215,25 @@ export type TranslationKey =
   | "profile.save"
   | "profile.saving"
   | "profile.systemSection"
+  | "profile.themeAuto"
+  | "profile.themeDark"
+  | "profile.themeDescription"
+  | "profile.themeLight"
   | "profile.title"
   | "profile.value.no"
   | "profile.value.yes"
   | "refLists.description"
   | "refLists.empty"
+  | "refLists.activate"
   | "refLists.active"
   | "refLists.address"
+  | "refLists.allowMultiple"
+  | "refLists.allowMultipleHelp"
   | "refLists.alpha2"
+  | "refLists.batchUploadTranslationsTitle"
+  | "refLists.backToBanks"
   | "refLists.backToEnglishList"
+  | "refLists.branchDescription"
   | "refLists.branchCode"
   | "refLists.branchName"
   | "refLists.code"
@@ -172,8 +245,14 @@ export type TranslationKey =
   | "refLists.default"
   | "refLists.defaultLocale"
   | "refLists.deactivate"
+  | "refLists.deactivateConfirmBody"
+  | "refLists.deactivateConfirmTitle"
   | "refLists.delete"
+  | "refLists.deleteCannotRollback"
+  | "refLists.deleteConfirmBody"
+  | "refLists.deleteConfirmTitle"
   | "refLists.descriptionColumn"
+  | "refLists.statusDescriptionHelp"
   | "refLists.edit"
   | "refLists.financialInstitutionId"
   | "refLists.formatMask"
@@ -181,20 +260,48 @@ export type TranslationKey =
   | "refLists.group"
   | "refLists.income"
   | "refLists.landlineFormat"
+  | "refLists.localeCountryFilterHelp"
   | "refLists.loading"
+  | "refLists.manageBranches"
   | "refLists.manageTranslations"
   | "refLists.mobileFormat"
   | "refLists.nameOrder"
   | "refLists.nativeName"
   | "refLists.phonePrefix"
   | "refLists.region"
+  | "refLists.recordReadonly"
+  | "refLists.recordReadonlyHelp"
+  | "refLists.recordWritable"
+  | "refLists.recordWritableHelp"
+  | "refLists.recordDeletable"
+  | "refLists.recordDeletableHelp"
   | "refLists.search"
   | "refLists.searchText"
+  | "refLists.sortBefore"
+  | "refLists.sortEndOfGroup"
   | "refLists.sortOrder"
   | "refLists.swiftCode"
   | "refLists.success"
+  | "refLists.successHelp"
   | "refLists.terminal"
+  | "refLists.terminalHelp"
   | "refLists.translationDescription"
+  | "refLists.translationsForTitle"
+  | "refLists.downloadCsv"
+  | "refLists.upload"
+  | "refLists.uploadCsvOnly"
+  | "refLists.uploadDropCsv"
+  | "refLists.uploadEnglishSkipped"
+  | "refLists.uploadFailed"
+  | "refLists.uploadHeaderMismatch"
+  | "refLists.uploadInserted"
+  | "refLists.uploadInstructions"
+  | "refLists.uploadMissingMaster"
+  | "refLists.uploadNoInsert"
+  | "refLists.uploadNoRows"
+  | "refLists.uploadSkipped"
+  | "refLists.uploading"
+  | "refLists.upperSnakeValidation"
   | "refLists.website"
   | "shell.accountSettings"
   | "shell.closeNavigation"
@@ -211,8 +318,10 @@ export type TranslationKey =
   | "users.activateConfirmBody"
   | "users.activateConfirmTitle"
   | "users.activateUser"
+  | "users.activeSession"
   | "users.activeEmailLinks"
   | "users.activeEmailLinksDescription"
+  | "users.backToUsers"
   | "users.clearForm"
   | "users.confirmNewEmail"
   | "users.createUser"
@@ -224,25 +333,38 @@ export type TranslationKey =
   | "users.deleteConfirmTitle"
   | "users.deleteUser"
   | "users.description"
+  | "users.deviceInfo"
   | "users.emailVerified"
   | "users.emailConfirmationMismatch"
   | "users.empty"
   | "users.editUser"
+  | "users.expiredSession"
+  | "users.expiresAt"
   | "users.expireLink"
+  | "users.ipAddress"
   | "users.invitationPasswordHelp"
+  | "users.lastUsedAt"
   | "users.linkExpiresAt"
   | "users.linkIssuedAt"
+  | "users.loginAt"
+  | "users.loginSessions"
+  | "users.loginSessionsDescription"
   | "users.loading"
   | "users.loadingEmailLinks"
   | "users.noActiveEmailLinks"
+  | "users.noLoginSessions"
   | "users.reload"
   | "users.resendVerification"
+  | "users.revokedAt"
+  | "users.revokedSession"
   | "users.search"
   | "users.searchUsers"
   | "users.sendVerification"
   | "users.sendVerificationConfirmBody"
   | "users.sendVerificationConfirmTitle"
   | "users.sendVerificationInvalidatesPrevious"
+  | "users.sessionStatus"
+  | "users.viewLoginSessions"
   | "users.role";
 
 export const translations: Record<
@@ -271,6 +393,43 @@ export const translations: Record<
     "auth.smtpWarningTitle": "Email setup needs attention",
     "auth.useAnotherEmail": "Use another email",
     "auth.welcomeBack": "Welcome back",
+    "bankAccounts.accountHolder": "Legal name used",
+    "bankAccounts.accountNumber": "Account number",
+    "bankAccounts.backToAccounts": "Back to bank accounts",
+    "bankAccounts.balance": "Current balance",
+    "bankAccounts.bank": "Bank",
+    "bankAccounts.balanceAfter": "Balance after",
+    "bankAccounts.bankBranch": "Bank branch",
+    "bankAccounts.branch": "Branch",
+    "bankAccounts.counterparty": "Counterparty",
+    "bankAccounts.clear": "Clear",
+    "bankAccounts.create": "Create bank account",
+    "bankAccounts.createTransaction": "Create transaction",
+    "bankAccounts.currency": "Currency",
+    "bankAccounts.deactivateConfirmBody": "Deactivate this bank account? It will stay in your records, but it will no longer be treated as active.",
+    "bankAccounts.deactivateConfirmTitle": "Deactivate bank account",
+    "bankAccounts.deleteCannotRollback": "This deletion cannot be rolled back.",
+    "bankAccounts.deleteConfirmBody": "Delete this bank account?",
+    "bankAccounts.deleteConfirmTitle": "Delete bank account",
+    "bankAccounts.description": "Store the bank accounts you use for rent, expenses, taxes, and property money movement.",
+    "bankAccounts.deposit": "Deposit",
+    "bankAccounts.edit": "Edit bank account",
+    "bankAccounts.empty": "No bank accounts found.",
+    "bankAccounts.loading": "Loading bank accounts...",
+    "bankAccounts.loadingTransactions": "Loading transactions...",
+    "bankAccounts.noTransactions": "No transactions found.",
+    "bankAccounts.notes": "Notes",
+    "bankAccounts.referenceNo": "Reference no.",
+    "bankAccounts.reload": "Reload bank accounts",
+    "bankAccounts.reloadTransactions": "Reload transactions",
+    "bankAccounts.search": "Search bank accounts",
+    "bankAccounts.sourceType": "Source",
+    "bankAccounts.transactionDate": "Date",
+    "bankAccounts.transactions": "Transactions",
+    "bankAccounts.transactionsDescription": "Review the money movement recorded for this bank account.",
+    "bankAccounts.transactionsForTitle": "Transactions for {name}",
+    "bankAccounts.transactionAmountRequired": "Enter either a deposit or a withdrawal, but not both.",
+    "bankAccounts.withdrawal": "Withdrawal",
     "dashboard.adminSetupCompleted": "Admin setup has already been completed.",
     "dashboard.adminSetupRequired": "Admin setup is required before using LeaseMate.",
     "dashboard.backendConnection": "Backend connection",
@@ -288,6 +447,13 @@ export const translations: Record<
     "dashboard.emailNotVerifiedMessage": "Please verify your email before using the rest of LeaseMate. You can stay here, resend the email, or log out.",
     "dashboard.emailNotVerifiedTitle": "Email not verified yet",
     "dashboard.keepCurrentEmail": "Keep current email",
+    "dashboard.readinessAccounts": "Bank accounts",
+    "dashboard.readinessDescription": "These records are needed before property, rent, and money workflows can run properly.",
+    "dashboard.readinessLegalNames": "Legal names",
+    "dashboard.readinessMissing": "Missing",
+    "dashboard.readinessProperties": "Properties",
+    "dashboard.readinessReady": "Ready",
+    "dashboard.readinessTitle": "Setup reminder",
     "dashboard.resendVerificationEmail": "Resend verification email",
     "dashboard.sendingVerificationEmail": "Sending...",
     "dashboard.stayOnDashboard": "Back to dashboard",
@@ -319,7 +485,17 @@ export const translations: Record<
     "form.passwordWeak": "Password does not meet the strength requirements.",
     "form.preferredLocale": "Preferred locale",
     "form.requiredMessage": "This field is required.",
+    "grid.columns": "Columns",
+    "grid.clearColumns": "Clear",
+    "grid.displayedColumns": "Displayed columns",
+    "grid.firstPage": "First page",
+    "grid.lastPage": "Last page",
+    "grid.nextPage": "Next page",
+    "grid.previousPage": "Previous page",
+    "grid.rows": "Rows",
+    "grid.selectAllColumns": "Select all",
     "nav.admin": "Admin",
+    "nav.bankAccounts": "Bank accounts",
     "nav.dashboard": "Dashboard",
     "nav.documents": "Documents",
     "nav.expenses": "Expenses",
@@ -339,12 +515,21 @@ export const translations: Record<
     "nav.ref.regions": "Regions",
     "nav.ref.roles": "Roles",
     "nav.ref.statusCodes": "Statuses",
+    "nav.ref.translations": "Translations",
     "nav.ref.utilityTypes": "Utility types",
     "nav.settings": "Settings",
     "nav.users": "Users",
     "nav.workspace": "Workspace",
+    "page.backToDashboard": "Back to dashboard",
+    "page.notFoundBody": "LeaseMate could not find a page for this URL.",
+    "page.notFoundTitle": "Page not found",
+    "page.underConstructionBody": "{page} is listed in the app menu, but this workspace page is not built yet.",
+    "page.underConstructionDescription": "This page is already reserved in the navigation and will be connected when the workflow is built.",
+    "page.underConstructionEyebrow": "Under construction",
+    "page.underConstructionTitle": "This page is not ready yet",
     "profile.accountSection": "User fields",
     "profile.add": "Add",
+    "profile.appearanceSection": "Appearance",
     "profile.cancel": "Cancel",
     "profile.changePassword": "Change password",
     "profile.close": "Close",
@@ -385,15 +570,25 @@ export const translations: Record<
     "profile.save": "Save",
     "profile.saving": "Saving...",
     "profile.systemSection": "System metadata",
+    "profile.themeAuto": "Automatic by local time",
+    "profile.themeDark": "Dark mode",
+    "profile.themeDescription": "Automatic uses this device's local time: dark from 6:00 PM to 6:00 AM.",
+    "profile.themeLight": "Normal mode",
     "profile.title": "Profile",
     "profile.value.no": "No",
     "profile.value.yes": "Yes",
     "refLists.description": "Manage the list values used throughout LeaseMate.",
     "refLists.empty": "No setup list records found.",
+    "refLists.activate": "Activate",
     "refLists.active": "Active",
     "refLists.address": "Address",
+    "refLists.allowMultiple": "Multiple",
+    "refLists.allowMultipleHelp": "Allow more than one person to use this access level on the same property.",
     "refLists.alpha2": "Alpha-2",
+    "refLists.batchUploadTranslationsTitle": "Batch upload translations for \"{name}\"",
+    "refLists.backToBanks": "Back to banks",
     "refLists.backToEnglishList": "Back to English list",
+    "refLists.branchDescription": "Manage the branches for this bank.",
     "refLists.branchCode": "Branch code",
     "refLists.branchName": "Branch name",
     "refLists.code": "Code",
@@ -405,8 +600,14 @@ export const translations: Record<
     "refLists.default": "Default",
     "refLists.defaultLocale": "Default language",
     "refLists.deactivate": "Deactivate",
+    "refLists.deactivateConfirmBody": "Deactivate this setup list record? It will stay in the database but will no longer be treated as active.",
+    "refLists.deactivateConfirmTitle": "Deactivate record",
     "refLists.delete": "Delete",
+    "refLists.deleteCannotRollback": "This delete action cannot be rolled back.",
+    "refLists.deleteConfirmBody": "Delete this setup list record?",
+    "refLists.deleteConfirmTitle": "Delete record",
     "refLists.descriptionColumn": "Description",
+    "refLists.statusDescriptionHelp": "Optional note shown to admins so they understand when this status should be used.",
     "refLists.edit": "Edit",
     "refLists.financialInstitutionId": "Bank ID",
     "refLists.displayedColumns": "Displayed columns",
@@ -414,20 +615,48 @@ export const translations: Record<
     "refLists.group": "Group",
     "refLists.income": "Income",
     "refLists.landlineFormat": "Landline format",
+    "refLists.localeCountryFilterHelp": "Optional filter only. The country is used to narrow locale choices and is not saved.",
     "refLists.loading": "Loading setup list records...",
+    "refLists.manageBranches": "Manage branches",
     "refLists.manageTranslations": "Manage translations",
     "refLists.mobileFormat": "Mobile format",
     "refLists.nameOrder": "Name order",
     "refLists.nativeName": "Native name",
     "refLists.phonePrefix": "Phone prefix",
     "refLists.region": "Region",
+    "refLists.recordReadonly": "Read",
+    "refLists.recordReadonlyHelp": "Can view records for properties where this access level is assigned.",
+    "refLists.recordWritable": "Edit",
+    "refLists.recordWritableHelp": "Can create or update records for properties where this access level is assigned.",
+    "refLists.recordDeletable": "Delete",
+    "refLists.recordDeletableHelp": "Can delete records for properties where this access level is assigned.",
     "refLists.search": "Search",
     "refLists.searchText": "Search text",
+    "refLists.sortBefore": "Before {name}",
+    "refLists.sortEndOfGroup": "End of group",
     "refLists.sortOrder": "Sort order",
     "refLists.swiftCode": "SWIFT code",
     "refLists.success": "Success",
+    "refLists.successHelp": "Check this when a closed workflow ended in the intended result, such as paid, completed, or received.",
     "refLists.terminal": "Terminal",
-    "refLists.translationDescription": "Manage the non-English translations for this setup list item.",
+    "refLists.terminalHelp": "Check this when this status closes the workflow. For example, Paid, Completed, Cancelled, and Expired are final states; Pending and In progress are not.",
+    "refLists.translationDescription": "Manage non-English translations for the {entity} \"{name}\".",
+    "refLists.translationsForTitle": "Translations for \"{name}\"",
+    "refLists.downloadCsv": "Download CSV template",
+    "refLists.upload": "Batch upload",
+    "refLists.uploadCsvOnly": "Please upload a CSV file.",
+    "refLists.uploadDropCsv": "Drop a CSV file here, or click to choose one.",
+    "refLists.uploadEnglishSkipped": "The first English row is only an example. It will be skipped during upload.",
+    "refLists.uploadFailed": "Upload failed.",
+    "refLists.uploadHeaderMismatch": "The CSV columns do not match the downloaded template.",
+    "refLists.uploadInserted": "All uploaded data has been inserted into the database table for {name}.",
+    "refLists.uploadInstructions": "Download the CSV template, fill the non-English translation rows, then upload the completed CSV here.",
+    "refLists.uploadMissingMaster": "The selected setup list item could not be found.",
+    "refLists.uploadNoInsert": "No new translation rows were inserted.",
+    "refLists.uploadNoRows": "The CSV does not contain any translation rows.",
+    "refLists.uploadSkipped": "Data for following locales already existed. Please confirm: {locales}",
+    "refLists.uploading": "Uploading CSV...",
+    "refLists.upperSnakeValidation": "Use uppercase letters, numbers, and underscores only.",
     "refLists.website": "Website",
     "shell.accountSettings": "Account settings",
     "shell.closeNavigation": "Close navigation",
@@ -444,8 +673,10 @@ export const translations: Record<
     "users.activateConfirmBody": "Activate this user? If their email is not verified yet, they will still need to complete email verification before they can use LeaseMate.",
     "users.activateConfirmTitle": "Activate user",
     "users.activateUser": "Activate this user",
+    "users.activeSession": "Active",
     "users.activeEmailLinks": "Pending verification",
     "users.activeEmailLinksDescription": "Manage user email verification records that are still waiting for confirmation.",
+    "users.backToUsers": "Back to users",
     "users.clearForm": "Clear",
     "users.confirmNewEmail": "Confirm new email",
     "users.createUser": "Create user",
@@ -457,25 +688,38 @@ export const translations: Record<
     "users.deleteConfirmTitle": "Delete user",
     "users.deleteUser": "Delete user",
     "users.description": "Manage user accounts, login status, and preferred language.",
+    "users.deviceInfo": "Device",
     "users.editUser": "Edit user",
     "users.emailConfirmationMismatch": "Enter the new email again to confirm it.",
     "users.emailVerified": "Email verified",
     "users.empty": "No users found.",
+    "users.expiredSession": "Expired",
+    "users.expiresAt": "Expires at",
     "users.expireLink": "Expire",
+    "users.ipAddress": "IP address",
     "users.invitationPasswordHelp": "After the user verifies their email, LeaseMate will ask them to set their own password before they can start using the service.",
+    "users.lastUsedAt": "Last used at",
     "users.linkExpiresAt": "Expires at",
     "users.linkIssuedAt": "Issued at",
+    "users.loginAt": "Login at",
+    "users.loginSessions": "Login sessions",
+    "users.loginSessionsDescription": "Review the browser login sessions recorded for this user.",
     "users.loading": "Loading users...",
     "users.loadingEmailLinks": "Loading pending verification records...",
     "users.noActiveEmailLinks": "No pending verification records.",
+    "users.noLoginSessions": "No login sessions found.",
     "users.reload": "Reload",
     "users.resendVerification": "Resend",
+    "users.revokedAt": "Revoked at",
+    "users.revokedSession": "Revoked",
     "users.search": "Search",
     "users.searchUsers": "Search users",
     "users.sendVerification": "Send verification",
     "users.sendVerificationConfirmBody": "Send a verification email to this address?",
     "users.sendVerificationConfirmTitle": "Send verification email",
     "users.sendVerificationInvalidatesPrevious": "All previous verification emails for this user will become invalid.",
+    "users.sessionStatus": "Session status",
+    "users.viewLoginSessions": "View login sessions",
     "users.role": "Role",
   },
   ja: {
@@ -500,6 +744,43 @@ export const translations: Record<
     "auth.smtpWarningTitle": "メール設定を確認してください",
     "auth.useAnotherEmail": "別のメールアドレスを使う",
     "auth.welcomeBack": "おかえりなさい",
+    "bankAccounts.accountHolder": "使用する法定氏名",
+    "bankAccounts.accountNumber": "口座番号",
+    "bankAccounts.backToAccounts": "銀行口座に戻る",
+    "bankAccounts.balance": "現在残高",
+    "bankAccounts.bank": "銀行",
+    "bankAccounts.balanceAfter": "取引後残高",
+    "bankAccounts.bankBranch": "銀行支店",
+    "bankAccounts.branch": "支店",
+    "bankAccounts.counterparty": "相手先",
+    "bankAccounts.clear": "クリア",
+    "bankAccounts.create": "銀行口座を作成",
+    "bankAccounts.createTransaction": "取引を作成",
+    "bankAccounts.currency": "通貨",
+    "bankAccounts.deactivateConfirmBody": "この銀行口座を無効化しますか？記録には残りますが、有効な口座として扱われなくなります。",
+    "bankAccounts.deactivateConfirmTitle": "銀行口座を無効化",
+    "bankAccounts.deleteCannotRollback": "この削除は元に戻せません。",
+    "bankAccounts.deleteConfirmBody": "この銀行口座を削除しますか？",
+    "bankAccounts.deleteConfirmTitle": "銀行口座を削除",
+    "bankAccounts.description": "賃料、経費、税金、物件のお金の動きに使う銀行口座を登録します。",
+    "bankAccounts.deposit": "入金",
+    "bankAccounts.edit": "銀行口座を編集",
+    "bankAccounts.empty": "銀行口座が見つかりません。",
+    "bankAccounts.loading": "銀行口座を読み込み中...",
+    "bankAccounts.loadingTransactions": "取引を読み込み中...",
+    "bankAccounts.noTransactions": "取引はありません。",
+    "bankAccounts.notes": "メモ",
+    "bankAccounts.referenceNo": "参照番号",
+    "bankAccounts.reload": "銀行口座を再読み込み",
+    "bankAccounts.reloadTransactions": "取引を再読み込み",
+    "bankAccounts.search": "銀行口座を検索",
+    "bankAccounts.sourceType": "発生元",
+    "bankAccounts.transactionDate": "日付",
+    "bankAccounts.transactions": "取引",
+    "bankAccounts.transactionsDescription": "この銀行口座に記録されたお金の動きを確認します。",
+    "bankAccounts.transactionsForTitle": "{name}の取引",
+    "bankAccounts.transactionAmountRequired": "入金または出金のどちらか一方だけを入力してください。",
+    "bankAccounts.withdrawal": "出金",
     "dashboard.adminSetupCompleted": "管理者設定は完了しています。",
     "dashboard.adminSetupRequired": "LeaseMate を使用する前に管理者設定が必要です。",
     "dashboard.backendConnection": "バックエンド接続",
@@ -517,6 +798,13 @@ export const translations: Record<
     "dashboard.emailNotVerifiedMessage": "LeaseMate の他の機能を使う前にメールを確認してください。ここで再送するか、ログアウトできます。",
     "dashboard.emailNotVerifiedTitle": "メールがまだ確認されていません",
     "dashboard.keepCurrentEmail": "現在のメールアドレスを使う",
+    "dashboard.readinessAccounts": "銀行口座",
+    "dashboard.readinessDescription": "物件、賃料、お金の管理を正しく動かすために必要な基本データです。",
+    "dashboard.readinessLegalNames": "正式氏名",
+    "dashboard.readinessMissing": "未登録",
+    "dashboard.readinessProperties": "物件",
+    "dashboard.readinessReady": "登録済み",
+    "dashboard.readinessTitle": "設定リマインダー",
     "dashboard.resendVerificationEmail": "確認メールを再送",
     "dashboard.sendingVerificationEmail": "送信中...",
     "dashboard.stayOnDashboard": "ダッシュボードに戻る",
@@ -548,7 +836,17 @@ export const translations: Record<
     "form.passwordWeak": "パスワードが強度要件を満たしていません。",
     "form.preferredLocale": "表示言語",
     "form.requiredMessage": "この項目は必須です。",
+    "grid.columns": "列",
+    "grid.clearColumns": "クリア",
+    "grid.displayedColumns": "表示する列",
+    "grid.firstPage": "最初のページ",
+    "grid.lastPage": "最後のページ",
+    "grid.nextPage": "次のページ",
+    "grid.previousPage": "前のページ",
+    "grid.rows": "表示件数",
+    "grid.selectAllColumns": "すべて選択",
     "nav.admin": "管理",
+    "nav.bankAccounts": "銀行口座",
     "nav.dashboard": "ダッシュボード",
     "nav.documents": "書類",
     "nav.expenses": "経費",
@@ -568,12 +866,21 @@ export const translations: Record<
     "nav.ref.regions": "地域",
     "nav.ref.roles": "ロール",
     "nav.ref.statusCodes": "ステータス",
+    "nav.ref.translations": "翻訳",
     "nav.ref.utilityTypes": "公共料金種別",
     "nav.settings": "設定",
     "nav.users": "ユーザー",
     "nav.workspace": "ワークスペース",
+    "page.backToDashboard": "ダッシュボードに戻る",
+    "page.notFoundBody": "この URL に対応するページが見つかりません。",
+    "page.notFoundTitle": "ページが見つかりません",
+    "page.underConstructionBody": "{page} はメニューにありますが、このワークスペースページはまだ作成中です。",
+    "page.underConstructionDescription": "このページはナビゲーションに確保済みで、ワークフロー作成時に接続されます。",
+    "page.underConstructionEyebrow": "作成中",
+    "page.underConstructionTitle": "このページはまだ準備中です",
     "profile.accountSection": "ユーザー項目",
     "profile.add": "追加",
+    "profile.appearanceSection": "表示モード",
     "profile.cancel": "キャンセル",
     "profile.changePassword": "パスワードを変更",
     "profile.close": "閉じる",
@@ -614,15 +921,25 @@ export const translations: Record<
     "profile.save": "保存",
     "profile.saving": "保存中...",
     "profile.systemSection": "システム情報",
+    "profile.themeAuto": "現在時刻で自動切替",
+    "profile.themeDark": "ダークモード",
+    "profile.themeDescription": "自動切替では、この端末の時刻で午後6時から午前6時までダークモードにします。",
+    "profile.themeLight": "通常モード",
     "profile.title": "プロフィール",
     "profile.value.no": "いいえ",
     "profile.value.yes": "はい",
     "refLists.description": "LeaseMate 全体で使うリスト値を管理します。",
     "refLists.empty": "設定リストのレコードはありません。",
+    "refLists.activate": "有効化",
     "refLists.active": "有効",
     "refLists.address": "住所",
+    "refLists.allowMultiple": "複数可",
+    "refLists.allowMultipleHelp": "同じ物件で、このアクセス権限を複数人に割り当てできます。",
     "refLists.alpha2": "Alpha-2",
+    "refLists.batchUploadTranslationsTitle": "「{name}」の翻訳を一括アップロード",
+    "refLists.backToBanks": "銀行一覧に戻る",
     "refLists.backToEnglishList": "英語リストに戻る",
+    "refLists.branchDescription": "この銀行の支店を管理します。",
     "refLists.branchCode": "支店コード",
     "refLists.branchName": "支店名",
     "refLists.code": "コード",
@@ -634,8 +951,14 @@ export const translations: Record<
     "refLists.default": "既定",
     "refLists.defaultLocale": "既定言語",
     "refLists.deactivate": "無効化",
+    "refLists.deactivateConfirmBody": "この設定リストのレコードを無効化しますか？データベースには残りますが、有効な値としては扱われなくなります。",
+    "refLists.deactivateConfirmTitle": "レコードを無効化",
     "refLists.delete": "削除",
+    "refLists.deleteCannotRollback": "この削除操作は元に戻せません。",
+    "refLists.deleteConfirmBody": "この設定リストのレコードを削除しますか？",
+    "refLists.deleteConfirmTitle": "レコードを削除",
     "refLists.descriptionColumn": "説明",
+    "refLists.statusDescriptionHelp": "管理者がこの状態をいつ使うべきか分かるように表示する任意のメモです。",
     "refLists.edit": "編集",
     "refLists.financialInstitutionId": "銀行 ID",
     "refLists.displayedColumns": "表示する列",
@@ -643,20 +966,48 @@ export const translations: Record<
     "refLists.group": "グループ",
     "refLists.income": "収入",
     "refLists.landlineFormat": "固定電話形式",
+    "refLists.localeCountryFilterHelp": "絞り込み用の任意項目です。国はロケール候補を絞るためだけに使い、保存されません。",
     "refLists.loading": "設定リストを読み込み中...",
+    "refLists.manageBranches": "支店を管理",
     "refLists.manageTranslations": "翻訳を管理",
     "refLists.mobileFormat": "携帯電話形式",
     "refLists.nameOrder": "氏名順",
     "refLists.nativeName": "現地名",
     "refLists.phonePrefix": "電話番号プレフィックス",
     "refLists.region": "地域",
+    "refLists.recordReadonly": "閲覧",
+    "refLists.recordReadonlyHelp": "このアクセス権限が割り当てられた物件のレコードを閲覧できます。",
+    "refLists.recordWritable": "編集",
+    "refLists.recordWritableHelp": "このアクセス権限が割り当てられた物件のレコードを作成・更新できます。",
+    "refLists.recordDeletable": "削除",
+    "refLists.recordDeletableHelp": "このアクセス権限が割り当てられた物件のレコードを削除できます。",
     "refLists.search": "検索",
     "refLists.searchText": "検索文字",
+    "refLists.sortBefore": "「{name}」の前",
+    "refLists.sortEndOfGroup": "グループの最後",
     "refLists.sortOrder": "並び順",
     "refLists.swiftCode": "SWIFT コード",
     "refLists.success": "成功",
+    "refLists.successHelp": "支払い済み、完了、受領済みなど、終了した処理が意図した結果で終わった場合に使います。",
     "refLists.terminal": "終了状態",
-    "refLists.translationDescription": "この設定リスト項目の英語以外の翻訳を管理します。",
+    "refLists.terminalHelp": "この状態で処理が終了する場合に使います。例：支払い済み、完了、キャンセル、期限切れは最終状態です。保留中や進行中は最終状態ではありません。",
+    "refLists.translationDescription": "{entity}「{name}」の英語以外の翻訳を管理します。",
+    "refLists.translationsForTitle": "「{name}」の翻訳",
+    "refLists.downloadCsv": "CSVテンプレートをダウンロード",
+    "refLists.upload": "一括アップロード",
+    "refLists.uploadCsvOnly": "CSVファイルをアップロードしてください。",
+    "refLists.uploadDropCsv": "CSVファイルをここにドロップするか、クリックして選択してください。",
+    "refLists.uploadEnglishSkipped": "先頭の英語行は入力例です。アップロード時にはスキップされます。",
+    "refLists.uploadFailed": "アップロードに失敗しました。",
+    "refLists.uploadHeaderMismatch": "CSVの列がダウンロードしたテンプレートと一致しません。",
+    "refLists.uploadInserted": "{name} の翻訳データをデータベースに登録しました。",
+    "refLists.uploadInstructions": "CSVテンプレートをダウンロードし、英語以外の翻訳行を入力してから、完成したCSVをアップロードしてください。",
+    "refLists.upperSnakeValidation": "英大文字、数字、アンダースコアのみ使用してください。",
+    "refLists.uploadMissingMaster": "選択された設定リスト項目が見つかりません。",
+    "refLists.uploadNoInsert": "新しい翻訳行は登録されませんでした。",
+    "refLists.uploadNoRows": "CSVに翻訳行がありません。",
+    "refLists.uploadSkipped": "次のロケールのデータは既に存在します。確認してください: {locales}",
+    "refLists.uploading": "CSVをアップロード中...",
     "refLists.website": "ウェブサイト",
     "shell.accountSettings": "アカウント設定",
     "shell.closeNavigation": "ナビゲーションを閉じる",
@@ -673,8 +1024,10 @@ export const translations: Record<
     "users.activateConfirmBody": "このユーザーを有効化しますか？メール確認がまだ完了していない場合は、LeaseMate を使い始める前にメール確認が必要です。",
     "users.activateConfirmTitle": "ユーザーを有効化",
     "users.activateUser": "このユーザーを有効化",
+    "users.activeSession": "有効",
     "users.activeEmailLinks": "確認待ち",
     "users.activeEmailLinksDescription": "まだメール確認が完了していないユーザー認証レコードを管理します。",
+    "users.backToUsers": "ユーザー一覧に戻る",
     "users.clearForm": "クリア",
     "users.confirmNewEmail": "新しいメールを確認",
     "users.createUser": "ユーザーを作成",
@@ -686,25 +1039,38 @@ export const translations: Record<
     "users.deleteConfirmTitle": "ユーザーを削除",
     "users.deleteUser": "ユーザーを削除",
     "users.description": "ユーザーアカウント、ログイン状態、表示言語を管理します。",
+    "users.deviceInfo": "端末",
     "users.editUser": "ユーザーを編集",
     "users.emailConfirmationMismatch": "確認のため、新しいメールをもう一度入力してください。",
     "users.emailVerified": "メール確認済み",
     "users.empty": "ユーザーが見つかりません。",
+    "users.expiredSession": "期限切れ",
+    "users.expiresAt": "有効期限",
     "users.expireLink": "期限切れにする",
+    "users.ipAddress": "IP アドレス",
     "users.invitationPasswordHelp": "ユーザーがメールを確認した後、LeaseMate を使い始める前に本人のパスワード設定を求めます。",
+    "users.lastUsedAt": "最終使用日時",
     "users.linkExpiresAt": "有効期限",
     "users.linkIssuedAt": "発行日時",
+    "users.loginAt": "ログイン日時",
+    "users.loginSessions": "ログインセッション",
+    "users.loginSessionsDescription": "このユーザーのブラウザログインセッションを確認します。",
     "users.loading": "ユーザーを読み込み中...",
     "users.loadingEmailLinks": "確認待ちレコードを読み込み中...",
     "users.noActiveEmailLinks": "確認待ちレコードはありません。",
+    "users.noLoginSessions": "ログインセッションはありません。",
     "users.reload": "再読み込み",
     "users.resendVerification": "再送",
+    "users.revokedAt": "無効化日時",
+    "users.revokedSession": "無効化済み",
     "users.search": "検索",
     "users.searchUsers": "ユーザーを検索",
     "users.sendVerification": "確認メールを送信",
     "users.sendVerificationConfirmBody": "このメールアドレスに確認メールを送信しますか？",
     "users.sendVerificationConfirmTitle": "確認メールを送信",
     "users.sendVerificationInvalidatesPrevious": "このユーザーの以前の確認メールはすべて無効になります。",
+    "users.sessionStatus": "セッション状態",
+    "users.viewLoginSessions": "ログインセッションを表示",
     "users.role": "ロール",
   },
   "zh-Hant-TW": {
@@ -729,6 +1095,43 @@ export const translations: Record<
     "auth.smtpWarningTitle": "電子郵件設定需要確認",
     "auth.useAnotherEmail": "使用其他電子郵件",
     "auth.welcomeBack": "歡迎回來",
+    "bankAccounts.accountHolder": "使用的法定姓名",
+    "bankAccounts.accountNumber": "帳號",
+    "bankAccounts.backToAccounts": "返回銀行帳戶",
+    "bankAccounts.balance": "目前餘額",
+    "bankAccounts.bank": "銀行",
+    "bankAccounts.balanceAfter": "交易後餘額",
+    "bankAccounts.bankBranch": "銀行分行",
+    "bankAccounts.branch": "分行",
+    "bankAccounts.counterparty": "交易對象",
+    "bankAccounts.clear": "清除",
+    "bankAccounts.create": "建立銀行帳戶",
+    "bankAccounts.createTransaction": "建立交易",
+    "bankAccounts.currency": "幣別",
+    "bankAccounts.deactivateConfirmBody": "要停用這個銀行帳戶嗎？資料會保留，但不會再被視為啟用中的帳戶。",
+    "bankAccounts.deactivateConfirmTitle": "停用銀行帳戶",
+    "bankAccounts.deleteCannotRollback": "此刪除動作無法復原。",
+    "bankAccounts.deleteConfirmBody": "要刪除此銀行帳戶嗎？",
+    "bankAccounts.deleteConfirmTitle": "刪除銀行帳戶",
+    "bankAccounts.description": "登錄租金、支出、稅務與物業金流會使用到的銀行帳戶。",
+    "bankAccounts.deposit": "收入",
+    "bankAccounts.edit": "編輯銀行帳戶",
+    "bankAccounts.empty": "找不到銀行帳戶。",
+    "bankAccounts.loading": "正在載入銀行帳戶...",
+    "bankAccounts.loadingTransactions": "正在載入交易...",
+    "bankAccounts.noTransactions": "沒有交易紀錄。",
+    "bankAccounts.notes": "備註",
+    "bankAccounts.referenceNo": "參考編號",
+    "bankAccounts.reload": "重新載入銀行帳戶",
+    "bankAccounts.reloadTransactions": "重新載入交易",
+    "bankAccounts.search": "搜尋銀行帳戶",
+    "bankAccounts.sourceType": "來源",
+    "bankAccounts.transactionDate": "日期",
+    "bankAccounts.transactions": "交易紀錄",
+    "bankAccounts.transactionsDescription": "查看此銀行帳戶已登錄的金流紀錄。",
+    "bankAccounts.transactionsForTitle": "{name}的交易紀錄",
+    "bankAccounts.transactionAmountRequired": "請輸入收入或支出其中一項，不能同時輸入兩項。",
+    "bankAccounts.withdrawal": "支出",
     "dashboard.adminSetupCompleted": "管理員設定已完成。",
     "dashboard.adminSetupRequired": "使用 LeaseMate 前需要先完成管理員設定。",
     "dashboard.backendConnection": "後端連線",
@@ -746,6 +1149,13 @@ export const translations: Record<
     "dashboard.emailNotVerifiedMessage": "使用 LeaseMate 其他功能前，請先驗證電子郵件。你可以留在這裡重新寄送，或登出。",
     "dashboard.emailNotVerifiedTitle": "電子郵件尚未驗證",
     "dashboard.keepCurrentEmail": "使用目前的電子郵件",
+    "dashboard.readinessAccounts": "銀行帳戶",
+    "dashboard.readinessDescription": "這些是開始管理物業、租金與金流前需要先建立的基本資料。",
+    "dashboard.readinessLegalNames": "法定姓名",
+    "dashboard.readinessMissing": "尚未建立",
+    "dashboard.readinessProperties": "物業",
+    "dashboard.readinessReady": "已建立",
+    "dashboard.readinessTitle": "設定提醒",
     "dashboard.resendVerificationEmail": "重新寄送驗證信",
     "dashboard.sendingVerificationEmail": "寄送中...",
     "dashboard.stayOnDashboard": "返回儀表板",
@@ -777,7 +1187,17 @@ export const translations: Record<
     "form.passwordWeak": "密碼未符合強度要求。",
     "form.preferredLocale": "偏好語言",
     "form.requiredMessage": "此欄位為必填。",
+    "grid.columns": "欄位",
+    "grid.clearColumns": "清除",
+    "grid.displayedColumns": "顯示欄位",
+    "grid.firstPage": "第一頁",
+    "grid.lastPage": "最後一頁",
+    "grid.nextPage": "下一頁",
+    "grid.previousPage": "上一頁",
+    "grid.rows": "每頁筆數",
+    "grid.selectAllColumns": "全選",
     "nav.admin": "管理",
+    "nav.bankAccounts": "銀行帳戶",
     "nav.dashboard": "儀表板",
     "nav.documents": "文件",
     "nav.expenses": "支出",
@@ -797,12 +1217,21 @@ export const translations: Record<
     "nav.ref.regions": "地區",
     "nav.ref.roles": "角色",
     "nav.ref.statusCodes": "狀態",
+    "nav.ref.translations": "翻譯",
     "nav.ref.utilityTypes": "公共事業類型",
     "nav.settings": "設定",
     "nav.users": "使用者",
     "nav.workspace": "工作區",
+    "page.backToDashboard": "返回儀表板",
+    "page.notFoundBody": "LeaseMate 找不到此網址對應的頁面。",
+    "page.notFoundTitle": "找不到頁面",
+    "page.underConstructionBody": "{page} 已列在選單中，但此工作區頁面尚未完成。",
+    "page.underConstructionDescription": "此頁面已保留在導覽中，工作流程完成後會接上。",
+    "page.underConstructionEyebrow": "建置中",
+    "page.underConstructionTitle": "此頁面尚未準備好",
     "profile.accountSection": "使用者欄位",
     "profile.add": "新增",
+    "profile.appearanceSection": "顯示模式",
     "profile.cancel": "取消",
     "profile.changePassword": "變更密碼",
     "profile.close": "關閉",
@@ -843,15 +1272,25 @@ export const translations: Record<
     "profile.save": "儲存",
     "profile.saving": "儲存中...",
     "profile.systemSection": "系統資料",
+    "profile.themeAuto": "依本機時間自動切換",
+    "profile.themeDark": "深色模式",
+    "profile.themeDescription": "自動切換會依此裝置的本機時間，在下午 6:00 至上午 6:00 使用深色模式。",
+    "profile.themeLight": "一般模式",
     "profile.title": "個人資料",
     "profile.value.no": "否",
     "profile.value.yes": "是",
     "refLists.description": "管理 LeaseMate 各處使用的清單值。",
     "refLists.empty": "沒有設定清單紀錄。",
+    "refLists.activate": "啟用",
     "refLists.active": "啟用",
     "refLists.address": "地址",
+    "refLists.allowMultiple": "可多人",
+    "refLists.allowMultipleHelp": "同一物件可將此存取層級指派給多個人。",
     "refLists.alpha2": "Alpha-2",
+    "refLists.batchUploadTranslationsTitle": "批次上傳「{name}」的翻譯",
+    "refLists.backToBanks": "返回銀行清單",
     "refLists.backToEnglishList": "返回英文清單",
+    "refLists.branchDescription": "管理這間銀行的分行。",
     "refLists.branchCode": "分行代碼",
     "refLists.branchName": "分行名稱",
     "refLists.code": "代碼",
@@ -863,8 +1302,14 @@ export const translations: Record<
     "refLists.default": "預設",
     "refLists.defaultLocale": "預設語言",
     "refLists.deactivate": "停用",
+    "refLists.deactivateConfirmBody": "要停用這筆設定清單資料嗎？資料會保留在資料庫，但不再視為啟用。",
+    "refLists.deactivateConfirmTitle": "停用資料",
     "refLists.delete": "刪除",
+    "refLists.deleteCannotRollback": "這個刪除動作無法復原。",
+    "refLists.deleteConfirmBody": "要刪除這筆設定清單資料嗎？",
+    "refLists.deleteConfirmTitle": "刪除資料",
     "refLists.descriptionColumn": "描述",
+    "refLists.statusDescriptionHelp": "可選備註，用來讓管理員了解此狀態應在什麼時候使用。",
     "refLists.edit": "編輯",
     "refLists.financialInstitutionId": "銀行 ID",
     "refLists.displayedColumns": "顯示欄位",
@@ -872,20 +1317,48 @@ export const translations: Record<
     "refLists.group": "群組",
     "refLists.income": "收入",
     "refLists.landlineFormat": "市話格式",
+    "refLists.localeCountryFilterHelp": "這只是選填的篩選條件。國家只用來縮小語言代碼選項，不會被儲存。",
     "refLists.loading": "正在載入設定清單紀錄...",
+    "refLists.manageBranches": "管理分行",
     "refLists.manageTranslations": "管理翻譯",
     "refLists.mobileFormat": "手機格式",
     "refLists.nameOrder": "姓名順序",
     "refLists.nativeName": "原文名稱",
     "refLists.phonePrefix": "電話區碼",
     "refLists.region": "地區",
+    "refLists.recordReadonly": "讀取",
+    "refLists.recordReadonlyHelp": "可檢視指派此存取層級之物件的紀錄。",
+    "refLists.recordWritable": "編輯",
+    "refLists.recordWritableHelp": "可新增或更新指派此存取層級之物件的紀錄。",
+    "refLists.recordDeletable": "刪除",
+    "refLists.recordDeletableHelp": "可刪除指派此存取層級之物件的紀錄。",
     "refLists.search": "搜尋",
     "refLists.searchText": "搜尋文字",
+    "refLists.sortBefore": "排在「{name}」之前",
+    "refLists.sortEndOfGroup": "群組最後",
     "refLists.sortOrder": "排序",
     "refLists.swiftCode": "SWIFT 代碼",
     "refLists.success": "成功",
+    "refLists.successHelp": "如果已結束的流程是預期結果，例如已付款、已完成或已收取，就勾選此項。",
     "refLists.terminal": "終止狀態",
-    "refLists.translationDescription": "管理此設定清單項目的非英文翻譯。",
+    "refLists.terminalHelp": "如果此狀態會結束流程，就勾選此項。例如已付款、已完成、已取消、已過期都是最終狀態；待處理或進行中不是。",
+    "refLists.translationDescription": "管理{entity}「{name}」的非英文翻譯。",
+    "refLists.translationsForTitle": "「{name}」的翻譯",
+    "refLists.downloadCsv": "下載 CSV 範本",
+    "refLists.upload": "批次上傳",
+    "refLists.uploadCsvOnly": "請上傳 CSV 檔案。",
+    "refLists.uploadDropCsv": "將 CSV 檔案拖放到這裡，或點擊選擇檔案。",
+    "refLists.uploadEnglishSkipped": "第一列英文資料只作範例，上傳時會略過。",
+    "refLists.uploadFailed": "上傳失敗。",
+    "refLists.uploadHeaderMismatch": "CSV 欄位與下載的範本不一致。",
+    "refLists.upperSnakeValidation": "只可使用英文大寫字母、數字及底線。",
+    "refLists.uploadInserted": "{name} 的所有上傳資料已新增到資料庫表格。",
+    "refLists.uploadInstructions": "下載 CSV 範本，填寫非英文翻譯資料列，然後在這裡上傳完成的 CSV。",
+    "refLists.uploadMissingMaster": "找不到已選取的設定清單項目。",
+    "refLists.uploadNoInsert": "沒有新增任何翻譯資料列。",
+    "refLists.uploadNoRows": "CSV 沒有任何翻譯資料列。",
+    "refLists.uploadSkipped": "以下語言代碼的資料已存在，請確認：{locales}",
+    "refLists.uploading": "正在上傳 CSV...",
     "refLists.website": "網站",
     "shell.accountSettings": "帳戶設定",
     "shell.closeNavigation": "關閉導覽",
@@ -902,8 +1375,10 @@ export const translations: Record<
     "users.activateConfirmBody": "要啟用這個使用者嗎？如果電子郵件尚未驗證，使用者仍需先完成電子郵件驗證，才能開始使用 LeaseMate。",
     "users.activateConfirmTitle": "啟用使用者",
     "users.activateUser": "啟用這個使用者",
+    "users.activeSession": "有效",
     "users.activeEmailLinks": "待驗證",
     "users.activeEmailLinksDescription": "管理尚未完成電子郵件驗證的使用者認證紀錄。",
+    "users.backToUsers": "返回使用者清單",
     "users.clearForm": "清除",
     "users.confirmNewEmail": "確認新電子郵件",
     "users.createUser": "建立使用者",
@@ -915,25 +1390,38 @@ export const translations: Record<
     "users.deleteConfirmTitle": "刪除使用者",
     "users.deleteUser": "刪除使用者",
     "users.description": "管理使用者帳戶、登入狀態與偏好語言。",
+    "users.deviceInfo": "裝置",
     "users.editUser": "編輯使用者",
     "users.emailConfirmationMismatch": "請再次輸入新電子郵件以確認。",
     "users.emailVerified": "電子郵件已驗證",
     "users.empty": "找不到使用者。",
+    "users.expiredSession": "已過期",
+    "users.expiresAt": "過期時間",
     "users.expireLink": "設為過期",
+    "users.ipAddress": "IP 位址",
     "users.invitationPasswordHelp": "使用者完成電子郵件驗證後，LeaseMate 會要求使用者先設定自己的密碼，才能開始使用 LeaseMate 服務。",
+    "users.lastUsedAt": "最後使用時間",
     "users.linkExpiresAt": "過期時間",
     "users.linkIssuedAt": "發出時間",
+    "users.loginAt": "登入時間",
+    "users.loginSessions": "登入工作階段",
+    "users.loginSessionsDescription": "檢視這個使用者的瀏覽器登入工作階段紀錄。",
     "users.loading": "正在載入使用者...",
     "users.loadingEmailLinks": "正在載入待驗證紀錄...",
     "users.noActiveEmailLinks": "沒有待驗證紀錄。",
+    "users.noLoginSessions": "沒有登入工作階段紀錄。",
     "users.reload": "重新載入",
     "users.resendVerification": "重新寄送",
+    "users.revokedAt": "撤銷時間",
+    "users.revokedSession": "已撤銷",
     "users.search": "搜尋",
     "users.searchUsers": "搜尋使用者",
     "users.sendVerification": "寄送驗證信",
     "users.sendVerificationConfirmBody": "要寄送驗證信到這個電子郵件地址嗎？",
     "users.sendVerificationConfirmTitle": "寄送驗證信",
     "users.sendVerificationInvalidatesPrevious": "這個使用者之前的所有驗證信都會失效。",
+    "users.sessionStatus": "工作階段狀態",
+    "users.viewLoginSessions": "檢視登入工作階段",
     "users.role": "角色",
   },
   "zh-Hant-HK": {
@@ -958,6 +1446,43 @@ export const translations: Record<
     "auth.smtpWarningTitle": "電郵設定需要確認",
     "auth.useAnotherEmail": "使用其他電郵",
     "auth.welcomeBack": "歡迎返嚟",
+    "bankAccounts.accountHolder": "使用嘅法定姓名",
+    "bankAccounts.accountNumber": "帳號",
+    "bankAccounts.backToAccounts": "返去銀行帳戶",
+    "bankAccounts.balance": "目前結餘",
+    "bankAccounts.bank": "銀行",
+    "bankAccounts.balanceAfter": "交易後結餘",
+    "bankAccounts.bankBranch": "銀行分行",
+    "bankAccounts.branch": "分行",
+    "bankAccounts.counterparty": "交易對象",
+    "bankAccounts.clear": "清除",
+    "bankAccounts.create": "建立銀行帳戶",
+    "bankAccounts.createTransaction": "建立交易",
+    "bankAccounts.currency": "幣別",
+    "bankAccounts.deactivateConfirmBody": "要停用呢個銀行帳戶嗎？資料會保留，但唔會再被視為啟用中嘅帳戶。",
+    "bankAccounts.deactivateConfirmTitle": "停用銀行帳戶",
+    "bankAccounts.deleteCannotRollback": "呢個刪除動作無法復原。",
+    "bankAccounts.deleteConfirmBody": "要刪除呢個銀行帳戶嗎？",
+    "bankAccounts.deleteConfirmTitle": "刪除銀行帳戶",
+    "bankAccounts.description": "登錄租金、開支、稅務同物業金流會用到嘅銀行帳戶。",
+    "bankAccounts.deposit": "收入",
+    "bankAccounts.edit": "編輯銀行帳戶",
+    "bankAccounts.empty": "搵唔到銀行帳戶。",
+    "bankAccounts.loading": "正在載入銀行帳戶...",
+    "bankAccounts.loadingTransactions": "正在載入交易...",
+    "bankAccounts.noTransactions": "沒有交易紀錄。",
+    "bankAccounts.notes": "備註",
+    "bankAccounts.referenceNo": "參考編號",
+    "bankAccounts.reload": "重新載入銀行帳戶",
+    "bankAccounts.reloadTransactions": "重新載入交易",
+    "bankAccounts.search": "搜尋銀行帳戶",
+    "bankAccounts.sourceType": "來源",
+    "bankAccounts.transactionDate": "日期",
+    "bankAccounts.transactions": "交易紀錄",
+    "bankAccounts.transactionsDescription": "查看呢個銀行帳戶已登錄嘅金流紀錄。",
+    "bankAccounts.transactionsForTitle": "{name}嘅交易紀錄",
+    "bankAccounts.transactionAmountRequired": "請輸入收入或支出其中一項，唔可以同時輸入兩項。",
+    "bankAccounts.withdrawal": "支出",
     "dashboard.adminSetupCompleted": "管理員設定已完成。",
     "dashboard.adminSetupRequired": "使用 LeaseMate 前需要先完成管理員設定。",
     "dashboard.backendConnection": "後端連線",
@@ -975,6 +1500,13 @@ export const translations: Record<
     "dashboard.emailNotVerifiedMessage": "使用 LeaseMate 其他功能前，請先驗證電郵。你可以喺呢度重新寄送，或者登出。",
     "dashboard.emailNotVerifiedTitle": "電郵尚未驗證",
     "dashboard.keepCurrentEmail": "使用目前嘅電郵",
+    "dashboard.readinessAccounts": "銀行帳戶",
+    "dashboard.readinessDescription": "呢啲係開始管理物業、租金同金流前需要先建立嘅基本資料。",
+    "dashboard.readinessLegalNames": "法定姓名",
+    "dashboard.readinessMissing": "尚未建立",
+    "dashboard.readinessProperties": "物業",
+    "dashboard.readinessReady": "已建立",
+    "dashboard.readinessTitle": "設定提示",
     "dashboard.resendVerificationEmail": "重新寄送驗證電郵",
     "dashboard.sendingVerificationEmail": "寄送中...",
     "dashboard.stayOnDashboard": "返回儀表板",
@@ -1006,7 +1538,17 @@ export const translations: Record<
     "form.passwordWeak": "密碼未符合強度要求。",
     "form.preferredLocale": "偏好語言",
     "form.requiredMessage": "此欄位必須填寫。",
+    "grid.columns": "欄位",
+    "grid.clearColumns": "清除",
+    "grid.displayedColumns": "顯示欄位",
+    "grid.firstPage": "第一頁",
+    "grid.lastPage": "最後一頁",
+    "grid.nextPage": "下一頁",
+    "grid.previousPage": "上一頁",
+    "grid.rows": "每頁筆數",
+    "grid.selectAllColumns": "全選",
     "nav.admin": "管理",
+    "nav.bankAccounts": "銀行帳戶",
     "nav.dashboard": "儀表板",
     "nav.documents": "文件",
     "nav.expenses": "開支",
@@ -1026,12 +1568,21 @@ export const translations: Record<
     "nav.ref.regions": "地區",
     "nav.ref.roles": "角色",
     "nav.ref.statusCodes": "狀態",
+    "nav.ref.translations": "翻譯",
     "nav.ref.utilityTypes": "公用服務類型",
     "nav.settings": "設定",
     "nav.users": "用戶",
     "nav.workspace": "工作區",
+    "page.backToDashboard": "返回儀表板",
+    "page.notFoundBody": "LeaseMate 搵唔到呢個網址對應嘅頁面。",
+    "page.notFoundTitle": "搵唔到頁面",
+    "page.underConstructionBody": "{page} 已列喺選單入面，但呢個工作區頁面仲未完成。",
+    "page.underConstructionDescription": "呢個頁面已經喺導覽預留，等工作流程完成後會接上。",
+    "page.underConstructionEyebrow": "建置中",
+    "page.underConstructionTitle": "呢個頁面仲未準備好",
     "profile.accountSection": "用戶欄位",
     "profile.add": "新增",
+    "profile.appearanceSection": "顯示模式",
     "profile.cancel": "取消",
     "profile.changePassword": "更改密碼",
     "profile.close": "關閉",
@@ -1072,15 +1623,25 @@ export const translations: Record<
     "profile.save": "儲存",
     "profile.saving": "儲存緊...",
     "profile.systemSection": "系統資料",
+    "profile.themeAuto": "按本機時間自動切換",
+    "profile.themeDark": "深色模式",
+    "profile.themeDescription": "自動切換會按此裝置嘅本機時間，喺下午 6:00 至上午 6:00 使用深色模式。",
+    "profile.themeLight": "一般模式",
     "profile.title": "個人資料",
     "profile.value.no": "否",
     "profile.value.yes": "是",
     "refLists.description": "管理 LeaseMate 各處使用嘅清單值。",
     "refLists.empty": "沒有設定清單紀錄。",
+    "refLists.activate": "啟用",
     "refLists.active": "啟用",
     "refLists.address": "地址",
+    "refLists.allowMultiple": "可多人",
+    "refLists.allowMultipleHelp": "同一物業可將此存取級別指派畀多個人。",
     "refLists.alpha2": "Alpha-2",
+    "refLists.batchUploadTranslationsTitle": "批量上載「{name}」嘅翻譯",
+    "refLists.backToBanks": "返去銀行清單",
     "refLists.backToEnglishList": "返去英文清單",
+    "refLists.branchDescription": "管理呢間銀行嘅分行。",
     "refLists.branchCode": "分行代碼",
     "refLists.branchName": "分行名稱",
     "refLists.code": "代碼",
@@ -1092,8 +1653,14 @@ export const translations: Record<
     "refLists.default": "預設",
     "refLists.defaultLocale": "預設語言",
     "refLists.deactivate": "停用",
+    "refLists.deactivateConfirmBody": "要停用呢筆設定清單資料嗎？資料會保留喺資料庫，但唔會再當成啟用。",
+    "refLists.deactivateConfirmTitle": "停用資料",
     "refLists.delete": "刪除",
+    "refLists.deleteCannotRollback": "呢個刪除動作無法還原。",
+    "refLists.deleteConfirmBody": "要刪除呢筆設定清單資料嗎？",
+    "refLists.deleteConfirmTitle": "刪除資料",
     "refLists.descriptionColumn": "描述",
+    "refLists.statusDescriptionHelp": "可選備註，用嚟俾管理員了解呢個狀態應該喺咩時候使用。",
     "refLists.edit": "編輯",
     "refLists.financialInstitutionId": "銀行 ID",
     "refLists.displayedColumns": "顯示欄位",
@@ -1101,20 +1668,48 @@ export const translations: Record<
     "refLists.group": "群組",
     "refLists.income": "收入",
     "refLists.landlineFormat": "固網電話格式",
+    "refLists.localeCountryFilterHelp": "呢個只係選填篩選。國家只用嚟收窄語言代碼選項，唔會儲存。",
     "refLists.loading": "正在載入設定清單紀錄...",
+    "refLists.manageBranches": "管理分行",
     "refLists.manageTranslations": "管理翻譯",
     "refLists.mobileFormat": "手機格式",
     "refLists.nameOrder": "姓名次序",
     "refLists.nativeName": "原文名稱",
     "refLists.phonePrefix": "電話區號",
     "refLists.region": "地區",
+    "refLists.recordReadonly": "讀取",
+    "refLists.recordReadonlyHelp": "可檢視指派此存取級別之物業嘅紀錄。",
+    "refLists.recordWritable": "編輯",
+    "refLists.recordWritableHelp": "可新增或更新指派此存取級別之物業嘅紀錄。",
+    "refLists.recordDeletable": "刪除",
+    "refLists.recordDeletableHelp": "可刪除指派此存取級別之物業嘅紀錄。",
     "refLists.search": "搜尋",
     "refLists.searchText": "搜尋文字",
+    "refLists.sortBefore": "排喺「{name}」之前",
+    "refLists.sortEndOfGroup": "群組最後",
     "refLists.sortOrder": "排序",
     "refLists.swiftCode": "SWIFT 代碼",
     "refLists.success": "成功",
+    "refLists.successHelp": "如果已結束嘅流程係預期結果，例如已付款、已完成或者已收取，就勾選呢項。",
     "refLists.terminal": "終止狀態",
-    "refLists.translationDescription": "管理呢個設定清單項目嘅非英文翻譯。",
+    "refLists.terminalHelp": "如果呢個狀態會結束流程，就勾選呢項。例如已付款、已完成、已取消、已過期都係最終狀態；待處理或者進行中唔係。",
+    "refLists.translationDescription": "管理{entity}「{name}」嘅非英文翻譯。",
+    "refLists.translationsForTitle": "「{name}」嘅翻譯",
+    "refLists.downloadCsv": "下載 CSV 範本",
+    "refLists.upload": "批量上載",
+    "refLists.uploadCsvOnly": "請上載 CSV 檔案。",
+    "refLists.uploadDropCsv": "將 CSV 檔案拖放到呢度，或者點擊選擇檔案。",
+    "refLists.uploadEnglishSkipped": "第一行英文資料只係例子，上載時會略過。",
+    "refLists.uploadFailed": "上載失敗。",
+    "refLists.uploadHeaderMismatch": "CSV 欄位同下載嘅範本唔一致。",
+    "refLists.upperSnakeValidation": "只可以用英文大寫字母、數字同底線。",
+    "refLists.uploadInserted": "{name} 嘅所有上載資料已新增到資料庫表格。",
+    "refLists.uploadInstructions": "下載 CSV 範本，填寫非英文翻譯資料列，然後喺呢度上載完成嘅 CSV。",
+    "refLists.uploadMissingMaster": "搵唔到已選取嘅設定清單項目。",
+    "refLists.uploadNoInsert": "未有新增任何翻譯資料列。",
+    "refLists.uploadNoRows": "CSV 入面冇任何翻譯資料列。",
+    "refLists.uploadSkipped": "以下語言代碼嘅資料已經存在，請確認：{locales}",
+    "refLists.uploading": "正在上載 CSV...",
     "refLists.website": "網站",
     "shell.accountSettings": "帳戶設定",
     "shell.closeNavigation": "關閉導覽",
@@ -1131,8 +1726,10 @@ export const translations: Record<
     "users.activateConfirmBody": "要啟用呢個用戶嗎？如果電郵尚未驗證，用戶仍然要先完成電郵驗證，先可以開始使用 LeaseMate。",
     "users.activateConfirmTitle": "啟用用戶",
     "users.activateUser": "啟用呢個用戶",
+    "users.activeSession": "有效",
     "users.activeEmailLinks": "待驗證",
     "users.activeEmailLinksDescription": "管理尚未完成電郵驗證嘅用戶認證紀錄。",
+    "users.backToUsers": "返去用戶清單",
     "users.clearForm": "清除",
     "users.confirmNewEmail": "確認新電郵",
     "users.createUser": "建立用戶",
@@ -1144,25 +1741,38 @@ export const translations: Record<
     "users.deleteConfirmTitle": "刪除用戶",
     "users.deleteUser": "刪除用戶",
     "users.description": "管理用戶帳戶、登入狀態同偏好語言。",
+    "users.deviceInfo": "裝置",
     "users.editUser": "編輯用戶",
     "users.emailConfirmationMismatch": "請再次輸入新電郵以作確認。",
     "users.emailVerified": "電郵已驗證",
     "users.empty": "搵唔到用戶。",
+    "users.expiredSession": "已過期",
+    "users.expiresAt": "過期時間",
     "users.expireLink": "設為過期",
+    "users.ipAddress": "IP 位址",
     "users.invitationPasswordHelp": "用戶完成電郵驗證後，LeaseMate 會要求用戶先設定自己嘅密碼，先可以開始使用 LeaseMate 服務。",
+    "users.lastUsedAt": "最後使用時間",
     "users.linkExpiresAt": "過期時間",
     "users.linkIssuedAt": "發出時間",
+    "users.loginAt": "登入時間",
+    "users.loginSessions": "登入工作階段",
+    "users.loginSessionsDescription": "檢視呢個用戶嘅瀏覽器登入工作階段紀錄。",
     "users.loading": "正在載入用戶...",
     "users.loadingEmailLinks": "正在載入待驗證紀錄...",
     "users.noActiveEmailLinks": "冇待驗證紀錄。",
+    "users.noLoginSessions": "冇登入工作階段紀錄。",
     "users.reload": "重新載入",
     "users.resendVerification": "重新寄送",
+    "users.revokedAt": "撤銷時間",
+    "users.revokedSession": "已撤銷",
     "users.search": "搜尋",
     "users.searchUsers": "搜尋用戶",
     "users.sendVerification": "寄送驗證電郵",
     "users.sendVerificationConfirmBody": "要寄送驗證電郵到呢個電郵地址嗎？",
     "users.sendVerificationConfirmTitle": "寄送驗證電郵",
     "users.sendVerificationInvalidatesPrevious": "呢個用戶之前所有驗證電郵都會失效。",
+    "users.sessionStatus": "工作階段狀態",
+    "users.viewLoginSessions": "檢視登入工作階段",
     "users.role": "角色",
   },
   th: {
@@ -1187,6 +1797,43 @@ export const translations: Record<
     "auth.smtpWarningTitle": "โปรดตรวจสอบการตั้งค่าอีเมล",
     "auth.useAnotherEmail": "ใช้อีเมลอื่น",
     "auth.welcomeBack": "ยินดีต้อนรับกลับ",
+    "bankAccounts.accountHolder": "ชื่อตามกฎหมายที่ใช้",
+    "bankAccounts.accountNumber": "เลขที่บัญชี",
+    "bankAccounts.backToAccounts": "กลับไปที่บัญชีธนาคาร",
+    "bankAccounts.balance": "ยอดคงเหลือปัจจุบัน",
+    "bankAccounts.bank": "ธนาคาร",
+    "bankAccounts.balanceAfter": "ยอดคงเหลือหลังรายการ",
+    "bankAccounts.bankBranch": "สาขาธนาคาร",
+    "bankAccounts.branch": "สาขา",
+    "bankAccounts.counterparty": "คู่รายการ",
+    "bankAccounts.clear": "ล้าง",
+    "bankAccounts.create": "สร้างบัญชีธนาคาร",
+    "bankAccounts.createTransaction": "สร้างรายการธุรกรรม",
+    "bankAccounts.currency": "สกุลเงิน",
+    "bankAccounts.deactivateConfirmBody": "ปิดใช้งานบัญชีธนาคารนี้หรือไม่? ข้อมูลจะยังอยู่ แต่จะไม่ถูกถือว่าเป็นบัญชีที่ใช้งานอยู่",
+    "bankAccounts.deactivateConfirmTitle": "ปิดใช้งานบัญชีธนาคาร",
+    "bankAccounts.deleteCannotRollback": "การลบนี้ไม่สามารถย้อนกลับได้",
+    "bankAccounts.deleteConfirmBody": "ลบบัญชีธนาคารนี้หรือไม่?",
+    "bankAccounts.deleteConfirmTitle": "ลบบัญชีธนาคาร",
+    "bankAccounts.description": "บันทึกบัญชีธนาคารที่ใช้กับค่าเช่า ค่าใช้จ่าย ภาษี และเงินของทรัพย์สิน",
+    "bankAccounts.deposit": "ฝาก",
+    "bankAccounts.edit": "แก้ไขบัญชีธนาคาร",
+    "bankAccounts.empty": "ไม่พบบัญชีธนาคาร",
+    "bankAccounts.loading": "กำลังโหลดบัญชีธนาคาร...",
+    "bankAccounts.loadingTransactions": "กำลังโหลดรายการ...",
+    "bankAccounts.noTransactions": "ไม่มีรายการธุรกรรม",
+    "bankAccounts.notes": "หมายเหตุ",
+    "bankAccounts.referenceNo": "เลขอ้างอิง",
+    "bankAccounts.reload": "โหลดบัญชีธนาคารอีกครั้ง",
+    "bankAccounts.reloadTransactions": "โหลดรายการอีกครั้ง",
+    "bankAccounts.search": "ค้นหาบัญชีธนาคาร",
+    "bankAccounts.sourceType": "แหล่งที่มา",
+    "bankAccounts.transactionDate": "วันที่",
+    "bankAccounts.transactions": "รายการธุรกรรม",
+    "bankAccounts.transactionsDescription": "ดูรายการเงินเข้าออกที่บันทึกไว้สำหรับบัญชีธนาคารนี้",
+    "bankAccounts.transactionsForTitle": "รายการธุรกรรมของ {name}",
+    "bankAccounts.transactionAmountRequired": "กรอกยอดฝากหรือยอดถอนอย่างใดอย่างหนึ่งเท่านั้น",
+    "bankAccounts.withdrawal": "ถอน",
     "dashboard.adminSetupCompleted": "ตั้งค่าผู้ดูแลเสร็จแล้ว",
     "dashboard.adminSetupRequired": "ต้องตั้งค่าผู้ดูแลก่อนใช้งาน LeaseMate",
     "dashboard.backendConnection": "การเชื่อมต่อ backend",
@@ -1204,6 +1851,13 @@ export const translations: Record<
     "dashboard.emailNotVerifiedMessage": "โปรดยืนยันอีเมลก่อนใช้ส่วนอื่นของ LeaseMate คุณสามารถอยู่หน้านี้ ส่งอีเมลใหม่ หรือออกจากระบบได้",
     "dashboard.emailNotVerifiedTitle": "ยังไม่ได้ยืนยันอีเมล",
     "dashboard.keepCurrentEmail": "ใช้อีเมลปัจจุบัน",
+    "dashboard.readinessAccounts": "บัญชีธนาคาร",
+    "dashboard.readinessDescription": "ข้อมูลเหล่านี้จำเป็นก่อนเริ่มจัดการทรัพย์สิน ค่าเช่า และกระแสเงินได้อย่างถูกต้อง",
+    "dashboard.readinessLegalNames": "ชื่อตามกฎหมาย",
+    "dashboard.readinessMissing": "ยังไม่มี",
+    "dashboard.readinessProperties": "ทรัพย์สิน",
+    "dashboard.readinessReady": "พร้อมแล้ว",
+    "dashboard.readinessTitle": "รายการเตือนการตั้งค่า",
     "dashboard.resendVerificationEmail": "ส่งอีเมลยืนยันอีกครั้ง",
     "dashboard.sendingVerificationEmail": "กำลังส่ง...",
     "dashboard.stayOnDashboard": "กลับไปแดชบอร์ด",
@@ -1235,7 +1889,17 @@ export const translations: Record<
     "form.passwordWeak": "รหัสผ่านยังไม่ตรงตามข้อกำหนดความปลอดภัย",
     "form.preferredLocale": "ภาษาที่ต้องการ",
     "form.requiredMessage": "จำเป็นต้องกรอกข้อมูลนี้",
+    "grid.columns": "คอลัมน์",
+    "grid.clearColumns": "ล้าง",
+    "grid.displayedColumns": "คอลัมน์ที่แสดง",
+    "grid.firstPage": "หน้าแรก",
+    "grid.lastPage": "หน้าสุดท้าย",
+    "grid.nextPage": "หน้าถัดไป",
+    "grid.previousPage": "หน้าก่อนหน้า",
+    "grid.rows": "จำนวนแถว",
+    "grid.selectAllColumns": "เลือกทั้งหมด",
     "nav.admin": "ผู้ดูแล",
+    "nav.bankAccounts": "บัญชีธนาคาร",
     "nav.dashboard": "แดชบอร์ด",
     "nav.documents": "เอกสาร",
     "nav.expenses": "ค่าใช้จ่าย",
@@ -1255,12 +1919,21 @@ export const translations: Record<
     "nav.ref.regions": "ภูมิภาค",
     "nav.ref.roles": "บทบาท",
     "nav.ref.statusCodes": "สถานะ",
+    "nav.ref.translations": "คำแปล",
     "nav.ref.utilityTypes": "ประเภทสาธารณูปโภค",
     "nav.settings": "ตั้งค่า",
     "nav.users": "ผู้ใช้",
     "nav.workspace": "พื้นที่ทำงาน",
+    "page.backToDashboard": "กลับไปแดชบอร์ด",
+    "page.notFoundBody": "LeaseMate ไม่พบหน้าสำหรับ URL นี้",
+    "page.notFoundTitle": "ไม่พบหน้า",
+    "page.underConstructionBody": "{page} อยู่ในเมนูแล้ว แต่หน้าเวิร์กสเปซนี้ยังสร้างไม่เสร็จ",
+    "page.underConstructionDescription": "หน้านี้ถูกจองไว้ในเมนูแล้ว และจะเชื่อมต่อเมื่อสร้างเวิร์กโฟลว์เสร็จ",
+    "page.underConstructionEyebrow": "กำลังสร้าง",
+    "page.underConstructionTitle": "หน้านี้ยังไม่พร้อมใช้งาน",
     "profile.accountSection": "ข้อมูลผู้ใช้",
     "profile.add": "เพิ่ม",
+    "profile.appearanceSection": "โหมดการแสดงผล",
     "profile.cancel": "ยกเลิก",
     "profile.changePassword": "เปลี่ยนรหัสผ่าน",
     "profile.close": "ปิด",
@@ -1301,15 +1974,25 @@ export const translations: Record<
     "profile.save": "บันทึก",
     "profile.saving": "กำลังบันทึก...",
     "profile.systemSection": "ข้อมูลระบบ",
+    "profile.themeAuto": "อัตโนมัติตามเวลาท้องถิ่น",
+    "profile.themeDark": "โหมดมืด",
+    "profile.themeDescription": "โหมดอัตโนมัติใช้เวลาท้องถิ่นของอุปกรณ์นี้ โดยใช้โหมดมืดตั้งแต่ 18:00 ถึง 06:00",
+    "profile.themeLight": "โหมดปกติ",
     "profile.title": "โปรไฟล์",
     "profile.value.no": "ไม่ใช่",
     "profile.value.yes": "ใช่",
     "refLists.description": "จัดการค่ารายการที่ใช้ใน LeaseMate",
     "refLists.empty": "ไม่มีข้อมูลในรายการตั้งค่า",
+    "refLists.activate": "เปิดใช้งาน",
     "refLists.active": "เปิดใช้งาน",
     "refLists.address": "ที่อยู่",
+    "refLists.allowMultiple": "หลายคน",
+    "refLists.allowMultipleHelp": "อนุญาตให้หลายคนใช้ระดับการเข้าถึงนี้กับทรัพย์สินเดียวกัน",
     "refLists.alpha2": "Alpha-2",
+    "refLists.batchUploadTranslationsTitle": "อัปโหลดคำแปลสำหรับ \"{name}\" แบบชุด",
+    "refLists.backToBanks": "กลับไปที่ธนาคาร",
     "refLists.backToEnglishList": "กลับไปที่รายการภาษาอังกฤษ",
+    "refLists.branchDescription": "จัดการสาขาของธนาคารนี้",
     "refLists.branchCode": "รหัสสาขา",
     "refLists.branchName": "ชื่อสาขา",
     "refLists.code": "รหัส",
@@ -1321,8 +2004,14 @@ export const translations: Record<
     "refLists.default": "ค่าเริ่มต้น",
     "refLists.defaultLocale": "ภาษาเริ่มต้น",
     "refLists.deactivate": "ปิดใช้งาน",
+    "refLists.deactivateConfirmBody": "ต้องการปิดใช้งานรายการตั้งค่านี้หรือไม่? ข้อมูลจะยังอยู่ในฐานข้อมูล แต่จะไม่ถือว่าใช้งานอยู่",
+    "refLists.deactivateConfirmTitle": "ปิดใช้งานรายการ",
     "refLists.delete": "ลบ",
+    "refLists.deleteCannotRollback": "การลบนี้ไม่สามารถย้อนกลับได้",
+    "refLists.deleteConfirmBody": "ต้องการลบรายการตั้งค่านี้หรือไม่?",
+    "refLists.deleteConfirmTitle": "ลบรายการ",
     "refLists.descriptionColumn": "คำอธิบาย",
+    "refLists.statusDescriptionHelp": "หมายเหตุเพิ่มเติมเพื่อให้ผู้ดูแลเข้าใจว่าควรใช้สถานะนี้เมื่อใด",
     "refLists.edit": "แก้ไข",
     "refLists.financialInstitutionId": "รหัสธนาคาร",
     "refLists.displayedColumns": "คอลัมน์ที่แสดง",
@@ -1330,20 +2019,48 @@ export const translations: Record<
     "refLists.group": "กลุ่ม",
     "refLists.income": "รายรับ",
     "refLists.landlineFormat": "รูปแบบโทรศัพท์บ้าน",
+    "refLists.localeCountryFilterHelp": "ตัวกรองนี้ไม่บังคับ ใช้ประเทศเพื่อจำกัดตัวเลือกภาษาเท่านั้น และจะไม่ถูกบันทึก",
     "refLists.loading": "กำลังโหลดรายการตั้งค่า...",
+    "refLists.manageBranches": "จัดการสาขา",
     "refLists.manageTranslations": "จัดการคำแปล",
     "refLists.mobileFormat": "รูปแบบมือถือ",
     "refLists.nameOrder": "ลำดับชื่อ",
     "refLists.nativeName": "ชื่อท้องถิ่น",
     "refLists.phonePrefix": "รหัสโทรศัพท์",
     "refLists.region": "ภูมิภาค",
+    "refLists.recordReadonly": "อ่าน",
+    "refLists.recordReadonlyHelp": "ดูข้อมูลของทรัพย์สินที่ได้รับระดับการเข้าถึงนี้ได้",
+    "refLists.recordWritable": "แก้ไข",
+    "refLists.recordWritableHelp": "สร้างหรือแก้ไขข้อมูลของทรัพย์สินที่ได้รับระดับการเข้าถึงนี้ได้",
+    "refLists.recordDeletable": "ลบ",
+    "refLists.recordDeletableHelp": "ลบข้อมูลของทรัพย์สินที่ได้รับระดับการเข้าถึงนี้ได้",
     "refLists.search": "ค้นหา",
     "refLists.searchText": "ข้อความค้นหา",
+    "refLists.sortBefore": "ก่อน {name}",
+    "refLists.sortEndOfGroup": "ท้ายกลุ่ม",
     "refLists.sortOrder": "ลำดับ",
     "refLists.swiftCode": "รหัส SWIFT",
     "refLists.success": "สำเร็จ",
+    "refLists.successHelp": "เลือกเมื่อเวิร์กโฟลว์ที่ปิดแล้วจบด้วยผลลัพธ์ที่ต้องการ เช่น ชำระแล้ว เสร็จสิ้น หรือได้รับแล้ว",
     "refLists.terminal": "สถานะปลายทาง",
-    "refLists.translationDescription": "จัดการคำแปลที่ไม่ใช่ภาษาอังกฤษสำหรับรายการตั้งค่านี้",
+    "refLists.terminalHelp": "เลือกเมื่อสถานะนี้ปิดเวิร์กโฟลว์ ตัวอย่างเช่น ชำระแล้ว เสร็จสิ้น ยกเลิก และหมดอายุเป็นสถานะสุดท้าย ส่วนรอดำเนินการหรือกำลังดำเนินการไม่ใช่",
+    "refLists.translationDescription": "จัดการคำแปลที่ไม่ใช่ภาษาอังกฤษสำหรับ{entity} \"{name}\"",
+    "refLists.translationsForTitle": "คำแปลสำหรับ \"{name}\"",
+    "refLists.downloadCsv": "ดาวน์โหลดเทมเพลต CSV",
+    "refLists.upload": "อัปโหลดเป็นชุด",
+    "refLists.uploadCsvOnly": "โปรดอัปโหลดไฟล์ CSV",
+    "refLists.uploadDropCsv": "ลากไฟล์ CSV มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
+    "refLists.uploadEnglishSkipped": "แถวภาษาอังกฤษแถวแรกเป็นเพียงตัวอย่าง และจะถูกข้ามตอนอัปโหลด",
+    "refLists.uploadFailed": "อัปโหลดไม่สำเร็จ",
+    "refLists.uploadHeaderMismatch": "คอลัมน์ CSV ไม่ตรงกับเทมเพลตที่ดาวน์โหลด",
+    "refLists.upperSnakeValidation": "ใช้ได้เฉพาะตัวพิมพ์ใหญ่ภาษาอังกฤษ ตัวเลข และขีดล่าง",
+    "refLists.uploadInserted": "ข้อมูลที่อัปโหลดทั้งหมดถูกเพิ่มลงในตารางฐานข้อมูลสำหรับ {name} แล้ว",
+    "refLists.uploadInstructions": "ดาวน์โหลดเทมเพลต CSV กรอกแถวคำแปลที่ไม่ใช่ภาษาอังกฤษ แล้วอัปโหลด CSV ที่เสร็จแล้วที่นี่",
+    "refLists.uploadMissingMaster": "ไม่พบรายการตั้งค่าที่เลือก",
+    "refLists.uploadNoInsert": "ไม่มีการเพิ่มแถวคำแปลใหม่",
+    "refLists.uploadNoRows": "CSV ไม่มีแถวคำแปล",
+    "refLists.uploadSkipped": "ข้อมูลสำหรับภาษาต่อไปนี้มีอยู่แล้ว โปรดยืนยัน: {locales}",
+    "refLists.uploading": "กำลังอัปโหลด CSV...",
     "refLists.website": "เว็บไซต์",
     "shell.accountSettings": "ตั้งค่าบัญชี",
     "shell.closeNavigation": "ปิดเมนู",
@@ -1360,8 +2077,10 @@ export const translations: Record<
     "users.activateConfirmBody": "เปิดใช้งานผู้ใช้นี้หรือไม่? หากยังไม่ได้ยืนยันอีเมล ผู้ใช้ยังต้องยืนยันอีเมลก่อนจึงจะเริ่มใช้ LeaseMate ได้",
     "users.activateConfirmTitle": "เปิดใช้งานผู้ใช้",
     "users.activateUser": "เปิดใช้งานผู้ใช้นี้",
+    "users.activeSession": "ใช้งานอยู่",
     "users.activeEmailLinks": "รอการยืนยัน",
     "users.activeEmailLinksDescription": "จัดการรายการยืนยันตัวตนของผู้ใช้ที่ยังรอการยืนยันอีเมล",
+    "users.backToUsers": "กลับไปที่ผู้ใช้",
     "users.clearForm": "ล้าง",
     "users.confirmNewEmail": "ยืนยันอีเมลใหม่",
     "users.createUser": "สร้างผู้ใช้",
@@ -1373,25 +2092,38 @@ export const translations: Record<
     "users.deleteConfirmTitle": "ลบผู้ใช้",
     "users.deleteUser": "ลบผู้ใช้",
     "users.description": "จัดการบัญชีผู้ใช้ สถานะการเข้าสู่ระบบ และภาษาที่ต้องการ",
+    "users.deviceInfo": "อุปกรณ์",
     "users.editUser": "แก้ไขผู้ใช้",
     "users.emailConfirmationMismatch": "กรุณากรอกอีเมลใหม่อีกครั้งเพื่อยืนยัน",
     "users.emailVerified": "ยืนยันอีเมลแล้ว",
     "users.empty": "ไม่พบผู้ใช้",
+    "users.expiredSession": "หมดอายุ",
+    "users.expiresAt": "หมดอายุเมื่อ",
     "users.expireLink": "ทำให้หมดอายุ",
+    "users.ipAddress": "ที่อยู่ IP",
     "users.invitationPasswordHelp": "หลังจากผู้ใช้ยืนยันอีเมลแล้ว LeaseMate จะให้ผู้ใช้ตั้งรหัสผ่านของตนเองก่อนเริ่มใช้งานบริการ LeaseMate",
+    "users.lastUsedAt": "ใช้ล่าสุดเมื่อ",
     "users.linkExpiresAt": "หมดอายุเมื่อ",
     "users.linkIssuedAt": "ออกเมื่อ",
+    "users.loginAt": "เข้าสู่ระบบเมื่อ",
+    "users.loginSessions": "เซสชันเข้าสู่ระบบ",
+    "users.loginSessionsDescription": "ตรวจสอบเซสชันเข้าสู่ระบบผ่านเบราว์เซอร์ของผู้ใช้นี้",
     "users.loading": "กำลังโหลดผู้ใช้...",
     "users.loadingEmailLinks": "กำลังโหลดรายการที่รอการยืนยัน...",
     "users.noActiveEmailLinks": "ไม่มีรายการที่รอการยืนยัน",
+    "users.noLoginSessions": "ไม่พบเซสชันเข้าสู่ระบบ",
     "users.reload": "โหลดใหม่",
     "users.resendVerification": "ส่งอีกครั้ง",
+    "users.revokedAt": "ยกเลิกเมื่อ",
+    "users.revokedSession": "ถูกยกเลิก",
     "users.search": "ค้นหา",
     "users.searchUsers": "ค้นหาผู้ใช้",
     "users.sendVerification": "ส่งอีเมลยืนยัน",
     "users.sendVerificationConfirmBody": "ส่งอีเมลยืนยันไปยังที่อยู่นี้หรือไม่?",
     "users.sendVerificationConfirmTitle": "ส่งอีเมลยืนยัน",
     "users.sendVerificationInvalidatesPrevious": "อีเมลยืนยันก่อนหน้าทั้งหมดของผู้ใช้นี้จะใช้งานไม่ได้",
+    "users.sessionStatus": "สถานะเซสชัน",
+    "users.viewLoginSessions": "ดูเซสชันเข้าสู่ระบบ",
     "users.role": "บทบาท",
   },
 };

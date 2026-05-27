@@ -5,8 +5,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.ref.status_code import STATUS_CODE_IDS
-
 
 class ExpenseCreate(BaseModel):
     property_id: UUID
@@ -20,7 +18,7 @@ class ExpenseCreate(BaseModel):
     end_date: Optional[date] = None
 
     description: Optional[str] = None
-    status_id: UUID = STATUS_CODE_IDS["EXPENSE_PENDING"]
+    status_id: Optional[UUID] = None
 
 
 class ExpenseUpdate(BaseModel):

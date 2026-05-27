@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class FinancialInstitutionCreate(BaseModel):
-    country_id: Optional[UUID] = None
+    country_id: UUID
     name: str
     swift_code: Optional[str] = None
     website: Optional[str] = None
@@ -23,7 +23,7 @@ class FinancialInstitutionUpdate(BaseModel):
 
 class FinancialInstitutionRead(BaseModel):
     id: UUID
-    country_id: Optional[UUID]
+    country_id: UUID
     name: str
     swift_code: Optional[str]
     website: Optional[str]

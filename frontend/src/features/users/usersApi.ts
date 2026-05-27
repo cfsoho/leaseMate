@@ -30,6 +30,17 @@ export type UserPage = {
   page_size: number;
 };
 
+export type UserLoginSession = {
+  id: string;
+  user_id: string;
+  device_info?: string | null;
+  ip_address?: string | null;
+  created_at?: string | null;
+  last_used_at?: string | null;
+  expires_at: string;
+  revoked_at?: string | null;
+};
+
 export type UserListParams = {
   page: number;
   pageSize: number;
@@ -75,6 +86,12 @@ export function listUsers(params: UserListParams) {
   );
 
   return apiRequest<UserPage>(`/users?${searchParams.toString()}`, {
+    auth: true,
+  });
+}
+
+export function listUserLoginSessions(userId: string) {
+  return apiRequest<UserLoginSession[]>(`/users/${userId}/login-sessions`, {
     auth: true,
   });
 }

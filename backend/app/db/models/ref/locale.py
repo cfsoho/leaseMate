@@ -35,7 +35,8 @@ class Locale(Base):
     # - AI translation workflows
     code = Column(
         String(35),
-        primary_key=True
+        primary_key=True,
+        comment="BCP-47 locale code used for UI language and translations."
     )
 
     # English/system display name.
@@ -47,7 +48,8 @@ class Locale(Base):
     # Japanese
     name = Column(
         String(255),
-        nullable=False
+        nullable=False,
+        comment="English or system display name for this locale."
     )
 
     # Native/local language display name.
@@ -64,7 +66,8 @@ class Locale(Base):
     # - Wikipedia-style native language display
     native_name = Column(
         String(255),
-        nullable=True
+        nullable=True,
+        comment="Locale name written in its own language."
     )
 
     # Name display/input order for personal names in this locale.
@@ -75,7 +78,8 @@ class Locale(Base):
     name_order = Column(
         String(20),
         nullable=False,
-        default="GIVEN_FAMILY"
+        default="GIVEN_FAMILY",
+        comment="Default personal-name order for this locale."
     )
 
     # Name display mask using placeholders.
@@ -88,7 +92,8 @@ class Locale(Base):
     name_format_mask = Column(
         String(100),
         nullable=False,
-        default="{given_name} {family_name}"
+        default="{given_name} {family_name}",
+        comment="Name display mask using {given_name} and {family_name} placeholders."
     )
 
     # Whether this locale is active/selectable.
@@ -100,7 +105,8 @@ class Locale(Base):
     is_active = Column(
         Boolean,
         nullable=False,
-        default=True
+        default=True,
+        comment="Whether this locale can be selected in forms."
     )
 
     # UI display ordering.
@@ -112,7 +118,8 @@ class Locale(Base):
     sort_order = Column(
         Integer,
         nullable=False,
-        default=0
+        default=0,
+        comment="Display order for locale selectors."
     )
 
     # Indicates system fallback/default locale.
@@ -127,18 +134,21 @@ class Locale(Base):
     is_default = Column(
         Boolean,
         nullable=False,
-        default=False
+        default=False,
+        comment="Whether this locale is the fallback/default locale."
     )
 
     created_at = Column(
         DateTime(timezone=True),
-        server_default=func.now()
+        server_default=func.now(),
+        comment="Timestamp when the locale row was created."
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
+        comment="Timestamp when the locale row was last updated."
     )
 
     # Relationships

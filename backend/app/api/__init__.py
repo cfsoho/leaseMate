@@ -27,6 +27,7 @@ from app.api.ref.region import router as region_router
 from app.api.reminder import router as reminder_router
 from app.api.ref.status_code import router as status_code_router
 from app.api.tax_record import router as tax_record_router
+from app.api.ref.translation import router as setup_list_translation_router
 from app.api.user_legal_name import router as user_legal_name_router
 from app.api.ref.utility_type import router as utility_type_router
 from app.api.utility_bill import router as utility_bill_router
@@ -62,6 +63,7 @@ all_routers = [
     region_router,
     reminder_router,
     role_router,
+    setup_list_translation_router,
     status_code_router,
     tax_record_router,
     user_legal_name_router,

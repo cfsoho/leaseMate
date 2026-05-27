@@ -29,7 +29,7 @@ def get_region_by_code(db: Session, code: str) -> Optional[Region]:
 def get_regions(db: Session, skip: int = 0, limit: int = 100):
     return (
         db.query(Region)
-        .order_by(Region.sort_order, Region.name)
+        .order_by(Region.is_active.desc(), Region.sort_order, Region.name)
         .offset(skip)
         .limit(limit)
         .all()

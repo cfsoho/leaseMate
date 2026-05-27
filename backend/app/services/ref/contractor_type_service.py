@@ -11,6 +11,14 @@ from app.db.schemas.ref.contractor_type import (
 )
 
 from app.services.soft_delete import soft_delete
+from app.services.ref.localized_shared_fields import (
+    inherit_master_shared_fields,
+    propagate_master_shared_fields,
+)
+from app.services.ref.translation_validation import ensure_translation_locale_available
+
+
+CONTRACTOR_TYPE_SHARED_FIELDS = {"code", "is_active"}
 
 def create_contractor_type(
     db: Session,
@@ -20,6 +28,19 @@ def create_contractor_type(
 
     if data.get("id") is None:
         data["id"] = uuid.uuid4()
+
+    ensure_translation_locale_available(
+        db,
+        ContractorType,
+        data["id"],
+        data["locale"],
+    )
+    inherit_master_shared_fields(
+        db,
+        ContractorType,
+        data,
+        CONTRACTOR_TYPE_SHARED_FIELDS,
+    )
 
     contractor_type = ContractorType(**data)
 
@@ -72,9 +93,25 @@ def update_contractor_type(
         return None
 
     update_data = payload.model_dump(exclude_unset=True)
+    ensure_translation_locale_available(
+        db,
+        ContractorType,
+        contractor_type_id,
+        update_data.get("locale"),
+        locale,
+    )
 
     for field, value in update_data.items():
         setattr(contractor_type, field, value)
+
+    propagate_master_shared_fields(
+        db,
+        ContractorType,
+        contractor_type_id,
+        locale,
+        update_data,
+        CONTRACTOR_TYPE_SHARED_FIELDS,
+    )
 
     db.commit()
     db.refresh(contractor_type)

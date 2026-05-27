@@ -35,7 +35,8 @@ class ExpenseType(Base):
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,
-        default=uuid.uuid4
+        default=uuid.uuid4,
+        comment="Shared multilingual expense type UUID."
     )
 
     # Locale code for this translation row.
@@ -47,7 +48,8 @@ class ExpenseType(Base):
     # ja
     locale = Column(
         String(35),
-        primary_key=True
+        primary_key=True,
+        comment="Locale code for this expense type translation."
     )
 
     # Stable internal/business code.
@@ -68,7 +70,8 @@ class ExpenseType(Base):
     code = Column(
         String(50),
         nullable=False,
-        index=True
+        index=True,
+        comment="Stable expense type code used by backend logic and reporting."
     )
 
     # Localized display name.
@@ -79,31 +82,36 @@ class ExpenseType(Base):
     # ซ่อมแซม
     name = Column(
         String(100),
-        nullable=False
+        nullable=False,
+        comment="Localized expense type display name."
     )
 
     # Optional localized description/help text.
     description = Column(
         String(255),
-        nullable=True
+        nullable=True,
+        comment="Optional localized help text for this expense type."
     )
 
     # Soft active/inactive flag.
     is_active = Column(
         Boolean,
         nullable=False,
-        default=True
+        default=True,
+        comment="Whether this expense type can be selected in forms."
     )
 
     created_at = Column(
         DateTime(timezone=True),
-        server_default=func.now()
+        server_default=func.now(),
+        comment="Timestamp when the expense type row was created."
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
+        comment="Timestamp when the expense type row was last updated."
     )
 
     # Prevent duplicate code within same locale.

@@ -27,9 +27,13 @@ import type { ProfileCountry, UserLegalName } from "../features/auth/authTypes";
 import { generateStrongPassword } from "../lib/auth/passwordGenerator";
 import { formatPersonName } from "../lib/i18n/nameFormat";
 import { useTranslation } from "../lib/i18n/useTranslation";
+import { useTheme } from "../lib/theme/useTheme";
+import type { ThemePreference } from "../lib/theme/themeContext";
 
 export function ProfilePage() {
   const { locale, t } = useTranslation();
+  const { preference: themePreference, setPreference: setThemePreference } =
+    useTheme();
   const queryClient = useQueryClient();
   const [isEditingUser, setIsEditingUser] = useState(false);
   const [userForm, setUserForm] = useState({
@@ -371,6 +375,42 @@ export function ProfilePage() {
                 ]}
               />
             )}
+          </section>
+
+          <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
+            <SectionTitle>{t("profile.appearanceSection")}</SectionTitle>
+            <p className="text-sm text-slate-600">
+              {t("profile.themeDescription")}
+            </p>
+            <div className="grid gap-3 md:grid-cols-3">
+              {(
+                [
+                  ["light", t("profile.themeLight")],
+                  ["dark", t("profile.themeDark")],
+                  ["auto", t("profile.themeAuto")],
+                ] satisfies [ThemePreference, string][]
+              ).map(([value, label]) => (
+                <label
+                  className={[
+                    "flex cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm font-semibold transition",
+                    themePreference === value
+                      ? "border-slate-950 bg-slate-950 text-white"
+                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                  ].join(" ")}
+                  key={value}
+                >
+                  <input
+                    checked={themePreference === value}
+                    className="h-4 w-4 accent-slate-950"
+                    name="themePreference"
+                    type="radio"
+                    value={value}
+                    onChange={() => setThemePreference(value)}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
           </section>
 
           <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">

@@ -5,8 +5,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.ref.status_code import STATUS_CODE_IDS
-
 
 class LeaseCreate(BaseModel):
     property_id: UUID
@@ -26,7 +24,7 @@ class LeaseCreate(BaseModel):
     due_day: int = 1
     payment_cycle: int = 1
 
-    status_id: UUID = STATUS_CODE_IDS["LEASE_DRAFT"]
+    status_id: Optional[UUID] = None
 
 
 class LeaseUpdate(BaseModel):

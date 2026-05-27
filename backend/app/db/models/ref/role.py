@@ -20,7 +20,8 @@ class Role(Base):
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,
-        default=uuid.uuid4
+        default=uuid.uuid4,
+        comment="Internal role UUID."
     )
 
     # System-controlled role code.
@@ -39,18 +40,21 @@ class Role(Base):
         ForeignKey("ref.role_codes.code"),
         nullable=False,
         unique=True,
-        index=True
+        index=True,
+        comment="System-controlled role code used for authorization."
     )
 
     created_at = Column(
         DateTime(timezone=True),
-        server_default=func.now()
+        server_default=func.now(),
+        comment="Timestamp when the role row was created."
     )
 
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()
+        onupdate=func.now(),
+        comment="Timestamp when the role row was last updated."
     )
 
     # Users assigned to this role.

@@ -78,6 +78,12 @@ class AccessTokenResponse(BaseModel):
     token_type: str = "bearer"
 
 
+class CurrentUserReadinessResponse(BaseModel):
+    legal_name_count: int
+    property_count: int
+    financial_account_count: int
+
+
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 

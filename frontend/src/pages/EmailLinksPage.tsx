@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { DataGrid } from "../components/data/DataGrid";
-import { PageHeader } from "../components/layout/PageHeader";
+import { GridManagementPage } from "../components/data/GridManagementPage";
 import { useDataGridPageSize } from "../components/data/useDataGridPageSize";
 import { useUrlDataGridState } from "../components/data/useUrlDataGridState";
 import { getBootstrapLocales } from "../features/auth/authApi";
@@ -17,7 +16,7 @@ import { useTranslation } from "../lib/i18n/useTranslation";
 export function EmailLinksPage() {
   const { locale, t } = useTranslation();
   const queryClient = useQueryClient();
-  const pageSize = useDataGridPageSize();
+  const { pageSize, setPageSize } = useDataGridPageSize();
   const { pageIndex, setPageIndex, setSortState, sortState } =
     useUrlDataGridState();
   const activeEmailLinks = useQuery({
@@ -54,32 +53,19 @@ export function EmailLinksPage() {
       });
     },
   });
+  const errorMessage =
+    activeEmailLinks.isError
+      ? activeEmailLinks.error.message
+      : expireEmailLinkMutation.isError
+        ? expireEmailLinkMutation.error.message
+        : resendEmailLinkMutation.isError
+          ? resendEmailLinkMutation.error.message
+          : undefined;
 
   return (
-    <section className="grid gap-4">
-      <PageHeader
-        description={t("users.activeEmailLinksDescription")}
-        eyebrow={t("nav.admin")}
-        title={t("users.activeEmailLinks")}
-      />
-
-      {activeEmailLinks.isError && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-normal text-red-700">
-          {activeEmailLinks.error.message}
-        </p>
-      )}
-      {expireEmailLinkMutation.isError && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-normal text-red-700">
-          {expireEmailLinkMutation.error.message}
-        </p>
-      )}
-      {resendEmailLinkMutation.isError && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-normal text-red-700">
-          {resendEmailLinkMutation.error.message}
-        </p>
-      )}
-
-      <DataGrid<ActiveEmailLink>
+    <GridManagementPage<ActiveEmailLink>
+        actionsClassName="md:self-end"
+        columnSelectionStorageKey="auth-control"
         columns={[
           {
             key: "name",
@@ -126,7 +112,7 @@ export function EmailLinksPage() {
           },
           {
             align: "right",
-            key: "action",
+            key: "actions",
             header: "",
             render: (link) => (
               <div className="flex justify-end gap-2">
@@ -163,15 +149,26 @@ export function EmailLinksPage() {
             ? t("users.loadingEmailLinks")
             : t("users.noActiveEmailLinks")
         }
+        errorMessage={errorMessage}
+        description={t("users.activeEmailLinksDescription")}
+        eyebrow={t("nav.admin")}
         heightClassName="h-[calc(100vh-260px)] min-h-[560px]"
         pageIndex={pageIndex}
+        paginationLabels={{
+          firstPage: t("grid.firstPage"),
+          lastPage: t("grid.lastPage"),
+          nextPage: t("grid.nextPage"),
+          previousPage: t("grid.previousPage"),
+          rows: t("grid.rows"),
+        }}
         pageSize={pageSize}
         records={activeEmailLinks.data ?? []}
         sortState={sortState}
+        title={t("users.activeEmailLinks")}
         onPageIndexChange={setPageIndex}
+        onPageSizeChange={setPageSize}
         onSortChange={setSortState}
       />
-    </section>
   );
 }
 

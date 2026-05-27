@@ -32,7 +32,10 @@ def create(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    return create_property_access_level(db, payload)
+    try:
+        return create_property_access_level(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.get("", response_model=List[PropertyAccessLevelRead])
@@ -70,12 +73,15 @@ def update(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    access_level = update_property_access_level(
-        db,
-        access_level_id,
-        locale,
-        payload
-    )
+    try:
+        access_level = update_property_access_level(
+            db,
+            access_level_id,
+            locale,
+            payload
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
     if not access_level:
         raise HTTPException(

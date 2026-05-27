@@ -7,7 +7,6 @@ from sqlalchemy import (
     Boolean,
     DateTime,
     ForeignKey,
-    Enum,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
@@ -33,24 +32,23 @@ class FinancialAccount(Base):
     legal_name_id = Column(
         UUID(as_uuid=True),
         ForeignKey("user_legal_names.id"),
-        nullable=True,
+        nullable=False,
         index=True
     )
 
-    # Financial institution branch platform.
-    # Nullable for CASH account.
+    # Financial institution branch used for this bank account.
     financial_institution_branch_id = Column(
         UUID(as_uuid=True),
         ForeignKey("ref.financial_institution_branches.id"),
-        nullable=True,
+        nullable=False,
         index=True
     )
 
     # Bank/account number or identifier.
-    account_number = Column(String(100), nullable=True)
+    account_number = Column(String(100), nullable=False, index=True)
 
     # Account currency.
-    currency_code = Column(String(3), nullable=False, default="THB")
+    currency_code = Column(String(3), nullable=False)
 
     # Latest balance of this account.
     # Updated when financial transactions are added.
@@ -61,6 +59,11 @@ class FinancialAccount(Base):
 
     # Freeform notes.
     notes = Column(String(255), nullable=True)
+
+    # Soft-delete metadata.
+    is_deleted = Column(Boolean, nullable=False, default=False, index=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    deleted_by = Column(UUID(as_uuid=True), nullable=True, index=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

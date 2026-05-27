@@ -5,7 +5,7 @@ import {
   setAccessToken,
 } from "../auth/tokenStorage";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   auth?: boolean;
@@ -105,9 +105,32 @@ async function readErrorMessage(response: Response) {
     if (typeof payload.detail === "string") {
       return payload.detail;
     }
+    if (Array.isArray(payload.detail)) {
+      const firstDetail = payload.detail.find(isValidationDetail);
+      if (firstDetail) {
+        const fieldPath = firstDetail.loc
+          .filter((part) => part !== "body")
+          .join(".");
+        return fieldPath
+          ? `${fieldPath}: ${firstDetail.msg}`
+          : firstDetail.msg;
+      }
+    }
   } catch {
     // The backend should normally return JSON, but keep UI errors readable if not.
   }
 
   return `Request failed with status ${response.status}`;
+}
+
+function isValidationDetail(value: unknown): value is {
+  loc: Array<string | number>;
+  msg: string;
+} {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as { loc?: unknown; msg?: unknown };
+  return Array.isArray(candidate.loc) && typeof candidate.msg === "string";
 }

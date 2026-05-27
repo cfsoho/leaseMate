@@ -7,12 +7,11 @@ from pydantic import BaseModel
 
 
 class FinancialAccountCreate(BaseModel):
-    user_id: UUID
-    legal_name_id: Optional[UUID] = None
-    financial_institution_branch_id: Optional[UUID] = None
-    account_number: Optional[str] = None
-    currency_code: str = "THB"
-    current_balance: Decimal = Decimal("0.00")
+    user_id: Optional[UUID] = None
+    legal_name_id: UUID
+    financial_institution_branch_id: UUID
+    account_number: str
+    currency_code: str
     is_active: bool = True
     notes: Optional[str] = None
 
@@ -22,7 +21,6 @@ class FinancialAccountUpdate(BaseModel):
     financial_institution_branch_id: Optional[UUID] = None
     account_number: Optional[str] = None
     currency_code: Optional[str] = None
-    current_balance: Optional[Decimal] = None
     is_active: Optional[bool] = None
     notes: Optional[str] = None
 

@@ -10,12 +10,19 @@ from app.db.schemas.recurring_expense_schedule import (
 )
 
 from app.services.soft_delete import soft_delete
+from app.services.status_defaults import apply_default_status
 
 def create_recurring_expense_schedule(
     db: Session,
     payload: RecurringExpenseScheduleCreate
 ) -> RecurringExpenseSchedule:
-    schedule = RecurringExpenseSchedule(**payload.model_dump())
+    data = apply_default_status(
+        db,
+        payload.model_dump(),
+        group_code="RECURRING_SCHEDULE",
+        code="ACTIVE",
+    )
+    schedule = RecurringExpenseSchedule(**data)
     db.add(schedule)
     db.commit()
     db.refresh(schedule)

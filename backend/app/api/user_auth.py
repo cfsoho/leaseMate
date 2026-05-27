@@ -12,6 +12,7 @@ from app.db.schemas.user_auth import (
     BootstrapAdminResponse,
     BootstrapLocaleResponse,
     BootstrapStatusResponse,
+    CurrentUserReadinessResponse,
     EmailConfirmationResponse,
     CurrentUserLegalNamePayload,
     EmailVerificationResendRequest,
@@ -19,6 +20,9 @@ from app.db.schemas.user_auth import (
     LoginRequest,
     RefreshTokenRequest,
 )
+from app.db.models.financial_account import FinancialAccount
+from app.db.models.property import Property
+from app.db.models.user_legal_name import UserLegalName
 from app.db.schemas.ref.country import CountryRead
 from app.db.schemas.user import UserPasswordChange, UserProfileUpdate, UserRead
 from app.db.schemas.user_legal_name import UserLegalNameCreate, UserLegalNameRead, UserLegalNameUpdate
@@ -181,6 +185,34 @@ def logout(
 @router.get("/me", response_model=UserRead)
 def me(current_user=Depends(require_current_user)):
     return current_user
+
+
+@router.get("/me/readiness", response_model=CurrentUserReadinessResponse)
+def my_readiness(
+    current_user=Depends(require_current_user),
+    db: Session = Depends(get_db)
+):
+    legal_name_count = (
+        db.query(UserLegalName)
+        .filter(UserLegalName.user_id == current_user.id)
+        .count()
+    )
+    property_count = (
+        db.query(Property)
+        .filter(Property.user_id == current_user.id)
+        .count()
+    )
+    financial_account_count = (
+        db.query(FinancialAccount)
+        .filter(FinancialAccount.user_id == current_user.id)
+        .count()
+    )
+
+    return {
+        "legal_name_count": legal_name_count,
+        "property_count": property_count,
+        "financial_account_count": financial_account_count,
+    }
 
 
 @router.post(

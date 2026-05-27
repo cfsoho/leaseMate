@@ -5,8 +5,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.ref.status_code import STATUS_CODE_IDS
-
 
 class LeaseDepositCreate(BaseModel):
     lease_id: UUID
@@ -19,7 +17,7 @@ class LeaseDepositCreate(BaseModel):
     deduction_amount: Optional[Decimal] = None
     refund_amount: Optional[Decimal] = None
     refund_date: Optional[date] = None
-    status_id: UUID = STATUS_CODE_IDS["DEPOSIT_PENDING"]
+    status_id: Optional[UUID] = None
     notes: Optional[str] = None
 
 

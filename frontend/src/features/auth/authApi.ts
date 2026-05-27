@@ -5,6 +5,7 @@ import type {
   BootstrapLocale,
   BootstrapStatus,
   CurrentUser,
+  CurrentUserReadiness,
   EmailConfirmationResponse,
   EmailVerificationResendResponse,
   ProfileCountry,
@@ -56,6 +57,12 @@ export function login(payload: LoginPayload) {
 
 export function getCurrentUser() {
   return apiRequest<CurrentUser>("/user-auth/me", {
+    auth: true,
+  });
+}
+
+export function getCurrentUserReadiness() {
+  return apiRequest<CurrentUserReadiness>("/user-auth/me/readiness", {
     auth: true,
   });
 }

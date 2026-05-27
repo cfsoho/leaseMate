@@ -11,11 +11,13 @@ from app.services.user_auth_service import (
     expire_active_email_confirmation_tokens_for_user,
     get_active_email_confirmation_tokens,
     get_email_link_dashboard_stats,
+    list_user_login_sessions,
 )
 from app.db.schemas.user import (
     ActiveEmailLinkRead,
     EmailLinkDashboardStats,
     UserCreate,
+    UserLoginSessionRead,
     UserPageRead,
     UserUpdate,
     UserRead,
@@ -125,6 +127,17 @@ def list_all(
         "page": page,
         "page_size": page_size,
     }
+
+
+@router.get("/{user_id}/login-sessions", response_model=List[UserLoginSessionRead])
+def list_login_sessions(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    if not get_user(db, user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return list_user_login_sessions(db, user_id)
 
 
 @router.get("/{user_id}", response_model=UserRead)

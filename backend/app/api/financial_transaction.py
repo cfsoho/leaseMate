@@ -14,7 +14,7 @@ from app.db.schemas.financial_transaction import (
 from app.services.financial_transaction_service import (
     create_financial_transaction,
     get_financial_transaction,
-    get_financial_transactions,
+    get_financial_transactions_for_user,
     update_financial_transaction,
     delete_financial_transaction,
 )
@@ -41,9 +41,17 @@ def create(
 def list_all(
     skip: int = 0,
     limit: int = 100,
+    financial_account_id: Optional[UUID] = None,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    return get_financial_transactions(db, skip, limit)
+    return get_financial_transactions_for_user(
+        db,
+        current_user.id,
+        skip,
+        limit,
+        financial_account_id,
+    )
 
 
 @router.get("/{transaction_id}", response_model=FinancialTransactionRead)

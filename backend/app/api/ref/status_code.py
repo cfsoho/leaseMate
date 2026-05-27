@@ -25,7 +25,10 @@ router = APIRouter(prefix="/status-codes", tags=["Status Codes"], dependencies=[
 
 @router.post("", response_model=StatusCodeRead)
 def create(payload: StatusCodeCreate, _admin=Depends(require_admin), db: Session = Depends(get_db)):
-    return create_status_code(db, payload)
+    try:
+        return create_status_code(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.get("", response_model=List[StatusCodeRead])
@@ -56,7 +59,10 @@ def update(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    status_code = update_status_code(db, status_code_id, locale, payload)
+    try:
+        status_code = update_status_code(db, status_code_id, locale, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     if not status_code:
         raise HTTPException(status_code=404, detail="Status code not found")
     return status_code

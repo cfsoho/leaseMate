@@ -5,8 +5,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from app.db.models.ref.status_code import STATUS_CODE_IDS
-
 
 class RecurringExpenseScheduleCreate(BaseModel):
     property_id: UUID
@@ -21,7 +19,7 @@ class RecurringExpenseScheduleCreate(BaseModel):
     next_due_date: date
     auto_create_expense: bool = False
     description: Optional[str] = None
-    status_id: UUID = STATUS_CODE_IDS["RECURRING_SCHEDULE_ACTIVE"]
+    status_id: Optional[UUID] = None
 
 
 class RecurringExpenseScheduleUpdate(BaseModel):

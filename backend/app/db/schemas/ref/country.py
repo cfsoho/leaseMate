@@ -20,6 +20,7 @@ class CountryBase(BaseModel):
     currency_code: str = Field(..., max_length=3)
 
     default_locale_code: Optional[str] = Field(None, max_length=35)
+    is_active: bool = True
 
 
 class CountryCreate(CountryBase):
@@ -41,6 +42,7 @@ class CountryUpdate(BaseModel):
     currency_code: Optional[str] = Field(None, max_length=3)
 
     default_locale_code: Optional[str] = Field(None, max_length=35)
+    is_active: Optional[bool] = None
 
 
 class CountryRead(CountryBase):

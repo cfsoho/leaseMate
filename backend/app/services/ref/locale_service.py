@@ -29,7 +29,7 @@ def get_locale(db: Session, code: str) -> Optional[Locale]:
 def get_locales(db: Session, skip: int = 0, limit: int = 100):
     return (
         db.query(Locale)
-        .order_by(Locale.sort_order, Locale.code)
+        .order_by(Locale.is_active.desc(), Locale.sort_order, Locale.code)
         .offset(skip)
         .limit(limit)
         .all()

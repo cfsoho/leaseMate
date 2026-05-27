@@ -32,7 +32,10 @@ def create(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    return create_utility_type(db, payload)
+    try:
+        return create_utility_type(db, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.get("", response_model=List[UtilityTypeRead])
@@ -70,12 +73,15 @@ def update(
     _admin=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    utility_type = update_utility_type(
-        db,
-        utility_type_id,
-        locale,
-        payload
-    )
+    try:
+        utility_type = update_utility_type(
+            db,
+            utility_type_id,
+            locale,
+            payload
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
     if not utility_type:
         raise HTTPException(

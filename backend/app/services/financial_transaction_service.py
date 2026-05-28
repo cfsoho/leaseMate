@@ -83,6 +83,24 @@ def get_financial_transaction(
     )
 
 
+def get_financial_transaction_for_user(
+    db: Session,
+    transaction_id: UUID,
+    user_id: UUID,
+) -> Optional[FinancialTransaction]:
+    return (
+        db.query(FinancialTransaction)
+        .join(FinancialAccount)
+        .filter(
+            FinancialTransaction.id == transaction_id,
+            FinancialTransaction.is_deleted.is_(False),
+            FinancialAccount.user_id == user_id,
+            FinancialAccount.is_deleted.is_(False),
+        )
+        .first()
+    )
+
+
 def get_financial_transactions(
     db: Session,
     skip: int = 0,
@@ -173,6 +191,38 @@ def update_financial_transaction(
     return transaction
 
 
+def update_financial_transaction_for_user(
+    db: Session,
+    transaction_id: UUID,
+    user_id: UUID,
+    payload: FinancialTransactionUpdate,
+) -> Optional[FinancialTransaction]:
+    transaction = get_financial_transaction_for_user(
+        db,
+        transaction_id,
+        user_id,
+    )
+
+    if not transaction:
+        return None
+
+    if payload.financial_account_id and payload.financial_account_id != transaction.financial_account_id:
+        account = (
+            db.query(FinancialAccount)
+            .filter(
+                FinancialAccount.id == payload.financial_account_id,
+                FinancialAccount.user_id == user_id,
+                FinancialAccount.is_deleted.is_(False),
+            )
+            .first()
+        )
+
+        if not account:
+            raise ValueError("Financial account not found")
+
+    return update_financial_transaction(db, transaction_id, payload)
+
+
 def delete_financial_transaction(
     db: Session,
     transaction_id: UUID,
@@ -181,6 +231,26 @@ def delete_financial_transaction(
 
     if not transaction:
         return False
+    soft_delete(db, transaction, deleted_by)
+
+    return True
+
+
+def delete_financial_transaction_for_user(
+    db: Session,
+    transaction_id: UUID,
+    user_id: UUID,
+    deleted_by: Optional[UUID] = None,
+) -> bool:
+    transaction = get_financial_transaction_for_user(
+        db,
+        transaction_id,
+        user_id,
+    )
+
+    if not transaction:
+        return False
+
     soft_delete(db, transaction, deleted_by)
 
     return True

@@ -37,9 +37,9 @@ def _normalize_financial_account_data(data: dict) -> dict:
 def _ensure_unique_financial_account_identity(
     db: Session,
     *,
-    user_id: UUID,
     branch_id: UUID,
     account_number: str,
+    currency_code: str,
     exclude_account_id: Optional[UUID] = None,
 ) -> None:
     branch_bank_id = (
@@ -59,9 +59,9 @@ def _ensure_unique_financial_account_identity(
             == FinancialAccount.financial_institution_branch_id,
         )
         .filter(
-            FinancialAccount.user_id == user_id,
             FinancialInstitutionBranch.financial_institution_id == branch_bank_id,
             FinancialAccount.account_number == account_number,
+            FinancialAccount.currency_code == currency_code,
             FinancialAccount.is_deleted.is_(False),
         )
     )
@@ -71,7 +71,7 @@ def _ensure_unique_financial_account_identity(
 
     if query.first():
         raise ValueError(
-            "Bank account number already exists for this bank."
+            "Bank account number already exists for this bank and currency."
         )
 
 
@@ -84,9 +84,9 @@ def _validate_financial_account_identity(
     normalized = _normalize_financial_account_data(data)
     _ensure_unique_financial_account_identity(
         db,
-        user_id=normalized["user_id"],
         branch_id=normalized["financial_institution_branch_id"],
         account_number=normalized["account_number"],
+        currency_code=normalized["currency_code"],
         exclude_account_id=exclude_account_id,
     )
 

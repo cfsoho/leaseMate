@@ -141,12 +141,17 @@ export function TopBar() {
 
           {isUserMenuOpen && (
             <div
-              className="absolute right-0 mt-2 w-64 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg"
+              className="absolute right-0 mt-2 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg"
               role="menu"
             >
-              <div className="border-b border-slate-100 px-4 py-3">
-                <p className="text-sm font-bold text-slate-950">{displayName}</p>
-                <p className="text-xs font-semibold text-slate-500">
+              <div className="min-w-0 border-b border-slate-100 px-4 py-3 pr-6">
+                <p className="truncate text-sm font-bold text-slate-950">
+                  {displayName}
+                </p>
+                <p
+                  className="max-w-full truncate text-xs font-normal text-slate-500"
+                  title={displayEmail || "Not signed in"}
+                >
                   {displayEmail || "Not signed in"}
                 </p>
               </div>

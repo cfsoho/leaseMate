@@ -12,11 +12,11 @@ from app.db.schemas.financial_transaction import (
     FinancialTransactionRead,
 )
 from app.services.financial_transaction_service import (
-    create_financial_transaction,
-    get_financial_transaction,
+    create_financial_transaction_for_user,
+    get_financial_transaction_for_user,
     get_financial_transactions_for_user,
-    update_financial_transaction,
-    delete_financial_transaction,
+    update_financial_transaction_for_user,
+    delete_financial_transaction_for_user,
 )
 
 router = APIRouter(
@@ -29,10 +29,11 @@ router = APIRouter(
 @router.post("", response_model=FinancialTransactionRead)
 def create(
     payload: FinancialTransactionCreate,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
     try:
-        return create_financial_transaction(db, payload)
+        return create_financial_transaction_for_user(db, current_user.id, payload)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -57,9 +58,14 @@ def list_all(
 @router.get("/{transaction_id}", response_model=FinancialTransactionRead)
 def get_one(
     transaction_id: UUID,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    transaction = get_financial_transaction(db, transaction_id)
+    transaction = get_financial_transaction_for_user(
+        db,
+        transaction_id,
+        current_user.id,
+    )
 
     if not transaction:
         raise HTTPException(
@@ -74,12 +80,14 @@ def get_one(
 def update(
     transaction_id: UUID,
     payload: FinancialTransactionUpdate,
+    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
     try:
-        transaction = update_financial_transaction(
+        transaction = update_financial_transaction_for_user(
             db,
             transaction_id,
+            current_user.id,
             payload
         )
     except ValueError as e:
@@ -100,7 +108,12 @@ def delete(
     current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_financial_transaction(db, transaction_id, current_user.id)
+    deleted = delete_financial_transaction_for_user(
+        db,
+        transaction_id,
+        current_user.id,
+        current_user.id,
+    )
 
     if not deleted:
         raise HTTPException(

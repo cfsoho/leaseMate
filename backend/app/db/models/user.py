@@ -6,6 +6,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Boolean,
+    Integer,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
@@ -37,6 +38,13 @@ class User(Base):
     # Temporary-password accounts must set their own password after first login.
     password_must_change = Column(Boolean, nullable=False, default=False)
 
+    # Incremented when existing access tokens must stop working.
+    #
+    # Example:
+    # A successful password reset must invalidate any already-open logged-in
+    # browser tabs for the same user.
+    token_version = Column(Integer, nullable=False, default=0)
+
     # Contact phone number.
     phone = Column(String(20), nullable=True)
 
@@ -63,6 +71,9 @@ class User(Base):
         nullable=True,
         index=True
     )
+
+    # Preferred UI color mode: light, dark, or auto by local time.
+    theme_preference = Column(String(20), nullable=False, default="light")
 
     # Account lifecycle status.
     status = Column(
@@ -119,6 +130,18 @@ class User(Base):
 
     refresh_tokens = relationship(
         "UserRefreshToken",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    passkeys = relationship(
+        "UserPasskey",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    webauthn_challenges = relationship(
+        "UserWebAuthnChallenge",
         back_populates="user",
         cascade="all, delete-orphan"
     )

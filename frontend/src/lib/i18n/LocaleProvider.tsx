@@ -7,7 +7,7 @@ import {
   type SupportedLocale,
 } from "./translations";
 
-const LOCALE_STORAGE_KEY = "leasemate.lastPreferredLocale";
+export const LOCALE_STORAGE_KEY = "leasemate.lastPreferredLocale";
 
 function getStoredLocale(): SupportedLocale {
   const storedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
@@ -32,4 +32,8 @@ export function LocaleProvider({ children }: PropsWithChildren) {
   return (
     <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
   );
+}
+
+export function clearStoredLocale() {
+  localStorage.removeItem(LOCALE_STORAGE_KEY);
 }

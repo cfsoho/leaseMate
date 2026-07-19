@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import {
@@ -20,7 +20,7 @@ import { Button } from "../components/ui/Button";
 import { Drawer } from "../components/ui/Drawer";
 import { IconButton } from "../components/ui/IconButton";
 import { Modal } from "../components/ui/Modal";
-import { formatPhoneForCountry } from "../components/ui/PhoneInput";
+import { formatPhoneForCountry } from "../components/ui/phoneInputUtils";
 import { SearchableSelect } from "../components/ui/SearchableSelect";
 import { SortPositionSelect, type SortPositionItem } from "../components/ui/SortPositionSelect";
 import {
@@ -246,14 +246,25 @@ export function ReferenceListsPage() {
       ),
     [countryOptions, translationLocaleOptions],
   );
-  const currentRecords = isBankBranchMode
-    ? (branchRecords.data ?? []).filter(
-        (record) =>
-          readRaw(record, "financial_institution_id") === selectedTranslationId,
-      )
-    : isTranslationMode
-      ? (translationRecords.data ?? [])
-      : (records.data ?? []);
+  const currentRecords = useMemo(
+    () =>
+      isBankBranchMode
+        ? (branchRecords.data ?? []).filter(
+            (record) =>
+              readRaw(record, "financial_institution_id") === selectedTranslationId,
+          )
+        : isTranslationMode
+          ? (translationRecords.data ?? [])
+          : (records.data ?? []),
+    [
+      branchRecords.data,
+      isBankBranchMode,
+      isTranslationMode,
+      records.data,
+      selectedTranslationId,
+      translationRecords.data,
+    ],
+  );
   const selectedMasterRecord =
     translationBaseRecord ??
     records.data?.find((record) => record.sharedId === selectedTranslationId) ??
@@ -321,6 +332,7 @@ export function ReferenceListsPage() {
     [
       activeDataSlug,
       countryOptions,
+      drawerMode,
       isBankBranchMode,
       isTranslationMode,
       regionOptions,
@@ -436,6 +448,68 @@ export function ReferenceListsPage() {
       setSelectedRecord(null);
     },
   });
+  function openCreateForm() {
+    createMutation.reset();
+    updateMutation.reset();
+    setDrawerMode("create");
+    setSelectedRecord(null);
+    setIsFormOpen(true);
+  }
+
+  const openEditForm = useCallback((record: ReferenceRecord) => {
+    createMutation.reset();
+    updateMutation.reset();
+    deactivateMutation.reset();
+    activateMutation.reset();
+    deleteMutation.reset();
+    setActionMode(null);
+    setDrawerMode("edit");
+    setSelectedRecord(record);
+    setIsFormOpen(true);
+  }, [activateMutation, createMutation, deactivateMutation, deleteMutation, updateMutation]);
+
+  const openDeactivateModal = useCallback((record: ReferenceRecord) => {
+    activateMutation.reset();
+    deactivateMutation.reset();
+    deleteMutation.reset();
+    setActionMode("deactivate");
+    setSelectedRecord(record);
+  }, [activateMutation, deactivateMutation, deleteMutation]);
+
+  const openDeleteModal = useCallback((record: ReferenceRecord) => {
+    activateMutation.reset();
+    deactivateMutation.reset();
+    deleteMutation.reset();
+    setActionMode("delete");
+    setSelectedRecord(record);
+  }, [activateMutation, deactivateMutation, deleteMutation]);
+
+  const openActivateModal = useCallback((record: ReferenceRecord) => {
+    activateMutation.reset();
+    deactivateMutation.reset();
+    deleteMutation.reset();
+    setActionMode("activate");
+    setSelectedRecord(record);
+  }, [activateMutation, deactivateMutation, deleteMutation]);
+
+  function openSearchForm() {
+    createMutation.reset();
+    updateMutation.reset();
+    setDrawerMode("search");
+    setSelectedRecord(null);
+    setIsFormOpen(true);
+  }
+
+  function closeFormDrawer() {
+    setIsFormOpen(false);
+    setSelectedRecord(null);
+  }
+
+  function closeActionModal() {
+    setActionMode(null);
+    setSelectedRecord(null);
+  }
+
   const selectableColumns = isTranslationMode ? translationColumns : allColumns;
   const defaultColumnKeys = useMemo(
     () => getDefaultDisplayedColumnKeys(selectableColumns, isCompactGridViewport),
@@ -510,73 +584,15 @@ export function ReferenceListsPage() {
     isBankBranchMode,
     isLocalizedList,
     isTranslationMode,
+    openActivateModal,
+    openDeactivateModal,
+    openDeleteModal,
+    openEditForm,
     referenceSlug,
     setUrlSearchParams,
     t,
     translationColumns,
   ]);
-
-  function openCreateForm() {
-    createMutation.reset();
-    updateMutation.reset();
-    setDrawerMode("create");
-    setSelectedRecord(null);
-    setIsFormOpen(true);
-  }
-
-  function openEditForm(record: ReferenceRecord) {
-    createMutation.reset();
-    updateMutation.reset();
-    deactivateMutation.reset();
-    activateMutation.reset();
-    deleteMutation.reset();
-    setActionMode(null);
-    setDrawerMode("edit");
-    setSelectedRecord(record);
-    setIsFormOpen(true);
-  }
-
-  function openDeactivateModal(record: ReferenceRecord) {
-    activateMutation.reset();
-    deactivateMutation.reset();
-    deleteMutation.reset();
-    setActionMode("deactivate");
-    setSelectedRecord(record);
-  }
-
-  function openDeleteModal(record: ReferenceRecord) {
-    activateMutation.reset();
-    deactivateMutation.reset();
-    deleteMutation.reset();
-    setActionMode("delete");
-    setSelectedRecord(record);
-  }
-
-  function openActivateModal(record: ReferenceRecord) {
-    activateMutation.reset();
-    deactivateMutation.reset();
-    deleteMutation.reset();
-    setActionMode("activate");
-    setSelectedRecord(record);
-  }
-
-  function openSearchForm() {
-    createMutation.reset();
-    updateMutation.reset();
-    setDrawerMode("search");
-    setSelectedRecord(null);
-    setIsFormOpen(true);
-  }
-
-  function closeFormDrawer() {
-    setIsFormOpen(false);
-    setSelectedRecord(null);
-  }
-
-  function closeActionModal() {
-    setActionMode(null);
-    setSelectedRecord(null);
-  }
 
   async function uploadTranslationCsv(rows: ReferenceFormValue[]) {
     if (!selectedMasterRecord) {

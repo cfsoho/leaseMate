@@ -1,8 +1,10 @@
 from uuid import UUID
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, EmailStr
+
+ThemePreference = Literal["light", "dark", "auto"]
 
 class UserCreate(BaseModel):
     family_name: str
@@ -13,6 +15,7 @@ class UserCreate(BaseModel):
     phone_country_id: Optional[UUID] = None
     role_id: Optional[UUID] = None
     preferred_locale_code: Optional[str] = None
+    theme_preference: Optional[ThemePreference] = None
 
 
 class UserUpdate(BaseModel):
@@ -23,6 +26,7 @@ class UserUpdate(BaseModel):
     phone_country_id: Optional[UUID] = None
     role_id: Optional[UUID] = None
     preferred_locale_code: Optional[str] = None
+    theme_preference: Optional[ThemePreference] = None
     status: Optional[str] = None
 
 
@@ -33,6 +37,7 @@ class UserProfileUpdate(BaseModel):
     phone: Optional[str] = None
     phone_country_id: Optional[UUID] = None
     preferred_locale_code: Optional[str] = None
+    theme_preference: Optional[ThemePreference] = None
 
 
 class UserPasswordChange(BaseModel):
@@ -51,6 +56,7 @@ class UserRead(BaseModel):
     phone_country_id: Optional[UUID]
     role_id: Optional[UUID]
     preferred_locale_code: Optional[str]
+    theme_preference: ThemePreference
     status: str
     created_at: datetime
     updated_at: Optional[datetime]

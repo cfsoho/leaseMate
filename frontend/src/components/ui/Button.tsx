@@ -7,9 +7,9 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "border-transparent bg-slate-950 text-white hover:bg-slate-800",
-  secondary: "border-slate-300 bg-white text-slate-800 hover:bg-slate-50",
-  ghost: "border-transparent bg-transparent text-slate-800 hover:bg-slate-100",
+  primary: "lm-button-primary",
+  secondary: "lm-button-secondary",
+  ghost: "lm-button-ghost",
 };
 
 export function Button({
@@ -21,10 +21,10 @@ export function Button({
   return (
     <button
       className={[
-        "inline-flex min-h-8 cursor-pointer items-center justify-center gap-1.5 rounded-md border px-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70",
+        "lm-button",
         variantClasses[variant],
         className,
-      ].join(" ")}
+      ].filter(Boolean).join(" ")}
       type={type}
       {...props}
     />

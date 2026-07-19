@@ -410,10 +410,12 @@ def upgrade():
     sa.Column('email_verified_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('password_hash', sa.String(length=255), nullable=False),
     sa.Column('password_must_change', sa.Boolean(), nullable=False),
+    sa.Column('token_version', sa.Integer(), nullable=False, server_default='0', comment='Incremented when existing access tokens must stop working.'),
     sa.Column('phone', sa.String(length=20), nullable=True),
     sa.Column('phone_country_id', sa.UUID(), nullable=True),
     sa.Column('role_id', sa.UUID(), nullable=True),
     sa.Column('preferred_locale_code', sa.String(length=35), nullable=True),
+    sa.Column('theme_preference', sa.String(length=20), nullable=False),
     sa.Column('status', sa.String(length=50), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
@@ -505,6 +507,31 @@ def upgrade():
     op.create_index(op.f('ix_user_legal_names_is_deleted'), 'user_legal_names', ['is_deleted'], unique=False)
     op.create_index(op.f('ix_user_legal_names_locale_code'), 'user_legal_names', ['locale_code'], unique=False)
     op.create_index(op.f('ix_user_legal_names_user_id'), 'user_legal_names', ['user_id'], unique=False)
+    op.create_table('user_passkeys',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.Column('credential_id', sa.String(length=1024), nullable=False),
+    sa.Column('credential_public_key', sa.Text(), nullable=False),
+    sa.Column('sign_count', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=True),
+    sa.Column('device_type', sa.String(length=50), nullable=True),
+    sa.Column('backed_up', sa.Boolean(), nullable=False),
+    sa.Column('transports', sa.String(length=255), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('last_used_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('is_deleted', sa.Boolean(), nullable=False),
+    sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('deleted_by', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_user_passkeys_credential_id'), 'user_passkeys', ['credential_id'], unique=True)
+    op.create_index(op.f('ix_user_passkeys_deleted_by'), 'user_passkeys', ['deleted_by'], unique=False)
+    op.create_index(op.f('ix_user_passkeys_is_active'), 'user_passkeys', ['is_active'], unique=False)
+    op.create_index(op.f('ix_user_passkeys_is_deleted'), 'user_passkeys', ['is_deleted'], unique=False)
+    op.create_index(op.f('ix_user_passkeys_user_id'), 'user_passkeys', ['user_id'], unique=False)
     op.create_table('user_refresh_tokens',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=False),
@@ -513,6 +540,9 @@ def upgrade():
     sa.Column('revoked_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('device_info', sa.String(length=255), nullable=True),
     sa.Column('ip_address', sa.String(length=45), nullable=True),
+    sa.Column('location_country_code', sa.String(length=2), nullable=True),
+    sa.Column('location_region', sa.String(length=100), nullable=True),
+    sa.Column('location_city', sa.String(length=100), nullable=True),
     sa.Column('last_used_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
@@ -547,6 +577,26 @@ def upgrade():
     op.create_index(op.f('ix_user_verification_tokens_token'), 'user_verification_tokens', ['token'], unique=True)
     op.create_index(op.f('ix_user_verification_tokens_token_type'), 'user_verification_tokens', ['token_type'], unique=False)
     op.create_index(op.f('ix_user_verification_tokens_user_id'), 'user_verification_tokens', ['user_id'], unique=False)
+    op.create_table('user_webauthn_challenges',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('user_id', sa.UUID(), nullable=True),
+    sa.Column('challenge', sa.String(length=1024), nullable=False),
+    sa.Column('challenge_type', sa.String(length=50), nullable=False),
+    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('used_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('is_deleted', sa.Boolean(), nullable=False),
+    sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('deleted_by', sa.UUID(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_user_webauthn_challenges_challenge'), 'user_webauthn_challenges', ['challenge'], unique=False)
+    op.create_index(op.f('ix_user_webauthn_challenges_challenge_type'), 'user_webauthn_challenges', ['challenge_type'], unique=False)
+    op.create_index(op.f('ix_user_webauthn_challenges_deleted_by'), 'user_webauthn_challenges', ['deleted_by'], unique=False)
+    op.create_index(op.f('ix_user_webauthn_challenges_expires_at'), 'user_webauthn_challenges', ['expires_at'], unique=False)
+    op.create_index(op.f('ix_user_webauthn_challenges_is_deleted'), 'user_webauthn_challenges', ['is_deleted'], unique=False)
+    op.create_index(op.f('ix_user_webauthn_challenges_user_id'), 'user_webauthn_challenges', ['user_id'], unique=False)
     op.create_table('document_links',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('document_id', sa.UUID(), nullable=False),
@@ -1107,12 +1157,21 @@ def downgrade():
     op.drop_index(op.f('ix_user_verification_tokens_expires_at'), table_name='user_verification_tokens')
     op.drop_index(op.f('ix_user_verification_tokens_deleted_by'), table_name='user_verification_tokens')
     op.drop_table('user_verification_tokens')
+    op.drop_index(op.f('ix_user_webauthn_challenges_user_id'), table_name='user_webauthn_challenges')
+    op.drop_index(op.f('ix_user_webauthn_challenges_expires_at'), table_name='user_webauthn_challenges')
+    op.drop_index(op.f('ix_user_webauthn_challenges_challenge_type'), table_name='user_webauthn_challenges')
+    op.drop_index(op.f('ix_user_webauthn_challenges_challenge'), table_name='user_webauthn_challenges')
+    op.drop_table('user_webauthn_challenges')
     op.drop_index(op.f('ix_user_refresh_tokens_user_id'), table_name='user_refresh_tokens')
     op.drop_index(op.f('ix_user_refresh_tokens_token_hash'), table_name='user_refresh_tokens')
     op.drop_index(op.f('ix_user_refresh_tokens_is_deleted'), table_name='user_refresh_tokens')
     op.drop_index(op.f('ix_user_refresh_tokens_expires_at'), table_name='user_refresh_tokens')
     op.drop_index(op.f('ix_user_refresh_tokens_deleted_by'), table_name='user_refresh_tokens')
     op.drop_table('user_refresh_tokens')
+    op.drop_index(op.f('ix_user_passkeys_user_id'), table_name='user_passkeys')
+    op.drop_index(op.f('ix_user_passkeys_is_active'), table_name='user_passkeys')
+    op.drop_index(op.f('ix_user_passkeys_credential_id'), table_name='user_passkeys')
+    op.drop_table('user_passkeys')
     op.drop_index(op.f('ix_user_legal_names_user_id'), table_name='user_legal_names')
     op.drop_index(op.f('ix_user_legal_names_locale_code'), table_name='user_legal_names')
     op.drop_index(op.f('ix_user_legal_names_is_deleted'), table_name='user_legal_names')

@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Edit2, Eye, EyeOff, Plus, Trash2, X } from "lucide-react";
+import { Edit2, Plus, Trash2, X } from "lucide-react";
 
 import { Button } from "../components/ui/Button";
-import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
+import {
+  PhoneInput,
+} from "../components/ui/PhoneInput";
 import {
   formatPhoneForCountry,
   inferPhoneCountryId,
-  PhoneInput,
-} from "../components/ui/PhoneInput";
+} from "../components/ui/phoneInputUtils";
 import { SearchableSelect } from "../components/ui/SearchableSelect";
 import {
-  changeCurrentUserPassword,
   createCurrentUserLegalName,
   deleteCurrentUserLegalName,
   getBootstrapLocales,
@@ -23,8 +23,10 @@ import {
   updateCurrentUserLegalName,
   updateCurrentUser,
 } from "../features/auth/authApi";
-import type { ProfileCountry, UserLegalName } from "../features/auth/authTypes";
-import { generateStrongPassword } from "../lib/auth/passwordGenerator";
+import type {
+  ProfileCountry,
+  UserLegalName,
+} from "../features/auth/authTypes";
 import { formatPersonName } from "../lib/i18n/nameFormat";
 import { useTranslation } from "../lib/i18n/useTranslation";
 import { useTheme } from "../lib/theme/useTheme";
@@ -51,29 +53,12 @@ export function ProfilePage() {
     locale_code: "",
     full_name: "",
   });
-  const [passwordForm, setPasswordForm] = useState({
-    confirm_password: "",
-    new_password: "",
-    old_password: "",
-  });
-  const [passwordErrors, setPasswordErrors] = useState<
-    Partial<Record<keyof typeof passwordForm, string>>
-  >({});
-  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
-  const [isPasswordSuccessModalOpen, setIsPasswordSuccessModalOpen] =
-    useState(false);
-  const [visiblePasswordFields, setVisiblePasswordFields] = useState<
-    Record<keyof typeof passwordForm, boolean>
-  >({
-    confirm_password: false,
-    new_password: false,
-    old_password: false,
-  });
   const currentUser = useQuery({
     queryKey: ["current-user"],
     queryFn: getCurrentUser,
     retry: false,
   });
+  const user = currentUser.data;
   const legalNames = useQuery({
     queryKey: ["current-user", "legal-names"],
     queryFn: getCurrentUserLegalNames,
@@ -89,7 +74,6 @@ export function ProfilePage() {
     queryFn: getProfileCountries,
     staleTime: Infinity,
   });
-  const user = currentUser.data;
   const userLocale = locales.data?.find(
     (localeOption) => localeOption.code === user?.preferred_locale_code,
   );
@@ -139,35 +123,6 @@ export function ProfilePage() {
       resetLegalNameForm();
     },
   });
-  const changePassword = useMutation({
-    mutationFn: () => {
-      if (!user) {
-        throw new Error(t("profile.loadError"));
-      }
-
-      return changeCurrentUserPassword(user.id, {
-        old_password: passwordForm.old_password,
-        new_password: passwordForm.new_password,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["current-user"] });
-      setPasswordForm({
-        confirm_password: "",
-        new_password: "",
-        old_password: "",
-      });
-      setPasswordErrors({});
-      setPasswordMessage(null);
-      setIsPasswordSuccessModalOpen(true);
-    },
-    onError: (error) => {
-      setPasswordMessage(
-        error instanceof Error ? error.message : t("profile.passwordUpdateFailed"),
-      );
-    },
-  });
-
   useEffect(() => {
     if (!user || isEditingUser) {
       return;
@@ -238,7 +193,7 @@ export function ProfilePage() {
     <section className="grid gap-4">
       <PageHeader
         description={t("profile.description")}
-        eyebrow={t("shell.profile")}
+        eyebrow={t("shell.user")}
         title={t("profile.title")}
       />
 
@@ -394,7 +349,7 @@ export function ProfilePage() {
                   className={[
                     "flex cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm font-semibold transition",
                     themePreference === value
-                      ? "border-slate-950 bg-slate-950 text-white"
+                      ? "lm-button-primary"
                       : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
                   ].join(" ")}
                   key={value}
@@ -476,10 +431,8 @@ export function ProfilePage() {
                       ),
                     )}
                     legalName={legalName}
-                    locale={locale}
                     isDeleting={deleteLegalName.isPending}
                     isEditing={editingLegalNameId === legalName.id}
-                    onCancel={resetLegalNameForm}
                     onDelete={() => {
                       if (window.confirm(t("profile.deleteConfirm"))) {
                         deleteLegalName.mutate(legalName.id);
@@ -510,148 +463,6 @@ export function ProfilePage() {
           </section>
 
           <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
-            <SectionTitle>{t("profile.passwordSection")}</SectionTitle>
-            {user.password_must_change && (
-              <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-normal text-amber-900">
-                {t("profile.passwordMustChange")}
-              </p>
-            )}
-            <form
-              className="grid gap-3"
-              onSubmit={(event) => {
-                event.preventDefault();
-                const nextErrors = validatePasswordChangeForm(passwordForm, {
-                  mismatch: t("form.passwordMismatch"),
-                  requireOldPassword: !user.password_must_change,
-                  required: t("form.requiredMessage"),
-                  sameAsCurrent: t("profile.passwordSameAsCurrent"),
-                  weak: t("form.passwordWeak"),
-                });
-                setPasswordErrors(nextErrors);
-                setPasswordMessage(null);
-
-                if (Object.keys(nextErrors).length === 0) {
-                  changePassword.mutate();
-                }
-              }}
-            >
-              <div className="grid gap-3">
-                {!user.password_must_change && (
-                  <PasswordField
-                    error={passwordErrors.old_password}
-                    label={t("profile.oldPassword")}
-                    name="old_password"
-                    value={passwordForm.old_password}
-                    visible={visiblePasswordFields.old_password}
-                    onChange={(value) =>
-                      setPasswordForm((current) => ({
-                        ...current,
-                        old_password: value,
-                      }))
-                    }
-                    onToggleVisible={() =>
-                      setVisiblePasswordFields((current) => ({
-                        ...current,
-                        old_password: !current.old_password,
-                      }))
-                    }
-                  />
-                )}
-                <PasswordField
-                  error={passwordErrors.new_password}
-                  label={t("profile.newPassword")}
-                  name="new_password"
-                  value={passwordForm.new_password}
-                  visible={visiblePasswordFields.new_password}
-                  onChange={(value) =>
-                    setPasswordForm((current) => ({
-                      ...current,
-                      new_password: value,
-                    }))
-                  }
-                  onToggleVisible={() =>
-                    setVisiblePasswordFields((current) => ({
-                      ...current,
-                      new_password: !current.new_password,
-                    }))
-                  }
-                >
-                  <button
-                    className="w-fit text-xs font-semibold text-slate-700 underline-offset-4 hover:text-slate-950 hover:underline"
-                    type="button"
-                    onClick={() => {
-                      const generatedPassword = generateStrongPassword();
-                      setPasswordForm((current) => ({
-                        ...current,
-                        confirm_password: generatedPassword,
-                        new_password: generatedPassword,
-                      }));
-                    }}
-                  >
-                    {t("form.generatePassword")}
-                  </button>
-                  <PasswordStrengthList
-                    checks={[
-                      {
-                        isMet: getPasswordChecks(passwordForm.new_password).minLength,
-                        label: t("form.passwordMinLength"),
-                      },
-                      {
-                        isMet: getPasswordChecks(passwordForm.new_password).uppercase,
-                        label: t("form.passwordUppercase"),
-                      },
-                      {
-                        isMet: getPasswordChecks(passwordForm.new_password).lowercase,
-                        label: t("form.passwordLowercase"),
-                      },
-                      {
-                        isMet: getPasswordChecks(passwordForm.new_password).number,
-                        label: t("form.passwordNumber"),
-                      },
-                      {
-                        isMet: getPasswordChecks(passwordForm.new_password).symbol,
-                        label: t("form.passwordSymbol"),
-                      },
-                    ]}
-                    title={t("form.passwordStrength")}
-                  />
-                </PasswordField>
-                <PasswordField
-                  error={passwordErrors.confirm_password}
-                  label={t("form.confirmPassword")}
-                  name="confirm_password"
-                  value={passwordForm.confirm_password}
-                  visible={visiblePasswordFields.confirm_password}
-                  onChange={(value) =>
-                    setPasswordForm((current) => ({
-                      ...current,
-                      confirm_password: value,
-                    }))
-                  }
-                  onToggleVisible={() =>
-                    setVisiblePasswordFields((current) => ({
-                      ...current,
-                      confirm_password: !current.confirm_password,
-                    }))
-                  }
-                />
-              </div>
-              {passwordMessage && (
-                <p className="text-sm font-semibold text-slate-700">
-                  {passwordMessage}
-                </p>
-              )}
-              <div className="flex justify-end border-t border-slate-200 pt-4">
-                <Button disabled={changePassword.isPending} type="submit">
-                  {changePassword.isPending
-                    ? t("profile.saving")
-                    : t("profile.changePassword")}
-                </Button>
-              </div>
-            </form>
-          </section>
-
-          <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
             <SectionTitle>{t("profile.systemSection")}</SectionTitle>
             <DefinitionGrid
               items={[
@@ -662,100 +473,7 @@ export function ProfilePage() {
           </section>
         </>
       )}
-      {isPasswordSuccessModalOpen && (
-        <Modal title={t("profile.passwordUpdatedTitle")}>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            {t("profile.passwordUpdatedBody")}
-          </p>
-          <div className="mt-5 flex justify-end">
-            <Button onClick={() => setIsPasswordSuccessModalOpen(false)}>
-              {t("profile.close")}
-            </Button>
-          </div>
-        </Modal>
-      )}
     </section>
-  );
-}
-
-function PasswordField({
-  children,
-  error,
-  label,
-  name,
-  value,
-  visible,
-  onChange,
-  onToggleVisible,
-}: {
-  children?: ReactNode;
-  error?: string;
-  label: string;
-  name: string;
-  value: string;
-  visible: boolean;
-  onChange: (value: string) => void;
-  onToggleVisible: () => void;
-}) {
-  return (
-    <label className="grid content-start gap-1.5 text-sm font-bold text-slate-700">
-      {label}
-      <span className="relative">
-        <input
-          autoComplete={name === "old_password" ? "current-password" : "new-password"}
-          className={`${inputClass} pr-10`}
-          maxLength={128}
-          type={visible ? "text" : "password"}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        />
-        <button
-          aria-label={visible ? "Hide password" : "Show password"}
-          className="absolute right-2 top-1/2 inline-grid size-7 -translate-y-1/2 place-items-center rounded-md text-slate-500 hover:bg-slate-100"
-          tabIndex={-1}
-          type="button"
-          onClick={onToggleVisible}
-        >
-          {visible ? (
-            <EyeOff aria-hidden="true" size={16} />
-          ) : (
-            <Eye aria-hidden="true" size={16} />
-          )}
-        </button>
-      </span>
-      {error && (
-        <span className="text-sm font-semibold text-red-700">
-          {error}
-        </span>
-      )}
-      {children}
-    </label>
-  );
-}
-
-function PasswordStrengthList({
-  checks,
-  title,
-}: {
-  checks: { isMet: boolean; label: string }[];
-  title: string;
-}) {
-  return (
-    <div className="w-full rounded-lg bg-slate-50 px-3 py-2">
-      <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-slate-500">
-        {title}
-      </p>
-      <ul className="grid gap-1 text-xs font-semibold">
-        {checks.map((check) => (
-          <li
-            className={check.isMet ? "text-emerald-700" : "text-slate-500"}
-            key={check.label}
-          >
-            {check.isMet ? "OK" : "--"} {check.label}
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }
 
@@ -764,8 +482,6 @@ function LegalNamePanel({
   isDeleting,
   isEditing,
   legalName,
-  locale,
-  onCancel,
   onDelete,
   onEdit,
   renderEditForm,
@@ -774,8 +490,6 @@ function LegalNamePanel({
   isDeleting: boolean;
   isEditing: boolean;
   legalName: UserLegalName;
-  locale: string;
-  onCancel: () => void;
   onDelete: () => void;
   onEdit: () => void;
   renderEditForm: () => ReactNode;
@@ -1049,55 +763,4 @@ function formatPhoneDisplay(
 
   const formatted = formatPhoneForCountry(value, country);
   return country?.phone_prefix ? `${country.phone_prefix} ${formatted}` : formatted;
-}
-
-function getPasswordChecks(password: string) {
-  return {
-    lowercase: /[a-z]/.test(password),
-    minLength: password.length >= 8,
-    number: /\d/.test(password),
-    symbol: /[^A-Za-z0-9]/.test(password),
-    uppercase: /[A-Z]/.test(password),
-  };
-}
-
-function isStrongPassword(password: string) {
-  return Object.values(getPasswordChecks(password)).every(Boolean);
-}
-
-function validatePasswordChangeForm(
-  value: {
-    confirm_password: string;
-    new_password: string;
-    old_password: string;
-  },
-  messages: {
-    mismatch: string;
-    requireOldPassword: boolean;
-    required: string;
-    sameAsCurrent: string;
-    weak: string;
-  },
-) {
-  const errors: Partial<Record<keyof typeof value, string>> = {};
-
-  if (messages.requireOldPassword && !value.old_password.trim()) {
-    errors.old_password = messages.required;
-  }
-
-  if (!value.new_password.trim()) {
-    errors.new_password = messages.required;
-  } else if (value.old_password && value.new_password === value.old_password) {
-    errors.new_password = messages.sameAsCurrent;
-  } else if (!isStrongPassword(value.new_password)) {
-    errors.new_password = messages.weak;
-  }
-
-  if (!value.confirm_password.trim()) {
-    errors.confirm_password = messages.required;
-  } else if (value.new_password !== value.confirm_password) {
-    errors.confirm_password = messages.mismatch;
-  }
-
-  return errors;
 }

@@ -57,7 +57,7 @@ export function EmailConfirmationPage() {
               : t("auth.emailConfirmationFailed"))}
         </p>
         <button
-          className="inline-flex min-h-8 items-center justify-center rounded-md bg-slate-950 px-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+          className="lm-button-primary inline-flex min-h-8 items-center justify-center rounded-md border px-2.5 text-sm font-semibold"
           type="button"
           onClick={() => {
             window.close();

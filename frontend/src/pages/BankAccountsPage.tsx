@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -411,7 +411,7 @@ export function BankAccountsPage() {
 
   function handleTransactionSubmit() {
     if (!selectedTransactionAccountId) {
-      return;
+      return false;
     }
 
     const nextErrors = validateTransactionForm(
@@ -421,12 +421,13 @@ export function BankAccountsPage() {
     );
     if (Object.keys(nextErrors).length > 0) {
       setTransactionFormErrors(nextErrors);
-      return;
+      return false;
     }
 
     createTransactionMutation.mutate(
       buildTransactionPayload(selectedTransactionAccountId, transactionForm),
     );
+    return true;
   }
 
   function setDrawerValue(nextValue: BankAccountFormValue) {
@@ -526,22 +527,23 @@ export function BankAccountsPage() {
       setSearchCriteria(searchForm);
       setPageIndex(0);
       closeDrawer();
-      return;
+      return false;
     }
 
     const nextErrors = validateForm(form, t("form.requiredMessage"));
     if (Object.keys(nextErrors).length > 0) {
       setFormErrors(nextErrors);
-      return;
+      return false;
     }
 
     const payload = buildPayload(form);
     if (isEditing) {
       updateMutation.mutate({ accountId: selectedAccount.id, payload });
-      return;
+      return true;
     }
 
     createMutation.mutate(payload);
+    return true;
   }
 
   return (
@@ -938,10 +940,18 @@ function BankAccountForm({
   onBranchCountryChange: (value: string) => void;
   onChange: (value: BankAccountFormValue) => void;
   onReset: () => void;
-  onSubmit: () => void;
+  onSubmit: () => boolean | void;
 }) {
   const { t } = useTranslation();
   const isSearchMode = mode === "search";
+  const [isSubmitLocked, setIsSubmitLocked] = useState(false);
+  const isFormDisabled = disabled || isSubmitLocked;
+
+  useEffect(() => {
+    if (!disabled) {
+      setIsSubmitLocked(false);
+    }
+  }, [disabled]);
 
   function setField<Field extends keyof BankAccountFormValue>(
     field: Field,
@@ -955,7 +965,14 @@ function BankAccountForm({
       className="grid gap-4"
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit();
+        if (isFormDisabled) {
+          return;
+        }
+
+        const didSubmit = onSubmit();
+        if (didSubmit !== false && !isSearchMode) {
+          setIsSubmitLocked(true);
+        }
       }}
     >
       <div className="grid items-start gap-4">
@@ -965,6 +982,7 @@ function BankAccountForm({
             {!isSearchMode && <span className="text-red-600"> *</span>}
           </span>
           <SearchableSelect
+            disabled={isFormDisabled}
             options={legalNameOptions}
             value={value.legal_name_id}
             onChange={(nextValue) => setField("legal_name_id", nextValue)}
@@ -985,6 +1003,7 @@ function BankAccountForm({
               {t("profile.field.country")}
             </span>
             <SearchableSelect
+              disabled={isFormDisabled}
               options={branchCountryOptions}
               value={value.branch_country_id}
               onChange={onBranchCountryChange}
@@ -995,6 +1014,7 @@ function BankAccountForm({
               {t("bankAccounts.bank")}
             </span>
             <SearchableSelect
+              disabled={isFormDisabled}
               options={bankOptions}
               value={value.financial_institution_id}
               onChange={onBankChange}
@@ -1005,6 +1025,7 @@ function BankAccountForm({
               {t("bankAccounts.branch")}
             </span>
             <SearchableSelect
+              disabled={isFormDisabled}
               options={branchOptions}
               value={value.financial_institution_branch_id}
               onChange={onBranchChange}
@@ -1025,7 +1046,7 @@ function BankAccountForm({
           </span>
           <input
             className={inputClassName}
-            disabled={disabled}
+            disabled={isFormDisabled}
             maxLength={100}
             value={value.account_number}
             onChange={(event) => setField("account_number", event.target.value)}
@@ -1042,7 +1063,7 @@ function BankAccountForm({
             {!isSearchMode && <span className="text-red-600"> *</span>}
           </span>
           <SearchableSelect
-            disabled={disabled}
+            disabled={isFormDisabled}
             options={currencyOptions}
             value={value.currency_code}
             onChange={(nextValue) => setField("currency_code", nextValue)}
@@ -1060,7 +1081,7 @@ function BankAccountForm({
         </span>
         <textarea
           className={`${inputClassName} min-h-24 resize-y py-2`}
-          disabled={disabled}
+          disabled={isFormDisabled}
           maxLength={255}
           value={value.notes}
           onChange={(event) => setField("notes", event.target.value)}
@@ -1070,7 +1091,7 @@ function BankAccountForm({
         <label className="flex min-h-[42px] w-full items-center gap-2 rounded-lg border border-slate-200 px-3">
           <input
             checked={value.is_active}
-            disabled={disabled}
+            disabled={isFormDisabled}
             type="checkbox"
             onChange={(event) => setField("is_active", event.target.checked)}
           />
@@ -1081,13 +1102,13 @@ function BankAccountForm({
       )}
       {error && <p className="text-sm font-normal text-red-700">{error}</p>}
       <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
-        <Button disabled={disabled} type="button" variant="secondary" onClick={onCancel}>
+        <Button disabled={isFormDisabled} type="button" variant="secondary" onClick={onCancel}>
           {t("profile.cancel")}
         </Button>
-        <Button disabled={disabled} type="button" variant="secondary" onClick={onReset}>
+        <Button disabled={isFormDisabled} type="button" variant="secondary" onClick={onReset}>
           {t("bankAccounts.clear")}
         </Button>
-        <Button disabled={disabled} type="submit">
+        <Button disabled={isFormDisabled} type="submit">
           {submitLabel}
         </Button>
       </div>
@@ -1167,9 +1188,17 @@ function TransactionForm({
   onCancel: () => void;
   onChange: (value: TransactionFormValue) => void;
   onReset: () => void;
-  onSubmit: () => void;
+  onSubmit: () => boolean | void;
 }) {
   const { t } = useTranslation();
+  const [isSubmitLocked, setIsSubmitLocked] = useState(false);
+  const isFormDisabled = disabled || isSubmitLocked;
+
+  useEffect(() => {
+    if (!disabled) {
+      setIsSubmitLocked(false);
+    }
+  }, [disabled]);
 
   function setField<Field extends keyof TransactionFormValue>(
     field: Field,
@@ -1191,7 +1220,14 @@ function TransactionForm({
       className="grid gap-4"
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit();
+        if (isFormDisabled) {
+          return;
+        }
+
+        const didSubmit = onSubmit();
+        if (didSubmit !== false) {
+          setIsSubmitLocked(true);
+        }
       }}
     >
       <div className="grid items-start gap-4 md:grid-cols-2">
@@ -1202,7 +1238,7 @@ function TransactionForm({
           </span>
           <input
             className={inputClassName}
-            disabled={disabled}
+            disabled={isFormDisabled}
             type="date"
             value={value.transaction_date}
             onChange={(event) => setField("transaction_date", event.target.value)}
@@ -1219,7 +1255,7 @@ function TransactionForm({
             <span className="text-red-600"> *</span>
           </span>
           <SearchableSelect
-            disabled={disabled}
+            disabled={isFormDisabled}
             options={sourceTypeOptions}
             value={value.source_type}
             onChange={(nextValue) => setField("source_type", nextValue)}
@@ -1238,7 +1274,7 @@ function TransactionForm({
           </span>
           <input
             className={inputClassName}
-            disabled={disabled}
+            disabled={isFormDisabled}
             inputMode="decimal"
             value={value.deposit_amount}
             onChange={(event) => setField("deposit_amount", event.target.value)}
@@ -1250,7 +1286,7 @@ function TransactionForm({
           </span>
           <input
             className={inputClassName}
-            disabled={disabled}
+            disabled={isFormDisabled}
             inputMode="decimal"
             value={value.withdrawal_amount}
             onChange={(event) => setField("withdrawal_amount", event.target.value)}
@@ -1268,7 +1304,7 @@ function TransactionForm({
           </span>
           <input
             className={inputClassName}
-            disabled={disabled}
+            disabled={isFormDisabled}
             inputMode="decimal"
             value={value.balance_after}
             onChange={(event) => setField("balance_after", event.target.value)}
@@ -1286,7 +1322,7 @@ function TransactionForm({
           </span>
           <input
             className={inputClassName}
-            disabled={disabled}
+            disabled={isFormDisabled}
             maxLength={3}
             value={value.currency_code}
             onChange={(event) =>
@@ -1307,7 +1343,7 @@ function TransactionForm({
           </span>
           <input
             className={inputClassName}
-            disabled={disabled}
+            disabled={isFormDisabled}
             maxLength={255}
             value={value.counterparty}
             onChange={(event) => setField("counterparty", event.target.value)}
@@ -1319,7 +1355,7 @@ function TransactionForm({
           </span>
           <input
             className={inputClassName}
-            disabled={disabled}
+            disabled={isFormDisabled}
             maxLength={100}
             value={value.reference_no}
             onChange={(event) => setField("reference_no", event.target.value)}
@@ -1332,7 +1368,7 @@ function TransactionForm({
         </span>
         <textarea
           className={`${inputClassName} min-h-24 resize-y py-2`}
-          disabled={disabled}
+          disabled={isFormDisabled}
           maxLength={255}
           value={value.notes}
           onChange={(event) => setField("notes", event.target.value)}
@@ -1340,13 +1376,13 @@ function TransactionForm({
       </label>
       {error && <p className="text-sm font-normal text-red-700">{error}</p>}
       <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
-        <Button disabled={disabled} type="button" variant="secondary" onClick={onCancel}>
+        <Button disabled={isFormDisabled} type="button" variant="secondary" onClick={onCancel}>
           {t("profile.cancel")}
         </Button>
-        <Button disabled={disabled} type="button" variant="secondary" onClick={onReset}>
+        <Button disabled={isFormDisabled} type="button" variant="secondary" onClick={onReset}>
           {t("bankAccounts.clear")}
         </Button>
-        <Button disabled={disabled} type="submit">
+        <Button disabled={isFormDisabled} type="submit">
           {submitLabel}
         </Button>
       </div>

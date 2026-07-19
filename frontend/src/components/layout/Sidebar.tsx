@@ -1,7 +1,9 @@
 import { NavLink } from "react-router-dom";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
+import { appBrand } from "../../config/appBrand";
 import { useTranslation } from "../../lib/i18n/useTranslation";
+import { BrandMark } from "../ui/BrandMark";
 import { NavigationSections } from "./NavigationSections";
 
 type SidebarProps = {
@@ -19,7 +21,7 @@ export function Sidebar({
 
   return (
     <aside
-      className="hidden overflow-hidden border-r border-slate-200 bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:self-start"
+      className="hidden overflow-hidden border-r border-slate-200 bg-white lg:sticky lg:top-0 lg:flex lg:h-dvh lg:max-h-dvh lg:flex-col lg:self-start"
       aria-label={t("shell.openNavigation")}
     >
       <div
@@ -36,12 +38,10 @@ export function Sidebar({
           ].join(" ")}
           to="/dashboard"
         >
-          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-slate-900 font-bold text-white">
-            LM
-          </span>
+          <BrandMark size="sm" />
           <div className={isCollapsed ? "hidden" : "min-w-0"}>
             <p className="truncate text-sm font-bold leading-5 text-slate-950">
-              LeaseMate
+              {appBrand.name}
             </p>
             <p className="truncate text-xs font-semibold text-slate-500">
               {t("app.subtitle")}
@@ -62,7 +62,7 @@ export function Sidebar({
         />
       </div>
 
-      <div className="shrink-0 border-t border-slate-200 p-2">
+      <div className="shrink-0 border-t border-slate-200 bg-white p-2">
         <button
           aria-label={
             isCollapsed ? t("shell.expandSidebar") : t("shell.collapseSidebar")

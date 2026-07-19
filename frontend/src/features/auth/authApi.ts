@@ -2,15 +2,24 @@ import { apiRequest } from "../../lib/api/client";
 import type {
   AuthTokenResponse,
   BootstrapAdminResponse,
+  BootstrapDefaultLocale,
   BootstrapLocale,
   BootstrapStatus,
   CurrentUser,
   CurrentUserReadiness,
   EmailConfirmationResponse,
   EmailVerificationResendResponse,
+  ForgotPasswordResponse,
+  PasskeyOptionsResponse,
+  PasswordResetTokenStatus,
   ProfileCountry,
+  ResetPasswordResponse,
+  SessionActionResponse,
+  ThemePreference,
   UserLegalName,
   UserLegalNamePayload,
+  UserLoginSession,
+  UserPasskey,
 } from "./authTypes";
 
 export type BootstrapAdminPayload = {
@@ -35,6 +44,10 @@ export function getBootstrapLocales() {
   return apiRequest<BootstrapLocale[]>("/user-auth/bootstrap-locales");
 }
 
+export function getBootstrapDefaultLocale() {
+  return apiRequest<BootstrapDefaultLocale>("/user-auth/bootstrap-default-locale");
+}
+
 export function getProfileCountries() {
   return apiRequest<ProfileCountry[]>("/user-auth/profile-countries", {
     auth: true,
@@ -55,9 +68,108 @@ export function login(payload: LoginPayload) {
   });
 }
 
+export function createPasskeyAuthenticationOptions(email?: string) {
+  return apiRequest<PasskeyOptionsResponse>(
+    "/user-auth/passkeys/authentication-options",
+    {
+      method: "POST",
+      body: { email: email || null },
+    },
+  );
+}
+
+export function verifyPasskeyAuthentication(credential: unknown) {
+  return apiRequest<AuthTokenResponse>("/user-auth/passkeys/authentication-verify", {
+    method: "POST",
+    body: { credential },
+  });
+}
+
+export function requestPasswordReset(email: string) {
+  return apiRequest<ForgotPasswordResponse>("/user-auth/forgot-password", {
+    method: "POST",
+    body: { email },
+  });
+}
+
+export function getPasswordResetTokenStatus(token: string) {
+  return apiRequest<PasswordResetTokenStatus>(
+    `/user-auth/reset-password/${token}`,
+  );
+}
+
+export function resetPassword(token: string, newPassword: string) {
+  return apiRequest<ResetPasswordResponse>("/user-auth/reset-password", {
+    method: "POST",
+    body: {
+      token,
+      new_password: newPassword,
+    },
+  });
+}
+
 export function getCurrentUser() {
   return apiRequest<CurrentUser>("/user-auth/me", {
     auth: true,
+  });
+}
+
+export function getCurrentUserPasskeys() {
+  return apiRequest<UserPasskey[]>("/user-auth/me/passkeys", {
+    auth: true,
+  });
+}
+
+export function createPasskeyRegistrationOptions() {
+  return apiRequest<PasskeyOptionsResponse>(
+    "/user-auth/me/passkeys/registration-options",
+    {
+      auth: true,
+      method: "POST",
+    },
+  );
+}
+
+export function verifyPasskeyRegistration(credential: unknown, name?: string) {
+  return apiRequest<UserPasskey>("/user-auth/me/passkeys/registration-verify", {
+    auth: true,
+    method: "POST",
+    body: { credential, name: name || null },
+  });
+}
+
+export function deleteCurrentUserPasskey(passkeyId: string) {
+  return apiRequest<{ message: string }>(`/user-auth/me/passkeys/${passkeyId}`, {
+    auth: true,
+    method: "DELETE",
+  });
+}
+
+export function getCurrentUserSessions() {
+  return apiRequest<UserLoginSession[]>("/user-auth/me/sessions", {
+    auth: true,
+  });
+}
+
+export function revokeCurrentUserSession(sessionId: string) {
+  return apiRequest<SessionActionResponse>(`/user-auth/me/sessions/${sessionId}`, {
+    auth: true,
+    method: "DELETE",
+  });
+}
+
+export function logoutOtherSessions(refreshToken?: string | null) {
+  return apiRequest<SessionActionResponse>("/user-auth/me/sessions/logout-others", {
+    auth: true,
+    method: "POST",
+    body: { refresh_token: refreshToken || null },
+  });
+}
+
+export function logoutAllSessions() {
+  return apiRequest<SessionActionResponse>("/user-auth/me/sessions/logout-all", {
+    auth: true,
+    method: "POST",
   });
 }
 
@@ -88,6 +200,7 @@ export type UpdateCurrentUserPayload = {
   phone?: string | null;
   phone_country_id?: string | null;
   preferred_locale_code?: string | null;
+  theme_preference?: ThemePreference;
 };
 
 export function updateCurrentUser(payload: UpdateCurrentUserPayload) {

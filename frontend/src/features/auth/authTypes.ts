@@ -23,6 +23,11 @@ export type BootstrapLocale = {
   name_format_mask?: string;
 };
 
+export type BootstrapDefaultLocale = {
+  locale_code: string;
+  country_alpha2?: string | null;
+};
+
 export type ProfileCountry = {
   id: string;
   code: string;
@@ -41,6 +46,44 @@ export type AuthTokenResponse = {
   token_type: "bearer";
 };
 
+export type ThemePreference = "light" | "dark" | "auto";
+
+export type PasskeyOptionsResponse = {
+  options: Record<string, unknown>;
+};
+
+export type UserPasskey = {
+  id: string;
+  name?: string | null;
+  device_type?: string | null;
+  backed_up: boolean;
+  transports?: string | null;
+  is_active: boolean;
+  last_used_at?: string | null;
+  created_at: string;
+};
+
+export type UserLoginSession = {
+  id: string;
+  device_info?: string | null;
+  ip_address?: string | null;
+  location_country_code?: string | null;
+  location_region?: string | null;
+  location_city?: string | null;
+  expires_at: string;
+  revoked_at?: string | null;
+  last_used_at?: string | null;
+  created_at: string;
+  is_current: boolean;
+  is_online: boolean;
+  session_status: "online" | "idle" | "offline";
+};
+
+export type SessionActionResponse = {
+  message?: string;
+  revoked_count?: number;
+};
+
 export type EmailConfirmationResponse = AuthTokenResponse & {
   user: CurrentUser;
 };
@@ -56,6 +99,7 @@ export type CurrentUser = {
   phone_country_id?: string | null;
   role_id?: string | null;
   preferred_locale_code?: string | null;
+  theme_preference?: ThemePreference | null;
   status?: string | null;
   created_at?: string;
   updated_at?: string | null;
@@ -75,6 +119,24 @@ export type EmailVerificationResendResponse = {
   email_sent: boolean;
   verification_token_expires_at?: string | null;
   verification_url?: string | null;
+};
+
+export type ForgotPasswordResponse = {
+  email_sent: boolean;
+  password_reset_token_expires_at?: string | null;
+  reset_url?: string | null;
+  message: string;
+};
+
+export type PasswordResetTokenStatus = {
+  valid: boolean;
+  status: string;
+  email?: string | null;
+};
+
+export type ResetPasswordResponse = {
+  password_reset: boolean;
+  message: string;
 };
 
 export type UserLegalName = {

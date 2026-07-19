@@ -154,9 +154,9 @@ export function EmailVerificationPrompt({
       </div>
       <button
         className={[
-          "inline-flex min-h-8 shrink-0 items-center justify-center rounded-md border px-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60",
+          "inline-flex min-h-8 shrink-0 items-center justify-center rounded-md border px-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60",
           compact
-            ? "border-slate-950 bg-slate-950 hover:border-slate-800 hover:bg-slate-800"
+            ? "lm-button-primary"
             : "border-rose-600 bg-rose-600 hover:border-rose-700 hover:bg-rose-700",
         ].join(" ")}
         disabled={sendVerification.isPending}

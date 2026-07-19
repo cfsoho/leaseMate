@@ -4,8 +4,11 @@ import {
   getRefreshToken,
   setAccessToken,
 } from "../auth/tokenStorage";
+import { setAuthRedirectReason } from "../../features/auth/authUiTransition";
+import { clearStoredLocale } from "../i18n/LocaleProvider";
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+export const API_ACTIVITY_EVENT = "leasemate:api-activity";
 
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   auth?: boolean;
@@ -37,10 +40,18 @@ export async function apiRequest<T>(
   }
 
   if (response.status === 204) {
+    notifyApiActivity(options);
     return undefined as T;
   }
 
+  notifyApiActivity(options);
   return response.json() as Promise<T>;
+}
+
+function notifyApiActivity(options: ApiRequestOptions) {
+  if (options.auth && typeof window !== "undefined") {
+    window.dispatchEvent(new Event(API_ACTIVITY_EVENT));
+  }
 }
 
 async function sendRequest(
@@ -71,7 +82,7 @@ async function refreshAccessToken() {
   const refreshToken = getRefreshToken();
 
   if (!refreshToken) {
-    clearTokens();
+    expireSession();
     return false;
   }
 
@@ -82,7 +93,7 @@ async function refreshAccessToken() {
   });
 
   if (!response.ok) {
-    clearTokens();
+    expireSession();
     return false;
   }
 
@@ -91,12 +102,18 @@ async function refreshAccessToken() {
   };
 
   if (!payload.access_token) {
-    clearTokens();
+    expireSession();
     return false;
   }
 
   setAccessToken(payload.access_token);
   return true;
+}
+
+function expireSession() {
+  setAuthRedirectReason("session_expired");
+  clearStoredLocale();
+  clearTokens();
 }
 
 async function readErrorMessage(response: Response) {

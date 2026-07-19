@@ -94,3 +94,52 @@ USER_INVITATION_TEMPLATES = {
         ),
     },
 }
+
+
+PASSWORD_RESET_TEMPLATES = {
+    "en": {
+        "subject": "Reset your LeaseMate password",
+        "body": (
+            "We received a request to reset your LeaseMate password.\n\n"
+            "Use this link to set a new password:\n"
+            "{reset_url}\n\n"
+            "If you did not request this, you can ignore this email."
+        ),
+    },
+    "ja": {
+        "subject": "LeaseMate のパスワードを再設定してください",
+        "body": (
+            "LeaseMate のパスワード再設定リクエストを受け付けました。\n\n"
+            "次のリンクから新しいパスワードを設定してください:\n"
+            "{reset_url}\n\n"
+            "このリクエストに心当たりがない場合は、このメールを無視してください。"
+        ),
+    },
+    "zh-Hant-TW": {
+        "subject": "重設你的 LeaseMate 密碼",
+        "body": (
+            "我們收到重設 LeaseMate 密碼的要求。\n\n"
+            "請使用以下連結設定新密碼:\n"
+            "{reset_url}\n\n"
+            "如果這不是你提出的要求，可以忽略這封信。"
+        ),
+    },
+    "zh-Hant-HK": {
+        "subject": "重設你嘅 LeaseMate 密碼",
+        "body": (
+            "我哋收到重設 LeaseMate 密碼嘅要求。\n\n"
+            "請用以下連結設定新密碼:\n"
+            "{reset_url}\n\n"
+            "如果唔係你提出嘅要求，可以忽略呢封電郵。"
+        ),
+    },
+    "th": {
+        "subject": "รีเซ็ตรหัสผ่าน LeaseMate ของคุณ",
+        "body": (
+            "เราได้รับคำขอรีเซ็ตรหัสผ่าน LeaseMate ของคุณ\n\n"
+            "ใช้ลิงก์นี้เพื่อตั้งรหัสผ่านใหม่:\n"
+            "{reset_url}\n\n"
+            "หากคุณไม่ได้ส่งคำขอนี้ คุณสามารถละเว้นอีเมลนี้ได้"
+        ),
+    },
+}

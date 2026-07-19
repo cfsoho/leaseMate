@@ -246,20 +246,21 @@ export function UsersPage() {
         setPageIndex(0);
       }
       setIsDrawerOpen(false);
-      return;
+      return false;
     }
 
     if (selectedUser) {
       if (value.email !== selectedUser.email && confirmEmail !== value.email) {
         setConfirmEmailError(t("users.emailConfirmationMismatch"));
-        return;
+        return false;
       }
 
       updateUserMutation.mutate({ id: selectedUser.id, value });
-      return;
+      return true;
     }
 
     createUserMutation.mutate(value);
+    return true;
   }
 
   if (loginSessionUser) {
@@ -536,6 +537,12 @@ export function UsersPage() {
             resetLabel={t("users.clearForm")}
             showInvitationHelp={!isEditing && drawerMode !== "search"}
             showPassword={false}
+            submitError={
+              createUserMutation.isError || updateUserMutation.isError
+                ? createUserMutation.error?.message ||
+                  updateUserMutation.error?.message
+                : undefined
+            }
             submitLabel={
               drawerMode === "search"
                 ? t("users.search")
@@ -568,11 +575,6 @@ export function UsersPage() {
             }}
             onSubmit={handleSubmit}
           />
-          {(createUserMutation.isError || updateUserMutation.isError) && (
-            <p className="mt-4 text-sm font-normal text-red-700">
-              {createUserMutation.error?.message || updateUserMutation.error?.message}
-            </p>
-          )}
         </div>
       </Drawer>
       {verificationUser && (

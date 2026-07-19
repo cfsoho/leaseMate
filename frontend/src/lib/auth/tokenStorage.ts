@@ -2,12 +2,19 @@ const ACCESS_TOKEN_KEY = "leasemate.accessToken";
 const LAST_LOGIN_EMAIL_KEY = "leasemate.lastLoginEmail";
 const REFRESH_TOKEN_KEY = "leasemate.refreshToken";
 
+export const AUTH_TOKEN_CHANGE_EVENT = "leasemate:auth-token-change";
+
+function notifyAuthTokenChange() {
+  window.dispatchEvent(new Event(AUTH_TOKEN_CHANGE_EVENT));
+}
+
 export function getAccessToken() {
   return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
 export function setAccessToken(token: string) {
   localStorage.setItem(ACCESS_TOKEN_KEY, token);
+  notifyAuthTokenChange();
 }
 
 export function getRefreshToken() {
@@ -16,6 +23,7 @@ export function getRefreshToken() {
 
 export function setRefreshToken(token: string) {
   localStorage.setItem(REFRESH_TOKEN_KEY, token);
+  notifyAuthTokenChange();
 }
 
 export function getLastLoginEmail() {
@@ -33,4 +41,5 @@ export function clearLastLoginEmail() {
 export function clearTokens() {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
+  notifyAuthTokenChange();
 }

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -77,7 +77,6 @@ export function DataGrid<TRecord extends { id: string }>({
   const [internalPageIndex, setInternalPageIndex] = useState(0);
   const [internalSortState, setInternalSortState] = useState<DataGridSortState>(null);
   const [internalPageSize, setInternalPageSize] = useState<number | null>(null);
-  const [viewportGridBodyHeight, setViewportGridBodyHeight] = useState<number | null>(null);
   const [viewportPageSize, setViewportPageSize] = useState<number | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
   const footerRef = useRef<HTMLDivElement | null>(null);
@@ -142,18 +141,40 @@ export function DataGrid<TRecord extends { id: string }>({
     () => (isServerPaged ? sortedRecords : sortedRecords.slice(pageStart, pageEnd)),
     [isServerPaged, pageEnd, pageStart, sortedRecords],
   );
+  const setPage = useCallback(
+    (nextPageIndex: number) => {
+      onPageIndexChange?.(nextPageIndex);
+      if (pageIndex === undefined) {
+        setInternalPageIndex(nextPageIndex);
+      }
+    },
+    [onPageIndexChange, pageIndex],
+  );
+  const setGridPageSize = useCallback(
+    (nextPageSize: number, options: { keepPage?: boolean } = {}) => {
+      const safePageSize = Math.max(1, Math.floor(nextPageSize));
+      onPageSizeChange?.(safePageSize);
+      if (!onPageSizeChange) {
+        setInternalPageSize(safePageSize);
+      }
+      if (!options.keepPage) {
+        setPage(0);
+      }
+    },
+    [onPageSizeChange, setPage],
+  );
 
   useEffect(() => {
     if (recordCount > 0 && activePageIndex > pageCount - 1) {
       setPage(pageCount - 1);
     }
-  }, [activePageIndex, pageCount, recordCount]);
+  }, [activePageIndex, pageCount, recordCount, setPage]);
 
   useEffect(() => {
     if (recordCount > 0 && requestedPageSize > recordCount) {
       setGridPageSize(recordCount, { keepPage: true });
     }
-  }, [recordCount, requestedPageSize]);
+  }, [recordCount, requestedPageSize, setGridPageSize]);
 
   useLayoutEffect(() => {
     if (!fitViewport) {
@@ -183,9 +204,6 @@ export function DataGrid<TRecord extends { id: string }>({
         Math.floor((nextBodyHeight - GRID_HEADER_HEIGHT_PX) / GRID_ROW_HEIGHT_PX),
       );
 
-      setViewportGridBodyHeight((current) =>
-        current === nextBodyHeight ? current : nextBodyHeight,
-      );
       setViewportPageSize((current) =>
         current === nextPageSize ? current : nextPageSize,
       );
@@ -230,13 +248,6 @@ export function DataGrid<TRecord extends { id: string }>({
     setSort(nextSortState);
   }
 
-  function setPage(nextPageIndex: number) {
-    onPageIndexChange?.(nextPageIndex);
-    if (pageIndex === undefined) {
-      setInternalPageIndex(nextPageIndex);
-    }
-  }
-
   function setSort(nextSortState: DataGridSortState) {
     onSortChange?.(nextSortState);
     if (sortState === undefined) {
@@ -244,66 +255,48 @@ export function DataGrid<TRecord extends { id: string }>({
     }
   }
 
-  function setGridPageSize(
-    nextPageSize: number,
-    options: { keepPage?: boolean } = {},
-  ) {
-    const safePageSize = Math.max(1, Math.floor(nextPageSize));
-    onPageSizeChange?.(safePageSize);
-    if (!onPageSizeChange) {
-      setInternalPageSize(safePageSize);
-    }
-    if (!options.keepPage) {
-      setPage(0);
-    }
-  }
-
   return (
     <div
       ref={gridRef}
-      className="overflow-hidden rounded-lg border border-slate-200 bg-white"
+      className="data-grid"
     >
       <div
-        className={`${fitViewport ? "" : heightClassName} overflow-auto`}
-        style={
-          fitViewport && viewportGridBodyHeight
-            ? { height: `${viewportGridBodyHeight}px` }
-            : undefined
-        }
+        className={[
+          fitViewport ? "data-grid-body-fit" : heightClassName,
+          "data-grid-body",
+        ].join(" ")}
       >
         <table
           className={[
-            "w-full border-collapse text-left text-sm",
-            fitsSingleDataColumn ? "min-w-full table-fixed" : "min-w-[720px]",
+            "data-grid-table",
+            fitsSingleDataColumn
+              ? "data-grid-table-single-column"
+              : "data-grid-table-wide",
           ].join(" ")}
         >
-          <thead className="sticky top-0 z-10 bg-slate-950 text-xs font-normal uppercase tracking-wide text-white">
+          <thead className="data-grid-head">
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className="border-b border-slate-200 px-4 py-3"
-                  style={{
-                    width:
-                      fitsSingleDataColumn && column.key === "actions"
-                        ? "56px"
-                        : column.width,
-                  }}
+                  className={[
+                    "data-grid-head-cell",
+                    getColumnWidthClassName(column.width),
+                    fitsSingleDataColumn && column.key === "actions"
+                      ? "data-grid-column-width-actions-compact"
+                      : "",
+                  ].join(" ")}
                 >
                   {column.sortable ? (
                     <button
                       className={[
-                        "flex w-full items-center gap-1 whitespace-nowrap text-left font-normal uppercase tracking-wide text-white hover:text-slate-200",
-                        column.align === "right"
-                          ? "justify-end text-right"
-                          : column.align === "center"
-                            ? "justify-center text-center"
-                            : "",
+                        "data-grid-sort-button",
+                        getColumnAlignClassName(column.align),
                       ].join(" ")}
                       type="button"
                       onClick={() => handleSort(column)}
                     >
-                      <span className="truncate">{column.header}</span>
+                      <span className="data-grid-head-label">{column.header}</span>
                       {activeSortState?.columnKey === column.key ? (
                         activeSortState.direction === "asc" ? (
                           <ArrowUp aria-hidden="true" size={14} />
@@ -316,13 +309,10 @@ export function DataGrid<TRecord extends { id: string }>({
                     </button>
                   ) : (
                     <span
-                      className={
-                        column.align === "right"
-                          ? "block whitespace-nowrap text-right"
-                          : column.align === "center"
-                            ? "block whitespace-nowrap text-center"
-                            : "block truncate whitespace-nowrap"
-                      }
+                      className={[
+                        "data-grid-head-label data-grid-head-label-static",
+                        getColumnAlignClassName(column.align),
+                      ].join(" ")}
                     >
                       {column.header}
                     </span>
@@ -336,10 +326,10 @@ export function DataGrid<TRecord extends { id: string }>({
               <tr
                 key={record.id}
                 className={[
-                  "border-b border-slate-100 last:border-0 hover:bg-slate-100",
-                  index % 2 === 1 ? "bg-slate-50/70" : "bg-white",
-                  onSelect ? "cursor-pointer" : "",
-                  selectedId === record.id ? "bg-slate-100" : "",
+                  "data-grid-row",
+                  index % 2 === 1 ? "data-grid-row-even" : "",
+                  onSelect ? "data-grid-row-selectable" : "",
+                  selectedId === record.id ? "data-grid-row-selected" : "",
                   getDataGridRowStateClassName({
                     activeRecordId,
                     isInactive: isRecordInactive?.(record),
@@ -352,16 +342,13 @@ export function DataGrid<TRecord extends { id: string }>({
                 {columns.map((column) => (
                   <td
                     key={column.key}
-                    className="whitespace-nowrap px-4 py-3 text-slate-700"
+                    className="data-grid-cell"
                   >
                     <div
-                      className={
-                        column.align === "right"
-                          ? "flex min-w-0 justify-end text-right"
-                          : column.align === "center"
-                            ? "flex min-w-0 justify-center text-center"
-                            : "min-w-0 truncate"
-                      }
+                      className={[
+                        "data-grid-cell-content",
+                        getColumnAlignClassName(column.align),
+                      ].join(" ")}
                     >
                       {column.render?.(record) ?? ""}
                     </div>
@@ -372,23 +359,23 @@ export function DataGrid<TRecord extends { id: string }>({
           </tbody>
         </table>
         {records.length === 0 && (
-          <div className="grid h-[calc(100%-42px)] min-h-[240px] place-items-center px-4 text-center text-sm font-semibold text-slate-500">
+          <div className="data-grid-empty">
             {emptyMessage}
           </div>
         )}
       </div>
       <div
         ref={footerRef}
-        className="flex min-h-12 items-center justify-between gap-3 border-t border-slate-200 px-3 py-2 text-sm text-slate-600"
+        className="data-grid-footer"
       >
-        <div className="flex min-w-0 items-center gap-3">
-          <p className="font-normal">
+        <div className="data-grid-footer-summary">
+          <p className="data-grid-record-count">
             {recordCount === 0 ? "0 / 0" : `${pageStart + 1}-${pageEnd} / ${recordCount}`}
           </p>
-          <label className="flex items-center gap-2 whitespace-nowrap text-sm font-normal text-slate-600">
+          <label className="data-grid-page-size-label">
             <span>{labels.rows}</span>
             <select
-              className="h-8 rounded-md border border-slate-300 bg-white px-2 text-sm font-normal text-slate-700 outline-none focus:border-slate-950 focus:ring-2 focus:ring-slate-200"
+              className="data-grid-page-size-select"
               value={String(effectivePageSize)}
               onChange={(event) => setGridPageSize(Number(event.target.value))}
             >
@@ -400,10 +387,10 @@ export function DataGrid<TRecord extends { id: string }>({
             </select>
           </label>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="data-grid-pagination">
           <button
             aria-label={labels.firstPage}
-            className="grid size-8 place-items-center rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+            className="data-grid-page-button"
             disabled={currentPageIndex === 0}
             type="button"
             onClick={() => setPage(0)}
@@ -412,19 +399,19 @@ export function DataGrid<TRecord extends { id: string }>({
           </button>
           <button
             aria-label={labels.previousPage}
-            className="grid size-8 place-items-center rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+            className="data-grid-page-button"
             disabled={currentPageIndex === 0}
             type="button"
             onClick={() => setPage(Math.max(currentPageIndex - 1, 0))}
           >
             <ChevronLeft aria-hidden="true" size={16} />
           </button>
-          <span className="min-w-12 text-center font-semibold text-slate-700">
+          <span className="data-grid-page-count">
             {recordCount === 0 ? 0 : currentPageIndex + 1} / {pageCount}
           </span>
           <button
             aria-label={labels.nextPage}
-            className="grid size-8 place-items-center rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+            className="data-grid-page-button"
             disabled={currentPageIndex >= pageCount - 1}
             type="button"
             onClick={() => setPage(Math.min(currentPageIndex + 1, pageCount - 1))}
@@ -433,7 +420,7 @@ export function DataGrid<TRecord extends { id: string }>({
           </button>
           <button
             aria-label={labels.lastPage}
-            className="grid size-8 place-items-center rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"
+            className="data-grid-page-button"
             disabled={currentPageIndex >= pageCount - 1}
             type="button"
             onClick={() => setPage(pageCount - 1)}
@@ -444,6 +431,31 @@ export function DataGrid<TRecord extends { id: string }>({
       </div>
     </div>
   );
+}
+
+function getColumnAlignClassName(align?: "left" | "right" | "center") {
+  if (align === "right") {
+    return "data-grid-align-right";
+  }
+  if (align === "center") {
+    return "data-grid-align-center";
+  }
+  return "data-grid-align-left";
+}
+
+function getColumnWidthClassName(width?: string) {
+  switch (width) {
+    case "130px":
+      return "data-grid-column-width-130";
+    case "136px":
+      return "data-grid-column-width-136";
+    case "140px":
+      return "data-grid-column-width-140";
+    case "180px":
+      return "data-grid-column-width-180";
+    default:
+      return "";
+  }
 }
 
 function buildPageSizeOptions(recordCount: number, requestedPageSize: number) {

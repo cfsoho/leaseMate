@@ -39,7 +39,7 @@ export function SortPositionSelect({
 
   return (
     <select
-      className="min-h-10 rounded-md border border-slate-300 bg-white px-3 text-sm font-normal text-slate-950 outline-none focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10"
+      className="lm-form-input"
       value={currentValue}
       onChange={(event) => onChange(event.target.value)}
     >

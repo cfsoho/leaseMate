@@ -48,6 +48,15 @@ class UserRefreshToken(Base):
     # Supports IPv4 and IPv6.
     ip_address = Column(String(45), nullable=True)
 
+    # Optional coarse login location captured from trusted reverse-proxy headers.
+    #
+    # These fields are not resolved by calling a third-party IP lookup service.
+    # In production, pass values from infrastructure such as Cloudflare,
+    # a load balancer, or a private geolocation middleware.
+    location_country_code = Column(String(2), nullable=True)
+    location_region = Column(String(100), nullable=True)
+    location_city = Column(String(100), nullable=True)
+
     # Last time this refresh token/session was used.
     last_used_at = Column(DateTime(timezone=True), nullable=True)
 

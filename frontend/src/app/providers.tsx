@@ -16,10 +16,10 @@ const queryClient = new QueryClient({
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
-    <ThemeProvider>
-      <LocaleProvider>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </LocaleProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <LocaleProvider>{children}</LocaleProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

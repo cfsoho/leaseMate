@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
   Building2,
   CheckCircle2,
+  KeyRound,
   MailCheck,
   ShieldCheck,
   UserRound,
@@ -17,12 +18,20 @@ import { PageHeader } from "../components/layout/PageHeader";
 import {
   getBootstrapStatus,
   getCurrentUser,
+  getCurrentUserPasskeys,
   getCurrentUserReadiness,
 } from "../features/auth/authApi";
+import {
+  PASSKEY_PROMPT_AFTER_PASSWORD_LOGIN_KEY,
+  passkeysAreSupported,
+  registerCurrentUserPasskey,
+} from "../features/auth/passkeys";
 import type { CurrentUserReadiness } from "../features/auth/authTypes";
 import { getEmailLinkDashboardStats } from "../features/users/usersApi";
 import { getAccessToken } from "../lib/auth/tokenStorage";
 import { useTranslation } from "../lib/i18n/useTranslation";
+import { Button } from "../components/ui/Button";
+import { Modal } from "../components/ui/Modal";
 
 const SETUP_COMPLETED_CARD_SEEN_KEY = "leasemate.dashboard.setupCompletedCardSeen";
 const READINESS_COMPLETED_KEY_PREFIX = "leasemate.dashboard.readinessComplete";
@@ -30,8 +39,12 @@ const READINESS_COMPLETED_KEY_PREFIX = "leasemate.dashboard.readinessComplete";
 export function DashboardPage() {
   const location = useLocation();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [hasSeenCompletedSetupCard] = useState(
     () => localStorage.getItem(SETUP_COMPLETED_CARD_SEEN_KEY) === "true",
+  );
+  const [isPasskeyPromptDismissed, setIsPasskeyPromptDismissed] = useState(
+    false,
   );
   const [readinessReminderComplete, setReadinessReminderComplete] = useState<
     boolean | null
@@ -39,6 +52,7 @@ export function DashboardPage() {
   const routeState = location.state as { setupWarning?: string } | null;
   const showSmtpWarning = routeState?.setupWarning === "smtp";
   const hasToken = Boolean(getAccessToken());
+  const passkeySupported = passkeysAreSupported();
   const bootstrapStatus = useQuery({
     queryKey: ["bootstrap-status"],
     queryFn: getBootstrapStatus,
@@ -64,6 +78,25 @@ export function DashboardPage() {
     enabled: hasToken && currentUser.isSuccess && Boolean(currentUser.data?.email_verified_at),
     retry: false,
   });
+  const passkeys = useQuery({
+    queryKey: ["current-user", "passkeys"],
+    queryFn: getCurrentUserPasskeys,
+    enabled:
+      hasToken &&
+      currentUser.isSuccess &&
+      Boolean(currentUser.data?.email_verified_at) &&
+      !currentUser.data?.password_must_change &&
+      passkeySupported,
+    retry: false,
+  });
+  const addPasskey = useMutation({
+    mutationFn: () => registerCurrentUserPasskey(),
+    onSuccess: () => {
+      sessionStorage.removeItem(PASSKEY_PROMPT_AFTER_PASSWORD_LOGIN_KEY);
+      setIsPasskeyPromptDismissed(true);
+      queryClient.invalidateQueries({ queryKey: ["current-user", "passkeys"] });
+    },
+  });
   const emailNeedsVerification =
     Boolean(currentUser.data) && !currentUser.data?.email_verified_at;
   const adminSetupCompleted = Boolean(
@@ -87,6 +120,15 @@ export function DashboardPage() {
       readiness.data.legal_name_count > 0 &&
       readiness.data.property_count > 0,
   );
+  const shouldPromptForPasskey =
+    !isPasskeyPromptDismissed &&
+    sessionStorage.getItem(PASSKEY_PROMPT_AFTER_PASSWORD_LOGIN_KEY) ===
+      "true" &&
+    Boolean(currentUser.data?.email_verified_at) &&
+    !currentUser.data?.password_must_change &&
+    passkeySupported &&
+    passkeys.isSuccess &&
+    (passkeys.data?.length ?? 0) === 0;
 
   useEffect(() => {
     if (
@@ -130,6 +172,15 @@ export function DashboardPage() {
     setReadinessReminderComplete(true);
   }, [currentUser.data?.id, readinessIsComplete]);
 
+  useEffect(() => {
+    if (!passkeys.isSuccess || (passkeys.data?.length ?? 0) === 0) {
+      return;
+    }
+
+    sessionStorage.removeItem(PASSKEY_PROMPT_AFTER_PASSWORD_LOGIN_KEY);
+    setIsPasskeyPromptDismissed(true);
+  }, [passkeys.data, passkeys.isSuccess]);
+
   return (
     <section className="grid gap-6">
       <PageHeader
@@ -139,7 +190,7 @@ export function DashboardPage() {
         actions={
           bootstrapStatus.data?.bootstrap_required ? (
           <Link
-            className="inline-flex min-h-8 items-center justify-center gap-1.5 rounded-md bg-slate-950 px-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+            className="lm-button-primary inline-flex min-h-8 items-center justify-center gap-1.5 rounded-md border px-2.5 text-sm font-semibold"
             to="/bootstrap-admin"
           >
             {t("auth.createAdmin")}
@@ -261,6 +312,56 @@ export function DashboardPage() {
           </Link>
         </section>
       )}
+
+      {shouldPromptForPasskey && (
+        <Modal title="Create a passkey?">
+          <div className="mt-4 grid gap-4">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 inline-grid size-9 shrink-0 place-items-center rounded-md bg-slate-950 text-white">
+                <KeyRound aria-hidden="true" size={18} />
+              </span>
+              <div>
+                <p className="m-0 text-sm leading-relaxed text-slate-700">
+                  Use this browser to sign in next time without typing your
+                  password.
+                </p>
+                <p className="mt-1 text-sm leading-relaxed text-slate-500">
+                  You can also add or remove passkeys later from Profile.
+                </p>
+              </div>
+            </div>
+
+            {addPasskey.isError && (
+              <p className="m-0 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-normal text-red-700">
+                {addPasskey.error.message}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
+              <Button
+                disabled={addPasskey.isPending}
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  sessionStorage.removeItem(
+                    PASSKEY_PROMPT_AFTER_PASSWORD_LOGIN_KEY,
+                  );
+                  setIsPasskeyPromptDismissed(true);
+                }}
+              >
+                Maybe later
+              </Button>
+              <Button
+                disabled={addPasskey.isPending}
+                type="button"
+                onClick={() => addPasskey.mutate()}
+              >
+                {addPasskey.isPending ? "Creating..." : "Create passkey"}
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </section>
   );
 }
@@ -287,17 +388,17 @@ function DashboardReadiness({
   const completedCount = items.filter((item) => item.count > 0).length;
 
   return (
-    <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-[18px]">
+    <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-[18px] dark:border-slate-700 dark:bg-slate-900">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-bold text-slate-950">
+          <h2 className="font-bold text-slate-950 dark:text-slate-100">
             {t("dashboard.readinessTitle")}
           </h2>
-          <p className="mt-1 text-sm leading-relaxed text-slate-500">
+          <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
             {t("dashboard.readinessDescription")}
           </p>
         </div>
-        <div className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+        <div className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
           {completedCount} / {items.length}
         </div>
       </div>
@@ -325,7 +426,12 @@ function DashboardReadinessItem({
   const { t } = useTranslation();
   const isReady = count > 0;
   const content = (
-    <>
+    <div
+      className={[
+        "grid gap-4",
+        isReady ? "" : "text-rose-950 dark:text-rose-950",
+      ].join(" ")}
+    >
       <div className="flex items-start justify-between gap-3">
         <Icon aria-hidden="true" className="mt-0.5 shrink-0" size={20} />
         {isReady ? (
@@ -335,22 +441,42 @@ function DashboardReadinessItem({
         )}
       </div>
       <div>
-        <h3 className="font-semibold text-slate-950">{label}</h3>
-        <p className="mt-1 text-sm text-slate-500">
+        <h3
+          className={[
+            "font-semibold",
+            isReady
+              ? "text-slate-950 dark:text-slate-100"
+              : "text-rose-950 dark:text-rose-950",
+          ].join(" ")}
+        >
+          {label}
+        </h3>
+        <p
+          className={[
+            "mt-1 text-sm",
+            isReady
+              ? "text-slate-500 dark:text-slate-400"
+              : "text-rose-700 dark:text-rose-700",
+          ].join(" ")}
+        >
           {isReady
             ? t("dashboard.readinessReady")
             : t("dashboard.readinessMissing")}
         </p>
       </div>
-    </>
+    </div>
   );
 
   const className = [
     "grid min-h-[120px] gap-4 rounded-lg border p-4 text-left transition",
     isReady
-      ? "border-slate-200 bg-slate-50"
-      : "border-rose-200 bg-rose-50 text-rose-950",
-    href ? "hover:border-slate-400 hover:bg-white" : "",
+      ? "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800"
+      : "border-rose-200 bg-rose-50 text-rose-950 dark:border-rose-200 dark:bg-rose-50 dark:text-rose-950",
+    href
+      ? isReady
+        ? "hover:border-slate-400 hover:bg-white dark:hover:border-slate-500 dark:hover:bg-slate-800"
+        : "hover:border-rose-300 hover:bg-rose-50 dark:hover:border-rose-300 dark:hover:bg-rose-50"
+      : "",
   ].join(" ");
 
   if (href) {
@@ -399,23 +525,21 @@ function DashboardBar({
   max: number;
   value: number;
 }) {
-  const width = `${Math.max((value / max) * 100, value > 0 ? 6 : 0)}%`;
-
   return (
     <div className="grid gap-1.5">
       <div className="flex items-center justify-between gap-3 text-sm">
         <span className="font-semibold text-slate-700">{label}</span>
         <span className="font-bold text-slate-950">{value}</span>
       </div>
-      <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-        <div
-          className={[
-            "h-full rounded-full",
-            danger ? "bg-rose-500" : "bg-slate-950",
-          ].join(" ")}
-          style={{ width }}
-        />
-      </div>
+      <progress
+        aria-label={label}
+        className={[
+          "dashboard-progress",
+          danger ? "dashboard-progress-danger" : "dashboard-progress-normal",
+        ].join(" ")}
+        max={max}
+        value={value}
+      />
     </div>
   );
 }

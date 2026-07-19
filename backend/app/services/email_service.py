@@ -5,6 +5,7 @@ from email.message import EmailMessage
 
 from app.services.email_templates.email_confirmation import (
     EMAIL_CONFIRMATION_TEMPLATES,
+    PASSWORD_RESET_TEMPLATES,
     USER_INVITATION_TEMPLATES,
 )
 
@@ -101,5 +102,23 @@ def send_user_invitation(
         to_email=to_email,
         subject=message["subject"],
         body=message["body"].format(verification_url=verification_url),
+        identity="system",
+    )
+
+
+def send_password_reset(
+    to_email: str,
+    reset_url: str,
+    locale_code: str | None = None,
+) -> bool:
+    message = PASSWORD_RESET_TEMPLATES.get(
+        locale_code or "",
+        PASSWORD_RESET_TEMPLATES["en"],
+    )
+
+    return send_email(
+        to_email=to_email,
+        subject=message["subject"],
+        body=message["body"].format(reset_url=reset_url),
         identity="system",
     )

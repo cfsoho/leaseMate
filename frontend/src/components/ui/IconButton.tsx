@@ -12,9 +12,9 @@ type IconButtonProps = {
 };
 
 const toneClasses: Record<IconButtonTone, string> = {
-  danger: "border-red-200 bg-white text-red-700 hover:bg-red-50 hover:text-red-800",
-  primary: "border-slate-950 bg-slate-950 text-white hover:bg-slate-800 hover:text-white",
-  secondary: "border-slate-300 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-950",
+  danger: "lm-icon-button-danger",
+  primary: "lm-icon-button-primary",
+  secondary: "lm-icon-button-secondary",
 };
 
 export function IconButton({
@@ -26,13 +26,13 @@ export function IconButton({
   onClick,
 }: IconButtonProps) {
   return (
-    <span className="group relative inline-flex">
+    <span className="lm-icon-button-wrap">
       <button
         aria-label={label}
         className={[
-          "grid size-8 place-items-center rounded-md border disabled:cursor-not-allowed disabled:opacity-40",
+          "lm-icon-button",
           toneClasses[tone],
-        ].join(" ")}
+        ].filter(Boolean).join(" ")}
         disabled={disabled}
         type="button"
         onClick={onClick}
@@ -40,7 +40,7 @@ export function IconButton({
         {children}
       </button>
       {!hideTooltip && (
-        <span className="pointer-events-none absolute bottom-full right-0 z-30 mb-2 hidden max-w-48 whitespace-nowrap rounded-md bg-slate-950 px-2 py-1 text-xs font-normal text-white shadow-lg group-hover:block group-focus-within:block">
+        <span className="lm-icon-button-tooltip">
           {label}
         </span>
       )}

@@ -5,22 +5,34 @@ import {
   ChevronDown,
   LogOut,
   Menu,
+  MonitorSmartphone,
   Search,
   User,
   X,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
+import { appBrand } from "../../config/appBrand";
 import { getCurrentUser } from "../../features/auth/authApi";
+import { startAppLogoutTransition } from "../../features/auth/authUiTransition";
 import { clearTokens, getAccessToken } from "../../lib/auth/tokenStorage";
+import { clearStoredLocale } from "../../lib/i18n/LocaleProvider";
 import { useTranslation } from "../../lib/i18n/useTranslation";
+import {
+  getUnreadLocalNotificationCount,
+  markAllLocalNotificationsRead,
+  subscribeLocalNotifications,
+} from "../../lib/notifications/localNotifications";
+import { BrandMark } from "../ui/BrandMark";
 import { NavigationSections } from "./NavigationSections";
 
 export function TopBar() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const hasToken = Boolean(getAccessToken());
@@ -39,16 +51,57 @@ export function TopBar() {
       : `${currentUser.data.given_name} ${currentUser.data.family_name}`.trim()
     : "Admin";
   const displayEmail = currentUser.data?.email ?? "";
+  const currentUserKey = currentUser.data?.id ?? currentUser.data?.email ?? "";
   const handleLogout = () => {
-    clearTokens();
-    queryClient.removeQueries({ queryKey: ["current-user"] });
     setIsUserMenuOpen(false);
-    navigate("/login", { replace: true });
+    startAppLogoutTransition(() => {
+      clearStoredLocale();
+      clearTokens();
+      queryClient.removeQueries({ queryKey: ["current-user"] });
+      navigate("/login", { replace: true });
+    });
   };
   const handleProfile = () => {
     setIsUserMenuOpen(false);
     navigate("/profile");
   };
+  const handleDevices = () => {
+    setIsUserMenuOpen(false);
+    navigate("/devices");
+  };
+  const handleNotifications = () => {
+    if (!currentUserKey || notificationCount === 0) {
+      return;
+    }
+
+    markAllLocalNotificationsRead(currentUserKey);
+    setNotificationCount(0);
+
+    if (location.pathname === "/devices") {
+      window.requestAnimationFrame(() => {
+        document
+          .getElementById("devices")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      return;
+    }
+
+    navigate("/devices#devices");
+  };
+
+  useEffect(() => {
+    if (!currentUserKey) {
+      setNotificationCount(0);
+      return;
+    }
+
+    const updateCount = () => {
+      setNotificationCount(getUnreadLocalNotificationCount(currentUserKey));
+    };
+
+    updateCount();
+    return subscribeLocalNotifications(currentUserKey, updateCount);
+  }, [currentUserKey]);
 
   useEffect(() => {
     if (!isUserMenuOpen) {
@@ -104,18 +157,29 @@ export function TopBar() {
         </div>
 
         <div className="flex min-w-0 flex-1 items-center gap-2 lg:hidden">
-          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-slate-900 font-bold text-white">
-            LM
+          <BrandMark size="sm" />
+          <span className="truncate font-bold text-slate-950">
+            {appBrand.name}
           </span>
-          <span className="truncate font-bold text-slate-950">LeaseMate</span>
         </div>
 
         <button
           aria-label={t("shell.notifications")}
-          className="inline-grid size-10 place-items-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+          className="relative inline-grid size-10 place-items-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+          title={
+            notificationCount > 0
+              ? t("notifications.otherDeviceLoggedIn")
+              : t("shell.notifications")
+          }
           type="button"
+          onClick={handleNotifications}
         >
           <Bell aria-hidden="true" size={18} />
+          {notificationCount > 0 && (
+            <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-5 text-white">
+              +{notificationCount}
+            </span>
+          )}
         </button>
 
         <div ref={userMenuRef} className="relative">
@@ -160,6 +224,11 @@ export function TopBar() {
                   icon={User}
                   label={t("shell.profile")}
                   onClick={handleProfile}
+                />
+                <UserMenuButton
+                  icon={MonitorSmartphone}
+                  label={t("shell.security")}
+                  onClick={handleDevices}
                 />
               </div>
               <div className="border-t border-slate-100 p-1.5">

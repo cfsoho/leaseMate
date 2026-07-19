@@ -100,7 +100,7 @@ function NavSection({
                   "flex min-h-10 items-center rounded-lg text-sm font-semibold",
                   isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5",
                   isActive
-                    ? "bg-slate-950 text-white"
+                    ? "lm-button-primary"
                     : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
                 ].join(" ")
               }
@@ -166,7 +166,7 @@ function AdminNavSection({
             "flex min-h-10 w-full items-center rounded-lg text-sm font-semibold",
             isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5",
             isReferenceActive
-              ? "bg-slate-950 text-white"
+              ? "lm-button-primary"
               : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
           ].join(" ")}
           type="button"
@@ -213,7 +213,7 @@ function AdminNavSection({
                       [
                         "flex min-h-9 items-center rounded-lg px-2.5 text-sm font-semibold whitespace-nowrap",
                         isActive
-                          ? "bg-slate-950 text-white"
+                          ? "lm-button-primary"
                           : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
                       ].join(" ")
                     }
@@ -250,7 +250,7 @@ function AdminNavSection({
               "flex min-h-10 items-center rounded-lg text-sm font-semibold",
               isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5",
               isActive
-                ? "bg-slate-950 text-white"
+                ? "lm-button-primary"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
             ].join(" ")
           }

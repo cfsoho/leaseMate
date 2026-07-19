@@ -1,20 +1,103 @@
+import { lazy, Suspense, type ComponentType, type ReactNode } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import { RouteLocaleProvider } from "./RouteLocaleProvider";
 import { AppLayout } from "../components/layout/AppLayout";
-import { BootstrapGate } from "../components/layout/BootstrapGate";
-import { BankAccountsPage } from "../pages/BankAccountsPage";
-import { BootstrapAdminPage } from "../pages/BootstrapAdminPage";
-import { DashboardPage } from "../pages/DashboardPage";
-import { EmailConfirmationPage } from "../pages/EmailConfirmationPage";
-import { EmailLinksPage } from "../pages/EmailLinksPage";
-import { ExpensesPage } from "../pages/ExpensesPage";
-import { LoginPage } from "../pages/LoginPage";
-import { NotFoundPage } from "../pages/NotFoundPage";
-import { ProfilePage } from "../pages/ProfilePage";
-import { ReferenceListsPage } from "../pages/ReferenceListsPage";
-import { UnderConstructionPage } from "../pages/UnderConstructionPage";
-import { UsersPage } from "../pages/UsersPage";
+import {
+  BootstrapGate,
+  BootstrapRedirectGate,
+} from "../components/layout/BootstrapGate";
+import { ForcedLightTheme } from "../lib/theme/ForcedLightTheme";
+
+type UnderConstructionPageProps = {
+  titleKey: string;
+};
+
+function lazyNamed<TProps = Record<string, never>>(
+  loader: () => Promise<unknown>,
+  exportName: string,
+) {
+  return lazy(async () => {
+    const module = (await loader()) as Record<string, ComponentType<TProps>>;
+
+    return {
+      default: module[exportName],
+    };
+  });
+}
+
+const BankAccountsPage = lazyNamed(
+  () => import("../pages/BankAccountsPage"),
+  "BankAccountsPage",
+);
+const BootstrapAdminPage = lazyNamed(
+  () => import("../pages/BootstrapAdminPage"),
+  "BootstrapAdminPage",
+);
+const DashboardPage = lazyNamed(
+  () => import("../pages/DashboardPage"),
+  "DashboardPage",
+);
+const DevicesPage = lazyNamed(
+  () => import("../pages/DevicesPage"),
+  "DevicesPage",
+);
+const EmailConfirmationPage = lazyNamed(
+  () => import("../pages/EmailConfirmationPage"),
+  "EmailConfirmationPage",
+);
+const EmailLinksPage = lazyNamed(
+  () => import("../pages/EmailLinksPage"),
+  "EmailLinksPage",
+);
+const ExpensesPage = lazyNamed(
+  () => import("../pages/ExpensesPage"),
+  "ExpensesPage",
+);
+const ForgotPasswordPage = lazyNamed(
+  () => import("../pages/ForgotPasswordPage"),
+  "ForgotPasswordPage",
+);
+const LoginPage = lazyNamed(() => import("../pages/LoginPage"), "LoginPage");
+const NotFoundPage = lazyNamed(
+  () => import("../pages/NotFoundPage"),
+  "NotFoundPage",
+);
+const ProfilePage = lazyNamed(
+  () => import("../pages/ProfilePage"),
+  "ProfilePage",
+);
+const ReferenceListsPage = lazyNamed(
+  () => import("../pages/ReferenceListsPage"),
+  "ReferenceListsPage",
+);
+const ResetPasswordPage = lazyNamed(
+  () => import("../pages/ResetPasswordPage"),
+  "ResetPasswordPage",
+);
+const UnderConstructionPage = lazyNamed<UnderConstructionPageProps>(
+  () => import("../pages/UnderConstructionPage"),
+  "UnderConstructionPage",
+);
+const UsersPage = lazyNamed(() => import("../pages/UsersPage"), "UsersPage");
+
+function withRouteFallback(element: ReactNode) {
+  return (
+    <Suspense
+      fallback={
+        <div className="grid min-h-[220px] place-items-center">
+          <span
+            aria-label="Loading"
+            className="size-8 animate-spin rounded-full border-2 border-slate-300 border-t-slate-950"
+            role="status"
+          />
+        </div>
+      }
+    >
+      {element}
+    </Suspense>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -26,49 +109,106 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: "dashboard", element: <DashboardPage /> },
-      { path: "bank-accounts", element: <BankAccountsPage /> },
+      { path: "dashboard", element: withRouteFallback(<DashboardPage />) },
+      {
+        path: "bank-accounts",
+        element: withRouteFallback(<BankAccountsPage />),
+      },
       {
         path: "properties",
-        element: <UnderConstructionPage titleKey="nav.properties" />,
+        element: withRouteFallback(
+          <UnderConstructionPage titleKey="nav.properties" />,
+        ),
       },
       {
         path: "leases",
-        element: <UnderConstructionPage titleKey="nav.leases" />,
+        element: withRouteFallback(
+          <UnderConstructionPage titleKey="nav.leases" />,
+        ),
       },
-      { path: "expenses", element: <ExpensesPage /> },
+      { path: "expenses", element: withRouteFallback(<ExpensesPage />) },
       {
         path: "documents",
-        element: <UnderConstructionPage titleKey="nav.documents" />,
+        element: withRouteFallback(
+          <UnderConstructionPage titleKey="nav.documents" />,
+        ),
       },
-      { path: "profile", element: <ProfilePage /> },
-      { path: "setup-lists", element: <ReferenceListsPage /> },
-      { path: "setup-lists/:listSlug", element: <ReferenceListsPage /> },
-      { path: "users", element: <UsersPage /> },
-      { path: "email-links", element: <EmailLinksPage /> },
+      { path: "profile", element: withRouteFallback(<ProfilePage />) },
+      { path: "devices", element: withRouteFallback(<DevicesPage />) },
+      {
+        path: "setup-lists",
+        element: withRouteFallback(<ReferenceListsPage />),
+      },
+      {
+        path: "setup-lists/:listSlug",
+        element: withRouteFallback(<ReferenceListsPage />),
+      },
+      { path: "users", element: withRouteFallback(<UsersPage />) },
+      { path: "email-links", element: withRouteFallback(<EmailLinksPage />) },
       {
         path: "settings",
-        element: <UnderConstructionPage titleKey="nav.settings" />,
+        element: withRouteFallback(
+          <UnderConstructionPage titleKey="nav.settings" />,
+        ),
       },
-      { path: "*", element: <NotFoundPage /> },
+      { path: "*", element: withRouteFallback(<NotFoundPage />) },
     ],
   },
   {
     path: "/bootstrap-admin",
-    element: (
-      <RouteLocaleProvider>
-        <BootstrapAdminPage />
-      </RouteLocaleProvider>
+    element: withRouteFallback(
+      <ForcedLightTheme>
+        <RouteLocaleProvider>
+          <BootstrapAdminPage />
+        </RouteLocaleProvider>
+      </ForcedLightTheme>,
     ),
   },
-  { path: "/login", element: <LoginPage /> },
+  {
+    path: "/login",
+    element: withRouteFallback(
+      <ForcedLightTheme>
+        <BootstrapRedirectGate>
+          <LoginPage />
+        </BootstrapRedirectGate>
+      </ForcedLightTheme>,
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: withRouteFallback(
+      <ForcedLightTheme>
+        <BootstrapRedirectGate>
+          <RouteLocaleProvider>
+            <ForgotPasswordPage />
+          </RouteLocaleProvider>
+        </BootstrapRedirectGate>
+      </ForcedLightTheme>,
+    ),
+  },
+  {
+    path: "/reset-password/:token",
+    element: withRouteFallback(
+      <ForcedLightTheme>
+        <BootstrapRedirectGate>
+          <RouteLocaleProvider>
+            <ResetPasswordPage />
+          </RouteLocaleProvider>
+        </BootstrapRedirectGate>
+      </ForcedLightTheme>,
+    ),
+  },
   {
     path: "/confirm-email/:token",
-    element: (
-      <RouteLocaleProvider>
-        <EmailConfirmationPage />
-      </RouteLocaleProvider>
+    element: withRouteFallback(
+      <ForcedLightTheme>
+        <BootstrapRedirectGate>
+          <RouteLocaleProvider>
+            <EmailConfirmationPage />
+          </RouteLocaleProvider>
+        </BootstrapRedirectGate>
+      </ForcedLightTheme>,
     ),
   },
-  { path: "*", element: <NotFoundPage /> },
+  { path: "*", element: withRouteFallback(<NotFoundPage />) },
 ]);

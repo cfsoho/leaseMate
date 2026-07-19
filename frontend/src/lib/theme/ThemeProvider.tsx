@@ -1,27 +1,30 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import type { PropsWithChildren } from "react";
 
+import { getCurrentUser, updateCurrentUser } from "../../features/auth/authApi";
+import { AUTH_TOKEN_CHANGE_EVENT, getAccessToken } from "../auth/tokenStorage";
 import {
   ThemeContext,
   type ResolvedTheme,
   type ThemePreference,
 } from "./themeContext";
 
-const THEME_STORAGE_KEY = "leasemate.themePreference";
 const AUTO_DARK_START_HOUR = 18;
 const AUTO_DARK_END_HOUR = 6;
+const FORCE_THEME_EVENT = "leasemate:force-theme";
 
-function isThemePreference(value: string | null): value is ThemePreference {
+function isThemePreference(value: string | null | undefined): value is ThemePreference {
   return value === "light" || value === "dark" || value === "auto";
 }
 
-function getStoredPreference(): ThemePreference {
-  if (typeof window === "undefined") {
-    return "light";
+function getForcedTheme(): ResolvedTheme | null {
+  if (typeof document === "undefined") {
+    return null;
   }
 
-  const storedPreference = window.localStorage.getItem(THEME_STORAGE_KEY);
-  return isThemePreference(storedPreference) ? storedPreference : "light";
+  const forcedTheme = document.documentElement.dataset.forceTheme;
+  return forcedTheme === "light" || forcedTheme === "dark" ? forcedTheme : null;
 }
 
 function resolveTheme(preference: ThemePreference): ResolvedTheme {
@@ -35,12 +38,68 @@ function resolveTheme(preference: ThemePreference): ResolvedTheme {
     : "light";
 }
 
+function hasAccessToken() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return Boolean(getAccessToken());
+}
+
 export function ThemeProvider({ children }: PropsWithChildren) {
-  const [preference, setPreferenceState] =
-    useState<ThemePreference>(getStoredPreference);
+  const queryClient = useQueryClient();
+  const [fallbackPreference, setFallbackPreference] =
+    useState<ThemePreference>("light");
+  const [forcedTheme, setForcedTheme] =
+    useState<ResolvedTheme | null>(getForcedTheme);
+  const [isAuthenticated, setIsAuthenticated] = useState(hasAccessToken);
+
+  const currentUser = useQuery({
+    queryKey: ["current-user"],
+    queryFn: getCurrentUser,
+    enabled: isAuthenticated,
+    retry: false,
+    staleTime: 30_000,
+  });
+
+  const userPreference = currentUser.data?.theme_preference;
+  const preference = isThemePreference(userPreference)
+    ? userPreference
+    : fallbackPreference;
+
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
-    resolveTheme(getStoredPreference()),
+    resolveTheme(preference),
   );
+  const effectiveTheme = forcedTheme ?? resolvedTheme;
+
+  const updateThemePreference = useMutation({
+    mutationFn: (nextPreference: ThemePreference) =>
+      updateCurrentUser({ theme_preference: nextPreference }),
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["current-user"], updatedUser);
+    },
+  });
+
+  useEffect(() => {
+    const updateForcedTheme = () => setForcedTheme(getForcedTheme());
+
+    window.addEventListener(FORCE_THEME_EVENT, updateForcedTheme);
+    return () => window.removeEventListener(FORCE_THEME_EVENT, updateForcedTheme);
+  }, []);
+
+  useEffect(() => {
+    const updateAuthenticationState = () => {
+      const hasToken = hasAccessToken();
+      setIsAuthenticated(hasToken);
+      if (!hasToken) {
+        queryClient.removeQueries({ queryKey: ["current-user"] });
+      }
+    };
+
+    window.addEventListener(AUTH_TOKEN_CHANGE_EVENT, updateAuthenticationState);
+    return () =>
+      window.removeEventListener(AUTH_TOKEN_CHANGE_EVENT, updateAuthenticationState);
+  }, [queryClient]);
 
   useEffect(() => {
     const updateResolvedTheme = () => {
@@ -57,23 +116,39 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   }, [preference]);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = resolvedTheme;
-    document.documentElement.style.colorScheme = resolvedTheme;
-  }, [resolvedTheme]);
+    document.documentElement.dataset.theme = effectiveTheme;
+    document.documentElement.style.colorScheme = effectiveTheme;
+  }, [effectiveTheme]);
 
   const value = useMemo(
     () => ({
       preference,
-      resolvedTheme,
+      resolvedTheme: effectiveTheme,
       setPreference: (nextPreference: ThemePreference) => {
-        window.localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
-        setPreferenceState(nextPreference);
+        setFallbackPreference(nextPreference);
+        if (hasAccessToken()) {
+          updateThemePreference.mutate(nextPreference);
+        }
       },
     }),
-    [preference, resolvedTheme],
+    [effectiveTheme, preference, updateThemePreference],
   );
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
+}
+
+export function setForcedTheme(theme: ResolvedTheme | null) {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  if (theme) {
+    document.documentElement.dataset.forceTheme = theme;
+  } else {
+    delete document.documentElement.dataset.forceTheme;
+  }
+
+  window.dispatchEvent(new Event(FORCE_THEME_EVENT));
 }

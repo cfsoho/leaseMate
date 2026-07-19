@@ -59,13 +59,13 @@ export function SearchableSelect({
   }, [isOpen]);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="lm-searchable-select">
       <button
         aria-expanded={isOpen}
         className={[
-          inputBaseClass,
-          "flex items-center justify-between gap-2 text-left font-normal",
-          disabled ? "cursor-not-allowed bg-slate-50 opacity-70" : "bg-white",
+          "lm-form-input",
+          "lm-searchable-select-button",
+          disabled ? "lm-searchable-select-button-disabled" : "",
         ].join(" ")}
         disabled={disabled}
         type="button"
@@ -76,29 +76,33 @@ export function SearchableSelect({
           }
         }}
       >
-        <span className="truncate">
+        <span className="lm-searchable-select-text">
           {selectedOption?.label || placeholder}
         </span>
-        <ChevronDown aria-hidden="true" className="shrink-0 text-slate-400" size={16} />
+        <ChevronDown
+          aria-hidden="true"
+          className="lm-searchable-select-icon"
+          size={16}
+        />
       </button>
       {isOpen && (
-        <div className="absolute z-30 mt-1 grid max-h-72 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
-          <label className="relative border-b border-slate-100">
+        <div className="lm-searchable-select-menu">
+          <label className="lm-searchable-select-search">
             <Search
               aria-hidden="true"
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              className="lm-searchable-select-search-icon"
               size={16}
             />
             <input
               autoFocus
-              className="h-10 w-full px-9 text-sm outline-none"
+              className="lm-searchable-select-search-input"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
-          <div className="max-h-60 overflow-y-auto p-1">
+          <div className="lm-searchable-select-options">
             {filteredOptions.length === 0 ? (
-              <div className="px-3 py-2 text-sm font-semibold text-slate-500">
+              <div className="lm-searchable-select-empty">
                 No matches
               </div>
             ) : (
@@ -106,10 +110,10 @@ export function SearchableSelect({
                 <button
                   key={option.value}
                   className={[
-                    "flex min-h-9 w-full items-center rounded-md px-3 text-left text-sm font-semibold hover:bg-slate-100",
+                    "lm-searchable-select-option",
                     option.value === value
-                      ? "bg-slate-100 text-slate-950"
-                      : "text-slate-700",
+                      ? "lm-searchable-select-option-selected"
+                      : "",
                   ].join(" ")}
                   type="button"
                   onClick={() => {
@@ -128,6 +132,3 @@ export function SearchableSelect({
     </div>
   );
 }
-
-const inputBaseClass =
-  "min-h-[42px] w-full rounded-lg border border-slate-300 px-3 text-slate-950 outline-none focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10";

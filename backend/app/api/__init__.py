@@ -20,6 +20,7 @@ from app.api.payment_coverage import router as payment_coverage_router
 from app.api.property import router as property_router
 from app.api.property_access import router as property_access_router
 from app.api.recurring_expense_schedule import router as recurring_expense_schedule_router
+from app.api.realtime import router as realtime_router
 from app.api.ref.property_access_level import router as property_access_level_router
 from app.api.ref.role import router as role_router
 from app.api.ref.ref_code import router as ref_code_router
@@ -58,6 +59,7 @@ all_routers = [
     property_router,
     property_access_router,
     recurring_expense_schedule_router,
+    realtime_router,
     property_access_level_router,
     ref_code_router,
     region_router,

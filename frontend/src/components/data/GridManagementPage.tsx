@@ -238,7 +238,7 @@ export function GridManagementPage<TRecord extends { id: string }>({
         >
           <div className="grid gap-3">
             <button
-              className="justify-self-start rounded-md border border-slate-300 bg-slate-950 px-3 py-2 text-sm font-normal text-white hover:bg-slate-800"
+              className="lm-button-primary justify-self-start rounded-md border px-3 py-2 text-sm font-normal"
               type="button"
               onClick={() => setAllVisibleColumns(!areAllColumnsVisible)}
             >

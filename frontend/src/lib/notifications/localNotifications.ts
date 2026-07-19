@@ -51,6 +51,15 @@ export function markAllLocalNotificationsRead(userKey: string) {
   emitNotificationChange(userKey);
 }
 
+export function removeLocalNotification(userKey: string, notificationId: string) {
+  const notifications = readNotifications(userKey).filter(
+    (notification) => notification.id !== notificationId,
+  );
+
+  writeNotifications(userKey, notifications);
+  emitNotificationChange(userKey);
+}
+
 export function subscribeLocalNotifications(
   userKey: string,
   callback: () => void,

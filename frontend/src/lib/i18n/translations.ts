@@ -344,7 +344,10 @@ export type TranslationKey =
   | "shell.languagePreferences"
   | "shell.logOut"
   | "shell.notifications"
+  | "notifications.none"
+  | "notifications.openSecurity"
   | "notifications.otherDeviceLoggedIn"
+  | "notifications.otherDeviceLoggedInBody"
   | "shell.openNavigation"
   | "shell.profile"
   | "shell.searchPlaceholder"
@@ -767,7 +770,10 @@ export const translations: Record<
     "shell.languagePreferences": "Language preferences",
     "shell.logOut": "Log out",
     "shell.notifications": "Notifications",
+    "notifications.none": "No notifications.",
+    "notifications.openSecurity": "Open Security to review this item.",
     "notifications.otherDeviceLoggedIn": "Another device signed in",
+    "notifications.otherDeviceLoggedInBody": "A new device signed in to your account.",
     "shell.openNavigation": "Open navigation",
     "shell.profile": "Profile",
     "shell.searchPlaceholder": "Search properties, leases, expenses...",
@@ -1186,7 +1192,10 @@ export const translations: Record<
     "shell.languagePreferences": "言語設定",
     "shell.logOut": "ログアウト",
     "shell.notifications": "通知",
+    "notifications.none": "通知はありません。",
+    "notifications.openSecurity": "セキュリティを開いて確認してください。",
     "notifications.otherDeviceLoggedIn": "別のデバイスでログインしました",
+    "notifications.otherDeviceLoggedInBody": "新しいデバイスでこのアカウントにログインしました。",
     "shell.openNavigation": "ナビゲーションを開く",
     "shell.profile": "プロフィール",
     "shell.searchPlaceholder": "物件、契約、経費を検索...",
@@ -1605,7 +1614,10 @@ export const translations: Record<
     "shell.languagePreferences": "語言偏好",
     "shell.logOut": "登出",
     "shell.notifications": "通知",
+    "notifications.none": "沒有通知。",
+    "notifications.openSecurity": "開啟安全性頁面查看此項目。",
     "notifications.otherDeviceLoggedIn": "其他裝置已登入",
+    "notifications.otherDeviceLoggedInBody": "有新裝置登入了你的帳戶。",
     "shell.openNavigation": "開啟導覽",
     "shell.profile": "個人資料",
     "shell.searchPlaceholder": "搜尋物業、租約、支出...",
@@ -2024,7 +2036,10 @@ export const translations: Record<
     "shell.languagePreferences": "語言偏好",
     "shell.logOut": "登出",
     "shell.notifications": "通知",
+    "notifications.none": "冇通知。",
+    "notifications.openSecurity": "開啟安全頁面查看呢個項目。",
     "notifications.otherDeviceLoggedIn": "其他裝置已登入",
+    "notifications.otherDeviceLoggedInBody": "有新裝置登入咗你嘅帳戶。",
     "shell.openNavigation": "開啟導覽",
     "shell.profile": "個人資料",
     "shell.searchPlaceholder": "搜尋物業、租約、開支...",
@@ -2443,7 +2458,10 @@ export const translations: Record<
     "shell.languagePreferences": "ตั้งค่าภาษา",
     "shell.logOut": "ออกจากระบบ",
     "shell.notifications": "การแจ้งเตือน",
+    "notifications.none": "ไม่มีการแจ้งเตือน",
+    "notifications.openSecurity": "เปิดหน้าความปลอดภัยเพื่อตรวจสอบรายการนี้",
     "notifications.otherDeviceLoggedIn": "มีอุปกรณ์อื่นเข้าสู่ระบบ",
+    "notifications.otherDeviceLoggedInBody": "มีอุปกรณ์ใหม่เข้าสู่ระบบบัญชีของคุณ",
     "shell.openNavigation": "เปิดเมนู",
     "shell.profile": "โปรไฟล์",
     "shell.searchPlaceholder": "ค้นหาทรัพย์สิน สัญญาเช่า ค่าใช้จ่าย...",

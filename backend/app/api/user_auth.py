@@ -435,7 +435,7 @@ def refresh_access_token(
 
 
 @router.post("/logout")
-def logout(
+async def logout(
     payload: RefreshTokenRequest,
     db: Session = Depends(get_db)
 ):
@@ -446,6 +446,14 @@ def logout(
             status_code=404,
             detail="Refresh token not found"
         )
+
+    user_id, session_id = revoked
+    await _notify_user_sessions_changed(
+        db,
+        user_id,
+        {session_id},
+        {"reason": "device_logged_out", "session_id": str(session_id)},
+    )
 
     return {
         "message": "Logged out successfully"
@@ -487,6 +495,13 @@ def my_login_sessions(
             "is_online": session_status == "online",
             "session_status": session_status,
         })
+    payload.sort(
+        key=lambda session: (
+            session["is_current"],
+            session["last_used_at"] or session["created_at"],
+        ),
+        reverse=True,
+    )
     return payload
 
 
@@ -525,6 +540,15 @@ async def _notify_login_created(
     if not current_session_id:
         return
 
+    current_session = next(
+        (
+            session
+            for session in list_user_login_sessions(db, user_id)
+            if session.id == current_session_id
+        ),
+        None,
+    )
+
     await _notify_user_sessions_changed(
         db,
         user_id,
@@ -532,6 +556,7 @@ async def _notify_login_created(
         {
             "reason": "device_logged_in",
             "session_id": str(current_session_id),
+            "device_info": current_session.device_info if current_session else "",
         },
     )
 

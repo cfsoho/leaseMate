@@ -1225,7 +1225,7 @@ def create_access_token_from_refresh_token(
 def revoke_refresh_token(
     db: Session,
     raw_token: str
-) -> bool:
+) -> tuple[UUID, UUID] | None:
     token_hash = hash_token(raw_token)
 
     refresh_token = (
@@ -1235,12 +1235,14 @@ def revoke_refresh_token(
     )
 
     if not refresh_token:
-        return False
+        return None
 
     refresh_token.revoked_at = now_utc()
+    user_id = refresh_token.user_id
+    session_id = refresh_token.id
     db.commit()
 
-    return True
+    return user_id, session_id
 
 
 def deactivate_user(

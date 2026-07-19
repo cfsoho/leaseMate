@@ -12,6 +12,10 @@ import {
 import { startAppLogoutTransition } from "../../features/auth/authUiTransition";
 import type { UserLoginSession } from "../../features/auth/authTypes";
 import { clearTokens, getRefreshToken } from "../../lib/auth/tokenStorage";
+import {
+  formatDeviceTitle,
+  isMobileDevice,
+} from "../../lib/device/deviceDisplay";
 import { clearStoredLocale } from "../../lib/i18n/LocaleProvider";
 import type { TranslationKey } from "../../lib/i18n/translations";
 import { useTranslation } from "../../lib/i18n/useTranslation";
@@ -119,13 +123,13 @@ export function LoginSessionsPanel() {
   }, [sessions.data]);
 
   return (
-    <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
+    <section className="login-sessions-card grid gap-4 rounded-lg border p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid gap-1">
-          <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <h2 className="login-sessions-title text-sm font-bold uppercase tracking-wide">
             {t("security.devicesTitle")}
           </h2>
-          <p className="m-0 text-sm font-normal leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="login-sessions-description m-0 text-sm font-normal leading-relaxed">
             {t("security.devicesDescription")}
           </p>
         </div>
@@ -229,21 +233,21 @@ function SessionPanel({
   return (
     <article
       className={[
-        "login-session-row grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center",
+        "login-session-row grid gap-3 rounded-lg border p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center",
         isEntering ? "login-session-entering" : "",
         isLeaving ? "login-session-leaving" : "",
       ].join(" ")}
     >
       <div className="flex min-w-0 items-start gap-3">
-        <span className="mt-0.5 inline-grid size-8 shrink-0 place-items-center rounded-md bg-slate-950 text-white dark:bg-white dark:text-slate-950">
+        <span className="login-session-icon mt-0.5 inline-grid size-8 shrink-0 place-items-center rounded-md">
           <DeviceIcon aria-hidden="true" size={16} />
         </span>
         <div className="min-w-0">
-          <p className="m-0 truncate text-sm font-semibold text-slate-950 dark:text-slate-50">
+          <p className="login-session-name m-0 truncate text-sm font-semibold">
             {title}
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="inline-flex items-center gap-1.5 text-xs font-normal text-slate-600 dark:text-slate-300">
+            <span className="login-session-state inline-flex items-center gap-1.5 text-xs font-normal">
               <span
                 aria-hidden="true"
                 className={[
@@ -254,37 +258,37 @@ function SessionPanel({
               {sessionStateLabel}
             </span>
             {session.is_current && (
-              <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs font-normal text-slate-700 dark:bg-slate-700 dark:text-slate-100">
+              <span className="login-session-current rounded-full px-2 py-0.5 text-xs font-normal">
                 {t("security.currentDevice")}
               </span>
             )}
           </div>
-          <p className="m-0 text-xs font-normal text-slate-500 dark:text-slate-400">
+          <p className="login-session-meta m-0 text-xs font-normal">
             {withToken(
               t("security.createdAt"),
               "date",
               formatDate(session.created_at, locale),
             )}
           </p>
-          <p className="m-0 text-xs font-normal text-slate-500 dark:text-slate-400">
+          <p className="login-session-meta m-0 text-xs font-normal">
             {withToken(
               t("security.expiresAt"),
               "date",
               formatDate(session.expires_at, locale),
             )}
           </p>
-          <p className="m-0 text-xs font-normal text-slate-500 dark:text-slate-400">
+          <p className="login-session-meta m-0 text-xs font-normal">
             {withToken(
               t("security.lastUsedAt"),
               "date",
               formatDate(session.last_used_at, locale),
             )}
           </p>
-          <p className="m-0 text-xs font-normal text-slate-500 dark:text-slate-400">
+          <p className="login-session-meta m-0 text-xs font-normal">
             {location}
           </p>
           {session.ip_address && (
-            <p className="m-0 text-xs font-normal text-slate-500 dark:text-slate-400">
+            <p className="login-session-meta m-0 text-xs font-normal">
               {withToken(t("security.ipAddress"), "ip", session.ip_address)}
             </p>
           )}
@@ -326,73 +330,8 @@ function getLocationLabel(
   return t("security.locationNotAvailable");
 }
 
-function formatDeviceTitle(
-  userAgent: string | null | undefined,
-  t: (key: TranslationKey) => string,
-) {
-  if (!userAgent) {
-    return t("security.browserSession");
-  }
-
-  const browser = getBrowserName(userAgent);
-  const platform = getPlatformName(userAgent);
-
-  if (browser && platform) {
-    return `${browser} on ${platform}`;
-  }
-
-  return browser || platform || t("security.browserSession");
-}
-
 function withToken(template: string, token: string, value: string) {
   return template.replace(`{${token}}`, value);
-}
-
-function isMobileDevice(userAgent: string | null | undefined) {
-  return Boolean(userAgent && /iPhone|iPad|Android|Mobile/i.test(userAgent));
-}
-
-function getBrowserName(userAgent: string) {
-  if (/Edg\//.test(userAgent)) {
-    return "Microsoft Edge";
-  }
-  if (/CriOS\//.test(userAgent)) {
-    return "Chrome";
-  }
-  if (/Chrome\//.test(userAgent) && !/Chromium\//.test(userAgent)) {
-    return "Chrome";
-  }
-  if (/Firefox\//.test(userAgent) || /FxiOS\//.test(userAgent)) {
-    return "Firefox";
-  }
-  if (/Safari\//.test(userAgent) && !/Chrome\//.test(userAgent)) {
-    return "Safari";
-  }
-
-  return "";
-}
-
-function getPlatformName(userAgent: string) {
-  if (/iPhone/.test(userAgent)) {
-    return "iPhone";
-  }
-  if (/iPad/.test(userAgent)) {
-    return "iPad";
-  }
-  if (/Macintosh/.test(userAgent)) {
-    return "Mac";
-  }
-  if (/Android/.test(userAgent)) {
-    return "Android";
-  }
-  if (/Windows/.test(userAgent)) {
-    return "Windows";
-  }
-  if (/Linux/.test(userAgent)) {
-    return "Linux";
-  }
-
-  return "";
 }
 
 function isLocalAddress(ipAddress: string | null | undefined) {
@@ -420,10 +359,8 @@ function SessionNotice({
   return (
     <p
       className={[
-        "m-0 rounded-lg border p-3 text-sm font-normal",
-        tone === "error"
-          ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-200"
-          : "border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300",
+        "login-session-notice m-0 rounded-lg border p-3 text-sm font-normal",
+        tone === "error" ? "login-session-notice-error" : "",
       ].join(" ")}
     >
       {message}

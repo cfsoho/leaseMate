@@ -68,6 +68,13 @@ export function login(payload: LoginPayload) {
   });
 }
 
+export function logout(refreshToken: string) {
+  return apiRequest<{ message: string }>("/user-auth/logout", {
+    method: "POST",
+    body: { refresh_token: refreshToken },
+  });
+}
+
 export function createPasskeyAuthenticationOptions(email?: string) {
   return apiRequest<PasskeyOptionsResponse>(
     "/user-auth/passkeys/authentication-options",

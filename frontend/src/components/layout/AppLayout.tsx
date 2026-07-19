@@ -14,6 +14,7 @@ import {
   getAccessToken,
 } from "../../lib/auth/tokenStorage";
 import { API_ACTIVITY_EVENT } from "../../lib/api/client";
+import { formatDeviceTitle } from "../../lib/device/deviceDisplay";
 import { clearStoredLocale } from "../../lib/i18n/LocaleProvider";
 import { useLocaleContext } from "../../lib/i18n/localeContext";
 import { isSupportedLocale } from "../../lib/i18n/localeUtils";
@@ -118,6 +119,10 @@ export function AppLayout() {
               sessionId:
                 typeof realtimeEvent.payload.session_id === "string"
                   ? realtimeEvent.payload.session_id
+                  : "",
+              device:
+                typeof realtimeEvent.payload.device_info === "string"
+                  ? formatDeviceTitle(realtimeEvent.payload.device_info, t)
                   : "",
             },
           });

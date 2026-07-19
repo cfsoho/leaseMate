@@ -439,3 +439,72 @@
 :root[data-theme="light"] .dashboard-progress-danger::-moz-progress-bar {
   background-color: #f43f5e;
 }
+
+:root .login-sessions-card,
+:root[data-theme="light"] .login-sessions-card {
+  border-color: #e2e8f0;
+  background-color: #ffffff;
+}
+
+:root .login-sessions-title,
+:root[data-theme="light"] .login-sessions-title {
+  color: #64748b;
+}
+
+:root .login-sessions-description,
+:root[data-theme="light"] .login-sessions-description {
+  color: #475569;
+}
+
+:root .login-session-row,
+:root[data-theme="light"] .login-session-row {
+  border-color: #e2e8f0;
+  background-color: #f8fafc;
+}
+
+:root .login-session-icon,
+:root[data-theme="light"] .login-session-icon {
+  background-color: #020617;
+  color: #ffffff;
+}
+
+:root .login-session-icon svg,
+:root[data-theme="light"] .login-session-icon svg {
+  color: currentColor;
+  stroke: currentColor;
+}
+
+:root .login-session-name,
+:root[data-theme="light"] .login-session-name {
+  color: #020617;
+}
+
+:root .login-session-state,
+:root[data-theme="light"] .login-session-state {
+  color: #475569;
+}
+
+:root .login-session-current,
+:root[data-theme="light"] .login-session-current {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+:root .login-session-meta,
+:root[data-theme="light"] .login-session-meta {
+  color: #64748b;
+}
+
+:root .login-session-notice,
+:root[data-theme="light"] .login-session-notice {
+  border-color: #e2e8f0;
+  background-color: #f8fafc;
+  color: #475569;
+}
+
+:root .login-session-notice-error,
+:root[data-theme="light"] .login-session-notice-error {
+  border-color: #fecaca;
+  background-color: #fef2f2;
+  color: #b91c1c;
+}

@@ -434,3 +434,60 @@
 :root[data-theme="dark"] .dashboard-progress-danger::-moz-progress-bar {
   background-color: #fb7185;
 }
+
+:root[data-theme="dark"] .login-sessions-card {
+  border-color: #334155;
+  background-color: #111827;
+}
+
+:root[data-theme="dark"] .login-sessions-title {
+  color: #94a3b8;
+}
+
+:root[data-theme="dark"] .login-sessions-description {
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .login-session-row {
+  border-color: #334155;
+  background-color: #0f172a;
+}
+
+:root[data-theme="dark"] .login-session-icon {
+  background-color: #ffffff;
+  color: #020617;
+}
+
+:root[data-theme="dark"] .login-session-icon svg {
+  color: currentColor;
+  stroke: currentColor;
+}
+
+:root[data-theme="dark"] .login-session-name {
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .login-session-state {
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .login-session-current {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+:root[data-theme="dark"] .login-session-meta {
+  color: #94a3b8;
+}
+
+:root[data-theme="dark"] .login-session-notice {
+  border-color: #334155;
+  background-color: #0f172a;
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .login-session-notice-error {
+  border-color: #7f1d1d;
+  background-color: #450a0a;
+  color: #fecaca;
+}

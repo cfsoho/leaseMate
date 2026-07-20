@@ -158,8 +158,12 @@ export function EmailLinksPage() {
           firstPage: t("grid.firstPage"),
           lastPage: t("grid.lastPage"),
           nextPage: t("grid.nextPage"),
+          paginationMode: t("grid.pagination"),
           previousPage: t("grid.previousPage"),
           rows: t("grid.rows"),
+          showAllMode: t("grid.showAllRows"),
+          switchToPagination: t("grid.switchToPagination"),
+          switchToShowAll: t("grid.switchToShowAll"),
         }}
         pageSize={pageSize}
         records={activeEmailLinks.data ?? []}

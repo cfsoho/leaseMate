@@ -1,12 +1,13 @@
 import uuid
 
 from sqlalchemy import (
+    Boolean,
     Column,
     String,
     DateTime,
     ForeignKey,
     func,
-    UniqueConstraint,
+    Index,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -80,14 +81,43 @@ class UserLegalName(Base):
         onupdate=func.now()
     )
 
-    # Prevent duplicate official name entry for the same user,
-    # country, and locale.
+    # Soft-delete marker. Deleted legal names are hidden from normal profile
+    # display, but can be restored when the exact same legal name is added again.
+    is_deleted = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        index=True
+    )
+
+    # UTC timestamp when this legal name was soft-deleted.
+    deleted_at = Column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+
+    # User UUID that performed the soft delete.
+    deleted_by = Column(
+        UUID(as_uuid=True),
+        nullable=True,
+        index=True
+    )
+
+    # Prevent duplicate active official-name entries for the same user,
+    # country, locale, and exact legal name.
+    #
+    # The same country/locale can legitimately have more than one legal name.
+    # Example: a user may own some Thailand properties under a US passport name
+    # and others under a Taiwan passport name, both written in English.
     __table_args__ = (
-        UniqueConstraint(
+        Index(
+            "uq_user_legal_name_user_country_locale_full_name_active",
             "user_id",
             "country_id",
             "locale_code",
-            name="uq_user_legal_name_user_country_locale"
+            "full_name",
+            unique=True,
+            postgresql_where=is_deleted.is_(False),
         ),
     )
 

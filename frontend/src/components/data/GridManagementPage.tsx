@@ -70,6 +70,7 @@ export function GridManagementPage<TRecord extends { id: string }>({
 }: GridManagementPageProps<TRecord>) {
   const { t } = useTranslation();
   const [isColumnsOpen, setIsColumnsOpen] = useState(false);
+  const isSuperWideViewport = useMinWidth(1536);
   const availableColumnKeys = useMemo(
     () =>
       columns
@@ -133,11 +134,20 @@ export function GridManagementPage<TRecord extends { id: string }>({
       return columns;
     }
 
+    if (isSuperWideViewport) {
+      return columns;
+    }
+
     return columns.filter(
       (column) =>
         isAlwaysVisibleColumn(column) || visibleColumnKeys.includes(column.key),
     );
-  }, [columnSelectionStorageKey, columns, visibleColumnKeys]);
+  }, [
+    columnSelectionStorageKey,
+    columns,
+    isSuperWideViewport,
+    visibleColumnKeys,
+  ]);
 
   function updateVisibleColumn(columnKey: string, shouldShow: boolean) {
     if (!columnSelectionStorageKey) {
@@ -191,7 +201,7 @@ export function GridManagementPage<TRecord extends { id: string }>({
 
   return (
     <>
-      <section className="grid gap-3">
+      <section className="grid-management-page">
         <PageHeader
           actions={composedActions}
           actionsClassName={actionsClassName}
@@ -201,7 +211,7 @@ export function GridManagementPage<TRecord extends { id: string }>({
           title={title}
         />
 
-        <section className="grid gap-0">
+        <section className="grid-management-grid">
           {errorMessage && (
             <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-normal text-red-700">
               {errorMessage}
@@ -247,7 +257,8 @@ export function GridManagementPage<TRecord extends { id: string }>({
             {columns
               .filter((column) => !isAlwaysVisibleColumn(column))
               .map((column) => {
-                const isChecked = visibleColumnKeys.includes(column.key);
+                const isChecked =
+                  isSuperWideViewport || visibleColumnKeys.includes(column.key);
                 return (
                   <label
                     key={column.key}
@@ -256,7 +267,10 @@ export function GridManagementPage<TRecord extends { id: string }>({
                     <input
                       checked={isChecked}
                       className="size-4 accent-slate-950"
-                      disabled={isChecked && visibleColumnKeys.length === 1}
+                      disabled={
+                        isSuperWideViewport ||
+                        (isChecked && visibleColumnKeys.length === 1)
+                      }
                       type="checkbox"
                       onChange={(event) =>
                         updateVisibleColumn(column.key, event.target.checked)
@@ -329,6 +343,28 @@ function readSavedColumnKeys(
 
 function saveColumnKeys(storageKey: string, columnKeys: string[]) {
   window.localStorage.setItem(getStorageKey(storageKey), JSON.stringify(columnKeys));
+}
+
+function useMinWidth(minWidth: number) {
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.matchMedia(`(min-width: ${minWidth}px)`).matches;
+  });
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(`(min-width: ${minWidth}px)`);
+    const updateMatches = () => setMatches(mediaQuery.matches);
+
+    updateMatches();
+    mediaQuery.addEventListener("change", updateMatches);
+
+    return () => mediaQuery.removeEventListener("change", updateMatches);
+  }, [minWidth]);
+
+  return matches;
 }
 
 function sanitizeColumnKeys(

@@ -207,7 +207,7 @@ class Country(Base):
 
     region = relationship("Region", back_populates="countries")
 
-    properties = relationship(
-        "Property",
+    property_buildings = relationship(
+        "PropertyBuilding",
         back_populates="country"
     )

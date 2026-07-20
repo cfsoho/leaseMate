@@ -32,7 +32,11 @@ import {
 import { BrandMark } from "../ui/BrandMark";
 import { NavigationSections } from "./NavigationSections";
 
-export function TopBar() {
+type TopBarProps = {
+  adminSetupOnly?: boolean;
+};
+
+export function TopBar({ adminSetupOnly = false }: TopBarProps) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false);
@@ -102,6 +106,9 @@ export function TopBar() {
       return;
     }
 
+    const targetPath = notification.targetPath || "/devices#devices";
+    const targetPathname = targetPath.split("#", 1)[0] || "/devices";
+
     removeLocalNotification(currentUserKey, notification.id);
     setNotifications((current) =>
       current.filter((item) => item.id !== notification.id),
@@ -109,7 +116,7 @@ export function TopBar() {
     setNotificationCount((current) => Math.max(0, current - 1));
     setIsNotificationMenuOpen(false);
 
-    if (location.pathname === notification.targetPath.split("#", 1)[0]) {
+    if (location.pathname === targetPathname) {
       window.requestAnimationFrame(() => {
         document
           .getElementById("devices")
@@ -118,7 +125,7 @@ export function TopBar() {
       return;
     }
 
-    navigate(notification.targetPath);
+    navigate(targetPath);
   };
 
   useEffect(() => {
@@ -346,7 +353,10 @@ export function TopBar() {
         ].join(" ")}
       >
         <div className="grid gap-6">
-          <NavigationSections onNavigate={() => setIsMobileNavOpen(false)} />
+          <NavigationSections
+            adminSetupOnly={adminSetupOnly}
+            onNavigate={() => setIsMobileNavOpen(false)}
+          />
         </div>
       </nav>
     </header>

@@ -18,6 +18,7 @@ import { useDataGridPageSize } from "../components/data/useDataGridPageSize";
 import { useUrlDataGridState } from "../components/data/useUrlDataGridState";
 import { Button } from "../components/ui/Button";
 import { Drawer } from "../components/ui/Drawer";
+import { FormAlert } from "../components/ui/FormAlert";
 import { IconButton } from "../components/ui/IconButton";
 import { Modal } from "../components/ui/Modal";
 import {
@@ -189,17 +190,14 @@ export function BankAccountsPage() {
     () => new Map((countries.data ?? []).map((country) => [country.id, country])),
     [countries.data],
   );
-  const legalNameOptions = useMemo(
-    () => [
-      ...(legalNames.data ?? []).map((legalName) => ({
-        label: formatLegalNameOption(legalName, countryById),
-        searchText: `${legalName.full_name} ${getCountryName(
-          countryById.get(legalName.country_id),
-        )}`,
-        value: legalName.id,
-      })),
-    ],
-    [countryById, legalNames.data],
+  const filteredLegalNameOptions = useMemo(
+    () =>
+      buildLegalNameOptions(
+        legalNames.data ?? [],
+        countryById,
+        drawerValue.branch_country_id,
+      ),
+    [countryById, drawerValue.branch_country_id, legalNames.data],
   );
   const filteredBranchOptions = useMemo(
     () =>
@@ -440,6 +438,154 @@ export function BankAccountsPage() {
     setFormErrors((current) => clearResolvedErrors(current, nextValue));
   }
 
+  function countryDefaultCurrency(countryId: string) {
+    const currencyCode = readRawString(countryById.get(countryId), "currency_code");
+    return currencyCode && currencyCode !== "XXX" ? currencyCode : "";
+  }
+
+  function hasExistingBankAccountCurrency(value: BankAccountFormValue) {
+    const accountNumber = normalizeAccountNumber(value.account_number);
+    const currencyCode = value.currency_code.trim().toUpperCase();
+    const bankId =
+      value.financial_institution_id ||
+      getBranchBankId(value.financial_institution_branch_id, branchById);
+
+    if (!accountNumber || !currencyCode || !bankId) {
+      return false;
+    }
+
+    return (accounts.data ?? []).some((account) => {
+      if (selectedAccount && account.id === selectedAccount.id) {
+        return false;
+      }
+
+      const accountBankId = getBranchBankId(
+        account.financial_institution_branch_id ?? "",
+        branchById,
+      );
+
+      return (
+        accountBankId === bankId &&
+        normalizeAccountNumber(account.account_number ?? "") === accountNumber &&
+        (account.currency_code ?? "").toUpperCase() === currencyCode
+      );
+    });
+  }
+
+  function applyCountryCurrencyDefault(nextValue: BankAccountFormValue) {
+    if (drawerMode === "search") {
+      return nextValue;
+    }
+
+    const defaultCurrency = countryDefaultCurrency(nextValue.branch_country_id);
+    if (!defaultCurrency) {
+      return { ...nextValue, currency_code: "" };
+    }
+
+    const valueWithDefaultCurrency = {
+      ...nextValue,
+      currency_code: defaultCurrency,
+    };
+
+    return {
+      ...nextValue,
+      currency_code: hasExistingBankAccountCurrency(valueWithDefaultCurrency)
+        ? ""
+        : defaultCurrency,
+    };
+  }
+
+  function withAutoSelectedCountryDependencies(
+    value: BankAccountFormValue,
+    countryId: string,
+  ) {
+    let nextValue: BankAccountFormValue = {
+      ...value,
+      branch_country_id: countryId,
+    };
+
+    if (!countryId) {
+      return {
+        ...nextValue,
+        legal_name_id: "",
+        financial_institution_id: "",
+        financial_institution_branch_id: "",
+        currency_code: drawerMode === "search" ? nextValue.currency_code : "",
+      };
+    }
+
+    const legalNameOptionsForCountry = buildLegalNameOptions(
+      legalNames.data ?? [],
+      countryById,
+      countryId,
+    );
+    if (
+      nextValue.legal_name_id &&
+      !legalNameOptionsForCountry.some(
+        (option) => option.value === nextValue.legal_name_id,
+      )
+    ) {
+      nextValue = { ...nextValue, legal_name_id: "" };
+    }
+    if (!nextValue.legal_name_id && legalNameOptionsForCountry.length === 1) {
+      nextValue = {
+        ...nextValue,
+        legal_name_id: legalNameOptionsForCountry[0].value,
+      };
+    }
+
+    const bankOptionsForCountry = buildBankOptions(
+      banks.data ?? [],
+      branches.data ?? [],
+      countryId,
+      nextValue.financial_institution_id,
+    );
+    if (
+      nextValue.financial_institution_id &&
+      !bankOptionsForCountry.some(
+        (option) => option.value === nextValue.financial_institution_id,
+      )
+    ) {
+      nextValue = {
+        ...nextValue,
+        financial_institution_id: "",
+        financial_institution_branch_id: "",
+      };
+    }
+    if (!nextValue.financial_institution_id && bankOptionsForCountry.length === 1) {
+      nextValue = {
+        ...nextValue,
+        financial_institution_id: bankOptionsForCountry[0].value,
+      };
+    }
+
+    const branchOptionsForCountry = buildBranchOptions(
+      branches.data ?? [],
+      bankRecordById,
+      countryId,
+      nextValue.financial_institution_id,
+    );
+    if (
+      nextValue.financial_institution_branch_id &&
+      !branchOptionsForCountry.some(
+        (option) => option.value === nextValue.financial_institution_branch_id,
+      )
+    ) {
+      nextValue = { ...nextValue, financial_institution_branch_id: "" };
+    }
+    if (
+      !nextValue.financial_institution_branch_id &&
+      branchOptionsForCountry.length === 1
+    ) {
+      nextValue = {
+        ...nextValue,
+        financial_institution_branch_id: branchOptionsForCountry[0].value,
+      };
+    }
+
+    return applyCountryCurrencyDefault(nextValue);
+  }
+
   function setBranch(nextBranchId: string) {
     const currentValue = drawerMode === "search" ? searchForm : form;
     const nextBankId = getBranchBankId(nextBranchId, branchById);
@@ -448,57 +594,18 @@ export function BankAccountsPage() {
       branchById,
       bankRecordById,
     );
-    const branchCurrency = getBranchCurrencyCode(
-      nextBranchId,
-      branchById,
-      bankRecordById,
-      countryById,
-    );
 
-    setDrawerValue({
+    setDrawerValue(applyCountryCurrencyDefault({
       ...currentValue,
       branch_country_id: nextCountryId || currentValue.branch_country_id,
       financial_institution_id: nextBankId || currentValue.financial_institution_id,
       financial_institution_branch_id: nextBranchId,
-      currency_code:
-        drawerMode === "search"
-          ? currentValue.currency_code
-          : branchCurrency || currentValue.currency_code,
-    });
+    }));
   }
 
   function setBranchCountry(nextCountryId: string) {
     const currentValue = drawerMode === "search" ? searchForm : form;
-    const selectedBankCountryId = currentValue.financial_institution_id
-      ? readRawString(
-          bankRecordById.get(currentValue.financial_institution_id),
-          "country_id",
-        )
-      : "";
-    const selectedBranchCountryId = getBranchCountryId(
-      currentValue.financial_institution_branch_id,
-      branchById,
-      bankRecordById,
-    );
-    const shouldClearBank =
-      nextCountryId &&
-      selectedBankCountryId &&
-      selectedBankCountryId !== nextCountryId;
-    const shouldClearBranch =
-      nextCountryId &&
-      selectedBranchCountryId &&
-      selectedBranchCountryId !== nextCountryId;
-
-    setDrawerValue({
-      ...currentValue,
-      branch_country_id: nextCountryId,
-      financial_institution_id: shouldClearBank
-        ? ""
-        : currentValue.financial_institution_id,
-      financial_institution_branch_id: shouldClearBank || shouldClearBranch
-        ? ""
-        : currentValue.financial_institution_branch_id,
-    });
+    setDrawerValue(withAutoSelectedCountryDependencies(currentValue, nextCountryId));
   }
 
   function setBank(nextBankId: string) {
@@ -511,7 +618,7 @@ export function BankAccountsPage() {
       ? readRawString(bankRecordById.get(nextBankId), "country_id")
       : "";
 
-    setDrawerValue({
+    const nextValue = {
       ...currentValue,
       branch_country_id: nextCountryId || currentValue.branch_country_id,
       financial_institution_id: nextBankId,
@@ -519,7 +626,23 @@ export function BankAccountsPage() {
         nextBankId && selectedBranchBankId && selectedBranchBankId !== nextBankId
           ? ""
           : currentValue.financial_institution_branch_id,
-    });
+    };
+
+    setDrawerValue(applyCountryCurrencyDefault(nextValue));
+  }
+
+  function setAccountNumber(nextAccountNumber: string) {
+    const currentValue = drawerMode === "search" ? searchForm : form;
+    let nextValue = { ...currentValue, account_number: nextAccountNumber };
+    if (
+      drawerMode !== "search" &&
+      nextValue.currency_code &&
+      nextValue.currency_code === countryDefaultCurrency(nextValue.branch_country_id) &&
+      hasExistingBankAccountCurrency(nextValue)
+    ) {
+      nextValue = { ...nextValue, currency_code: "" };
+    }
+    setDrawerValue(nextValue);
   }
 
   function handleSubmit() {
@@ -601,8 +724,12 @@ export function BankAccountsPage() {
             firstPage: t("grid.firstPage"),
             lastPage: t("grid.lastPage"),
             nextPage: t("grid.nextPage"),
+            paginationMode: t("grid.pagination"),
             previousPage: t("grid.previousPage"),
             rows: t("grid.rows"),
+            showAllMode: t("grid.showAllRows"),
+            switchToPagination: t("grid.switchToPagination"),
+            switchToShowAll: t("grid.switchToShowAll"),
           }}
           pageSize={pageSize}
           records={transactions.data ?? []}
@@ -762,8 +889,12 @@ export function BankAccountsPage() {
           firstPage: t("grid.firstPage"),
           lastPage: t("grid.lastPage"),
           nextPage: t("grid.nextPage"),
+          paginationMode: t("grid.pagination"),
           previousPage: t("grid.previousPage"),
           rows: t("grid.rows"),
+          showAllMode: t("grid.showAllRows"),
+          switchToPagination: t("grid.switchToPagination"),
+          switchToShowAll: t("grid.switchToShowAll"),
         }}
         pageSize={pageSize}
         records={visibleAccounts}
@@ -796,7 +927,7 @@ export function BankAccountsPage() {
           disabled={createMutation.isPending || updateMutation.isPending}
           error={drawerError}
           errors={formErrors}
-          legalNameOptions={legalNameOptions}
+          legalNameOptions={filteredLegalNameOptions}
           mode={drawerMode}
           submitLabel={
             drawerMode === "search"
@@ -808,6 +939,7 @@ export function BankAccountsPage() {
           value={drawerValue}
           onCancel={closeDrawer}
           onBankChange={setBank}
+          onAccountNumberChange={setAccountNumber}
           onBranchChange={setBranch}
           onBranchCountryChange={setBranchCountry}
           onChange={setDrawerValue}
@@ -916,6 +1048,7 @@ function BankAccountForm({
   submitLabel,
   value,
   onCancel,
+  onAccountNumberChange,
   onBankChange,
   onBranchChange,
   onBranchCountryChange,
@@ -935,6 +1068,7 @@ function BankAccountForm({
   submitLabel: string;
   value: BankAccountFormValue;
   onCancel: () => void;
+  onAccountNumberChange: (value: string) => void;
   onBankChange: (value: string) => void;
   onBranchChange: (value: string) => void;
   onBranchCountryChange: (value: string) => void;
@@ -960,9 +1094,16 @@ function BankAccountForm({
     onChange({ ...value, [field]: nextValue });
   }
 
+  const selectedCountryLabel =
+    branchCountryOptions.find((option) => option.value === value.branch_country_id)
+      ?.label ?? value.branch_country_id;
+  const isLegalNameMissingForCountry =
+    Boolean(value.branch_country_id) && legalNameOptions.length === 0;
+
   return (
     <form
       className="grid gap-4"
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
         if (isFormDisabled) {
@@ -978,37 +1119,52 @@ function BankAccountForm({
       <div className="grid items-start gap-4">
         <label className="grid items-start gap-1.5">
           <span className="text-sm font-semibold text-slate-700">
-            {t("bankAccounts.accountHolder")}
+            {t("profile.field.country")}
             {!isSearchMode && <span className="text-red-600"> *</span>}
           </span>
           <SearchableSelect
             disabled={isFormDisabled}
-            options={legalNameOptions}
-            value={value.legal_name_id}
-            onChange={(nextValue) => setField("legal_name_id", nextValue)}
+            options={branchCountryOptions}
+            value={value.branch_country_id}
+            onChange={onBranchCountryChange}
           />
-          {errors.legal_name_id && (
+          {errors.branch_country_id && (
             <p className="text-xs font-normal text-red-700">
-              {errors.legal_name_id}
+              {errors.branch_country_id}
             </p>
           )}
         </label>
+        {isLegalNameMissingForCountry ? (
+          <FormAlert>
+            {t("bankAccounts.legalNameMissingForCountry").replace(
+              "{country}",
+              selectedCountryLabel,
+            )}
+          </FormAlert>
+        ) : (
+          <label className="grid items-start gap-1.5">
+            <span className="text-sm font-semibold text-slate-700">
+              {t("bankAccounts.accountHolder")}
+              {!isSearchMode && <span className="text-red-600"> *</span>}
+            </span>
+            <SearchableSelect
+              disabled={isFormDisabled}
+              options={legalNameOptions}
+              value={value.legal_name_id}
+              onChange={(nextValue) => setField("legal_name_id", nextValue)}
+            />
+            {errors.legal_name_id && (
+              <p className="text-xs font-normal text-red-700">
+                {errors.legal_name_id}
+              </p>
+            )}
+          </label>
+        )}
         <div className="grid items-start gap-3">
           <p className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.bankBranch")}
             {!isSearchMode && <span className="text-red-600"> *</span>}
           </p>
-          <label className="grid items-start gap-1.5">
-            <span className="text-xs font-semibold uppercase text-slate-500">
-              {t("profile.field.country")}
-            </span>
-            <SearchableSelect
-              disabled={isFormDisabled}
-              options={branchCountryOptions}
-              value={value.branch_country_id}
-              onChange={onBranchCountryChange}
-            />
-          </label>
           <label className="grid items-start gap-1.5">
             <span className="text-xs font-semibold uppercase text-slate-500">
               {t("bankAccounts.bank")}
@@ -1049,7 +1205,7 @@ function BankAccountForm({
             disabled={isFormDisabled}
             maxLength={100}
             value={value.account_number}
-            onChange={(event) => setField("account_number", event.target.value)}
+            onChange={(event) => onAccountNumberChange(event.target.value)}
           />
           {errors.account_number && (
             <p className="text-xs font-normal text-red-700">
@@ -1218,6 +1374,7 @@ function TransactionForm({
   return (
     <form
       className="grid gap-4"
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
         if (isFormDisabled) {
@@ -1446,6 +1603,9 @@ function buildTransactionPayload(
 function validateForm(value: BankAccountFormValue, requiredMessage: string) {
   const errors: BankAccountFormErrors = {};
 
+  if (!value.branch_country_id) {
+    errors.branch_country_id = requiredMessage;
+  }
   if (!value.legal_name_id) {
     errors.legal_name_id = requiredMessage;
   }
@@ -1649,6 +1809,10 @@ function readRawString(record: ReferenceRecord | undefined, key: string) {
   return typeof value === "string" ? value : "";
 }
 
+function normalizeAccountNumber(accountNumber: string) {
+  return accountNumber.trim().toLowerCase();
+}
+
 function formatLegalNameById(
   legalNameId: string,
   legalNames: { country_id: string; full_name: string; id: string }[],
@@ -1666,6 +1830,22 @@ function formatLegalNameOption(
   return countryName
     ? `${legalName.full_name} (${countryName})`
     : legalName.full_name;
+}
+
+function buildLegalNameOptions(
+  legalNames: { country_id: string; full_name: string; id: string }[],
+  countryById: Map<string, ReferenceRecord>,
+  countryId = "",
+): SearchableSelectOption[] {
+  return legalNames
+    .filter((legalName) => !countryId || legalName.country_id === countryId)
+    .map((legalName) => ({
+      label: formatLegalNameOption(legalName, countryById),
+      searchText: `${legalName.full_name} ${getCountryName(
+        countryById.get(legalName.country_id),
+      )}`,
+      value: legalName.id,
+    }));
 }
 
 function getCountryName(country?: ReferenceRecord) {
@@ -1780,26 +1960,6 @@ function buildBranchCountryOptions(
       )}`,
       value: country.id,
     }));
-}
-
-function getBranchCurrencyCode(
-  branchId: string,
-  branchById: Map<string, ReferenceRecord>,
-  bankById: Map<string, ReferenceRecord>,
-  countryById: Map<string, ReferenceRecord>,
-) {
-  const branch = branchById.get(branchId);
-  if (!branch) {
-    return "";
-  }
-
-  const bank = bankById.get(readRawString(branch, "financial_institution_id"));
-  if (!bank) {
-    return "";
-  }
-
-  const country = countryById.get(readRawString(bank, "country_id"));
-  return country ? readRawString(country, "currency_code") : "";
 }
 
 function buildCurrencyOptions(

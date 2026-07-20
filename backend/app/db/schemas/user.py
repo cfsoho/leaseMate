@@ -55,6 +55,7 @@ class UserRead(BaseModel):
     phone: Optional[str]
     phone_country_id: Optional[UUID]
     role_id: Optional[UUID]
+    role_code: Optional[str]
     preferred_locale_code: Optional[str]
     theme_preference: ThemePreference
     status: str

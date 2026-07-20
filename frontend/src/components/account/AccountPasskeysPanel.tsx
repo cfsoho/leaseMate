@@ -14,6 +14,7 @@ import type { UserPasskey } from "../../features/auth/authTypes";
 import { useTranslation } from "../../lib/i18n/useTranslation";
 import type { TranslationKey } from "../../lib/i18n/translations";
 import { Button } from "../ui/Button";
+import { CollapsibleCard } from "../ui/CollapsibleCard";
 
 export function AccountPasskeysPanel() {
   const { locale, t } = useTranslation();
@@ -45,11 +46,8 @@ export function AccountPasskeysPanel() {
   });
 
   return (
-    <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="m-0 text-sm font-bold uppercase tracking-wide text-slate-500">
-          {t("security.passkeysTitle")}
-        </h2>
+    <CollapsibleCard
+      action={
         <Button
           disabled={
             addPasskey.isPending ||
@@ -64,10 +62,13 @@ export function AccountPasskeysPanel() {
             ? t("security.addingPasskey")
             : t("security.addPasskey")}
         </Button>
-      </div>
-      <p className="m-0 text-sm font-normal leading-relaxed text-slate-600">
-        {t("security.passkeysDescription")}
-      </p>
+      }
+      collapsible={false}
+      description={t("security.passkeysDescription")}
+      isOpen
+      onOpenChange={() => undefined}
+      title={t("security.passkeysTitle")}
+    >
       {addPasskey.isError && (
         <PasskeyNotice message={addPasskey.error.message} tone="error" />
       )}
@@ -97,7 +98,7 @@ export function AccountPasskeysPanel() {
           ))}
         </div>
       )}
-    </section>
+    </CollapsibleCard>
   );
 }
 

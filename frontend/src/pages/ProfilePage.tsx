@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Edit2, Plus, Trash2, X } from "lucide-react";
+import { Edit2 } from "lucide-react";
 
 import { Button } from "../components/ui/Button";
+import { CollapsibleCard } from "../components/ui/CollapsibleCard";
+import { CollapsibleCardContainer } from "../components/ui/CollapsibleCardContainer";
 import { PageHeader } from "../components/layout/PageHeader";
-import {
-  PhoneInput,
-} from "../components/ui/PhoneInput";
 import {
   formatPhoneForCountry,
   inferPhoneCountryId,
 } from "../components/ui/phoneInputUtils";
-import { SearchableSelect } from "../components/ui/SearchableSelect";
 import {
   createCurrentUserLegalName,
   deleteCurrentUserLegalName,
@@ -23,10 +20,12 @@ import {
   updateCurrentUserLegalName,
   updateCurrentUser,
 } from "../features/auth/authApi";
-import type {
-  ProfileCountry,
-  UserLegalName,
-} from "../features/auth/authTypes";
+import type { ProfileCountry, UserLegalNamePayload } from "../features/auth/authTypes";
+import { LegalNamesCard } from "../features/legalNames/LegalNamesCard";
+import {
+  UserBasicInfoForm,
+  type UserBasicInfoFormValue,
+} from "../features/users/UserBasicInfoForm";
 import { formatPersonName } from "../lib/i18n/nameFormat";
 import { useTranslation } from "../lib/i18n/useTranslation";
 import { useTheme } from "../lib/theme/useTheme";
@@ -38,20 +37,13 @@ export function ProfilePage() {
     useTheme();
   const queryClient = useQueryClient();
   const [isEditingUser, setIsEditingUser] = useState(false);
-  const [userForm, setUserForm] = useState({
+  const [userForm, setUserForm] = useState<UserBasicInfoFormValue>({
     family_name: "",
     given_name: "",
+    email: "",
     phone: "",
     phone_country_id: "",
     preferred_locale_code: "",
-  });
-  const [editingLegalNameId, setEditingLegalNameId] = useState<string | null>(
-    null,
-  );
-  const [legalNameForm, setLegalNameForm] = useState({
-    country_id: "",
-    locale_code: "",
-    full_name: "",
   });
   const currentUser = useQuery({
     queryKey: ["current-user"],
@@ -100,7 +92,6 @@ export function ProfilePage() {
     mutationFn: createCurrentUserLegalName,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["current-user", "legal-names"] });
-      resetLegalNameForm();
     },
   });
   const updateLegalName = useMutation({
@@ -109,18 +100,16 @@ export function ProfilePage() {
       payload,
     }: {
       id: string;
-      payload: typeof legalNameForm;
+      payload: UserLegalNamePayload;
     }) => updateCurrentUserLegalName(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["current-user", "legal-names"] });
-      resetLegalNameForm();
     },
   });
   const deleteLegalName = useMutation({
     mutationFn: deleteCurrentUserLegalName,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["current-user", "legal-names"] });
-      resetLegalNameForm();
     },
   });
   useEffect(() => {
@@ -131,6 +120,7 @@ export function ProfilePage() {
     setUserForm({
       family_name: user.family_name,
       given_name: user.given_name,
+      email: user.email,
       phone: user.phone ?? "",
       phone_country_id:
         user.phone_country_id || inferPhoneCountryId(user.preferred_locale_code, countries.data),
@@ -138,76 +128,34 @@ export function ProfilePage() {
     });
   }, [countries.data, isEditingUser, user]);
 
-  function beginCreateLegalName() {
-    if (editingLegalNameId === "new") {
-      resetLegalNameForm();
-      return;
-    }
-
-    const defaultCountry = countries.data?.[0];
-    setEditingLegalNameId("new");
-    setLegalNameForm({
-      country_id: defaultCountry?.id ?? "",
-      locale_code:
-        defaultCountry?.default_locale_code || user?.preferred_locale_code || locale,
-      full_name: "",
-    });
-  }
-
-  function beginEditLegalName(legalName: UserLegalName) {
-    setEditingLegalNameId(legalName.id);
-    setLegalNameForm({
-      country_id: legalName.country_id,
-      locale_code: legalName.locale_code,
-      full_name: legalName.full_name,
-    });
-  }
-
-  function resetLegalNameForm() {
-    setEditingLegalNameId(null);
-    setLegalNameForm({
-      country_id: "",
-      locale_code: "",
-      full_name: "",
-    });
-  }
-
-  function submitLegalName() {
-    const payload = {
-      country_id: legalNameForm.country_id,
-      locale_code: legalNameForm.locale_code,
-      full_name: legalNameForm.full_name,
-    };
-
-    if (editingLegalNameId === "new") {
-      createLegalName.mutate(payload);
-      return;
-    }
-
-    if (editingLegalNameId) {
-      updateLegalName.mutate({ id: editingLegalNameId, payload });
-    }
-  }
-
   return (
-    <section className="grid gap-4">
-      <PageHeader
-        description={t("profile.description")}
-        eyebrow={t("shell.user")}
-        title={t("profile.title")}
-      />
+    <CollapsibleCardContainer
+      className="gap-4"
+      header={
+        <>
+          <PageHeader
+            description={t("profile.description")}
+            eyebrow={t("shell.user")}
+            title={t("profile.title")}
+          />
 
-      {currentUser.isLoading && (
-        <ProfileNotice message={t("profile.loading")} />
-      )}
-      {currentUser.isError && (
-        <ProfileNotice message={t("profile.loadError")} tone="error" />
-      )}
+          {currentUser.isLoading && (
+            <ProfileNotice message={t("profile.loading")} />
+          )}
+          {currentUser.isError && (
+            <ProfileNotice message={t("profile.loadError")} tone="error" />
+          )}
+        </>
+      }
+    >
 
       {user && (
         <>
-          <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
-            <SectionHeader
+          <CollapsibleCard
+            collapsible={false}
+            isOpen
+            onOpenChange={() => undefined}
+            title={t("profile.accountSection")}
               action={
                 !isEditingUser && (
                   <Button
@@ -220,103 +168,36 @@ export function ProfilePage() {
                   </Button>
                 )
               }
-              title={t("profile.accountSection")}
-            />
+            >
             {isEditingUser ? (
-              <form
-                className="grid gap-4"
-                onSubmit={(event) => {
-                  event.preventDefault();
+              <UserBasicInfoForm
+                cancelLabel={t("profile.cancel")}
+                countries={countries.data ?? []}
+                disabled={updateProfile.isPending}
+                localeCode={locale}
+                locales={locales.data ?? []}
+                submitError={
+                  updateProfile.isError ? updateProfile.error.message : undefined
+                }
+                submitLabel={
+                  updateProfile.isPending
+                    ? t("profile.saving")
+                    : t("profile.save")
+                }
+                value={userForm}
+                onCancel={() => setIsEditingUser(false)}
+                onChange={setUserForm}
+                onSubmit={(nextValue) => {
                   updateProfile.mutate({
-                    family_name: userForm.family_name,
-                    given_name: userForm.given_name,
-                    phone: userForm.phone || null,
-                    phone_country_id: userForm.phone_country_id || null,
-                    preferred_locale_code: userForm.preferred_locale_code || null,
+                    family_name: nextValue.family_name,
+                    given_name: nextValue.given_name,
+                    phone: nextValue.phone || null,
+                    phone_country_id: nextValue.phone_country_id || null,
+                    preferred_locale_code:
+                      nextValue.preferred_locale_code || null,
                   });
                 }}
-              >
-                <div className="grid gap-4 md:grid-cols-2">
-                  <ProfileField label={t("form.familyName")}>
-                    <input
-                      className={inputClass}
-                      maxLength={50}
-                      value={userForm.family_name}
-                      onChange={(event) =>
-                        setUserForm((current) => ({
-                          ...current,
-                          family_name: event.target.value,
-                        }))
-                      }
-                    />
-                  </ProfileField>
-                  <ProfileField label={t("form.givenName")}>
-                    <input
-                      className={inputClass}
-                      maxLength={50}
-                      value={userForm.given_name}
-                      onChange={(event) =>
-                        setUserForm((current) => ({
-                          ...current,
-                          given_name: event.target.value,
-                        }))
-                      }
-                    />
-                  </ProfileField>
-                  <ProfileField label={t("profile.field.phone")}>
-                    <PhoneInput
-                      countries={countries.data ?? []}
-                      countryId={userForm.phone_country_id}
-                      inputClassName={inputClass}
-                      phone={userForm.phone}
-                      onChange={(value) =>
-                        setUserForm((current) => ({
-                          ...current,
-                          ...value,
-                        }))
-                      }
-                    />
-                  </ProfileField>
-                  <ProfileField label={t("profile.field.preferredLocale")}>
-                    <select
-                      className={inputClass}
-                      value={userForm.preferred_locale_code}
-                      onChange={(event) =>
-                        setUserForm((current) => ({
-                          ...current,
-                          preferred_locale_code: event.target.value,
-                        }))
-                      }
-                    >
-                      {locales.data?.map((localeOption) => (
-                        <option key={localeOption.code} value={localeOption.code}>
-                          {localeOption.native_name || localeOption.name}
-                        </option>
-                      ))}
-                    </select>
-                  </ProfileField>
-                </div>
-                {updateProfile.isError && (
-                  <p className="text-sm font-semibold text-red-700">
-                    {updateProfile.error.message}
-                  </p>
-                )}
-                <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
-                  <Button
-                    disabled={updateProfile.isPending}
-                    type="button"
-                    variant="secondary"
-                    onClick={() => setIsEditingUser(false)}
-                  >
-                    {t("profile.cancel")}
-                  </Button>
-                  <Button disabled={updateProfile.isPending} type="submit">
-                    {updateProfile.isPending
-                      ? t("profile.saving")
-                      : t("profile.save")}
-                  </Button>
-                </div>
-              </form>
+              />
             ) : (
               <DefinitionGrid
                 items={[
@@ -328,12 +209,16 @@ export function ProfilePage() {
                   ],
                   [t("profile.field.preferredLocale"), preferredLocaleLabel],
                 ]}
-              />
+                />
             )}
-          </section>
+          </CollapsibleCard>
 
-          <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
-            <SectionTitle>{t("profile.appearanceSection")}</SectionTitle>
+          <CollapsibleCard
+            collapsible={false}
+            isOpen
+            onOpenChange={() => undefined}
+            title={t("profile.appearanceSection")}
+          >
             <p className="text-sm text-slate-600">
               {t("profile.themeDescription")}
             </p>
@@ -366,301 +251,41 @@ export function ProfilePage() {
                 </label>
               ))}
             </div>
-          </section>
+          </CollapsibleCard>
 
-          <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
-            <SectionHeader
-              action={
-                editingLegalNameId && editingLegalNameId !== "new" ? undefined : (
-                  <Button
-                    className="min-h-8 px-2.5 text-sm"
-                    variant="secondary"
-                    onClick={beginCreateLegalName}
-                  >
-                    {editingLegalNameId === "new" ? (
-                      <X aria-hidden="true" size={16} />
-                    ) : (
-                      <Plus aria-hidden="true" size={16} />
-                    )}
-                    {editingLegalNameId === "new"
-                      ? t("profile.cancel")
-                      : t("profile.add")}
-                  </Button>
-                )
-              }
-              title={t("profile.legalNamesSection")}
-            />
-            {editingLegalNameId === "new" && (
-              <LegalNameForm
-                countries={countries.data ?? []}
-                disabled={createLegalName.isPending}
-                error={createLegalName.error?.message}
-                form={legalNameForm}
-                locales={locales.data ?? []}
-                submitLabel={
-                  createLegalName.isPending ? t("profile.saving") : t("profile.save")
-                }
-                onCancel={resetLegalNameForm}
-                onChange={setLegalNameForm}
-                onSubmit={submitLegalName}
-              />
-            )}
-            {legalNames.isLoading && (
-              <p className="text-sm font-semibold text-slate-500">
-                {t("profile.loading")}
-              </p>
-            )}
-            {legalNames.isError && (
-              <p className="text-sm font-semibold text-red-700">
-                {t("profile.loadError")}
-              </p>
-            )}
-            {legalNames.data?.length === 0 && (
-              <p className="text-sm font-semibold text-slate-500">
-                {t("profile.noLegalNames")}
-              </p>
-            )}
-            {legalNames.data && legalNames.data.length > 0 && (
-              <div className="grid gap-3">
-                {legalNames.data.map((legalName) => (
-                  <LegalNamePanel
-                    key={legalName.id}
-                    countryLabel={formatCountryLabel(
-                      countries.data?.find(
-                        (country) => country.id === legalName.country_id,
-                      ),
-                    )}
-                    legalName={legalName}
-                    isDeleting={deleteLegalName.isPending}
-                    isEditing={editingLegalNameId === legalName.id}
-                    onDelete={() => {
-                      if (window.confirm(t("profile.deleteConfirm"))) {
-                        deleteLegalName.mutate(legalName.id);
-                      }
-                    }}
-                    onEdit={() => beginEditLegalName(legalName)}
-                    renderEditForm={() => (
-                      <LegalNameForm
-                        countries={countries.data ?? []}
-                        disabled={updateLegalName.isPending}
-                        error={updateLegalName.error?.message}
-                        form={legalNameForm}
-                        locales={locales.data ?? []}
-                        submitLabel={
-                          updateLegalName.isPending
-                            ? t("profile.saving")
-                            : t("profile.save")
-                        }
-                        onCancel={resetLegalNameForm}
-                        onChange={setLegalNameForm}
-                        onSubmit={submitLegalName}
-                      />
-                    )}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
+          <LegalNamesCard
+            countries={countries.data ?? []}
+            defaultCountryId={user.phone_country_id ?? undefined}
+            defaultLocaleCode={user.preferred_locale_code || locale}
+            deleteError={deleteLegalName.error?.message}
+            isDeleting={deleteLegalName.isPending}
+            isLoading={legalNames.isLoading}
+            legalNames={legalNames.data ?? []}
+            loadError={legalNames.isError ? t("profile.loadError") : undefined}
+            locales={locales.data ?? []}
+            onCreate={(payload) => createLegalName.mutateAsync(payload)}
+            onDelete={(id) => deleteLegalName.mutateAsync(id)}
+            onUpdate={(id, payload) =>
+              updateLegalName.mutateAsync({ id, payload })
+            }
+          />
 
-          <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-5">
-            <SectionTitle>{t("profile.systemSection")}</SectionTitle>
+          <CollapsibleCard
+            collapsible={false}
+            isOpen
+            onOpenChange={() => undefined}
+            title={t("profile.systemSection")}
+          >
             <DefinitionGrid
               items={[
                 [t("profile.field.createdAt"), formatDate(user.created_at, locale)],
                 [t("profile.field.updatedAt"), formatDate(user.updated_at, locale)],
               ]}
             />
-          </section>
+          </CollapsibleCard>
         </>
       )}
-    </section>
-  );
-}
-
-function LegalNamePanel({
-  countryLabel,
-  isDeleting,
-  isEditing,
-  legalName,
-  onDelete,
-  onEdit,
-  renderEditForm,
-}: {
-  countryLabel: string;
-  isDeleting: boolean;
-  isEditing: boolean;
-  legalName: UserLegalName;
-  onDelete: () => void;
-  onEdit: () => void;
-  renderEditForm: () => ReactNode;
-}) {
-  const { t } = useTranslation();
-  if (isEditing) {
-    return (
-      <article className="rounded-lg border border-slate-300 bg-slate-50 p-4">
-        {renderEditForm()}
-      </article>
-    );
-  }
-
-  return (
-    <article className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
-      <DefinitionGrid
-        items={[
-          [t("profile.field.country"), countryLabel],
-          [t("profile.field.fullName"), legalName.full_name],
-        ]}
-      />
-      <div className="flex justify-end gap-1.5">
-        <button
-          aria-label={t("profile.edit")}
-          className="inline-grid size-8 place-items-center rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-          type="button"
-          onClick={onEdit}
-        >
-          <Edit2 aria-hidden="true" size={15} />
-        </button>
-        <button
-          aria-label={t("profile.delete")}
-          className="inline-grid size-8 place-items-center rounded-md border border-red-200 bg-white text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isDeleting}
-          type="button"
-          onClick={onDelete}
-        >
-          <Trash2 aria-hidden="true" size={15} />
-        </button>
-      </div>
-    </article>
-  );
-}
-
-function LegalNameForm({
-  countries,
-  disabled,
-  error,
-  form,
-  locales,
-  submitLabel,
-  onCancel,
-  onChange,
-  onSubmit,
-}: {
-  countries: ProfileCountry[];
-  disabled?: boolean;
-  error?: string;
-  form: { country_id: string; locale_code: string; full_name: string };
-  locales: { code: string; name: string; native_name?: string | null }[];
-  submitLabel: string;
-  onCancel: () => void;
-  onChange: (form: { country_id: string; locale_code: string; full_name: string }) => void;
-  onSubmit: () => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <form
-      className="grid gap-4"
-      onSubmit={(event) => {
-        event.preventDefault();
-        onSubmit();
-      }}
-    >
-      <div className="grid gap-4 md:grid-cols-3">
-        <ProfileField label={t("profile.field.country")}>
-          <SearchableSelect
-            disabled={disabled}
-            options={countries.map((country) => ({
-              label: formatCountryLabel(country),
-              searchText: `${country.name} ${country.native_name ?? ""} ${country.code} ${country.alpha2}`,
-              value: country.id,
-            }))}
-            placeholder="--"
-            value={form.country_id}
-            onChange={(value) => {
-              const country = countries.find(
-                (option) => option.id === value,
-              );
-              onChange({
-                ...form,
-                country_id: value,
-                locale_code: country?.default_locale_code || form.locale_code,
-              });
-            }}
-          />
-        </ProfileField>
-        <ProfileField label={t("profile.field.localeCode")}>
-          <select
-            className={inputClass}
-            disabled={disabled}
-            required
-            value={form.locale_code}
-            onChange={(event) =>
-              onChange({ ...form, locale_code: event.target.value })
-            }
-          >
-            <option value="">--</option>
-            {locales.map((localeOption) => (
-              <option key={localeOption.code} value={localeOption.code}>
-                {formatLocaleLabel(localeOption)}
-              </option>
-            ))}
-          </select>
-        </ProfileField>
-        <ProfileField label={t("profile.field.fullName")}>
-          <input
-            className={inputClass}
-            disabled={disabled}
-            maxLength={150}
-            required
-            value={form.full_name}
-            onChange={(event) =>
-              onChange({ ...form, full_name: event.target.value })
-            }
-          />
-        </ProfileField>
-      </div>
-      {error && <p className="text-sm font-semibold text-red-700">{error}</p>}
-      <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
-        <Button disabled={disabled} type="button" variant="secondary" onClick={onCancel}>
-          {t("profile.cancel")}
-        </Button>
-        <Button disabled={disabled} type="submit">
-          {submitLabel}
-        </Button>
-      </div>
-    </form>
-  );
-}
-
-const inputClass =
-  "min-h-[42px] w-full rounded-lg border border-slate-300 bg-white px-3 text-slate-950 outline-none focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10";
-
-function ProfileField({
-  children,
-  label,
-}: {
-  children: ReactNode;
-  label: string;
-}) {
-  return (
-    <label className="grid gap-2 text-sm font-bold text-slate-700">
-      {label}
-      {children}
-    </label>
-  );
-}
-
-function SectionHeader({
-  action,
-  title,
-}: {
-  action?: ReactNode;
-  title: string;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <SectionTitle>{title}</SectionTitle>
-      {action}
-    </div>
+    </CollapsibleCardContainer>
   );
 }
 
@@ -678,14 +303,6 @@ function DefinitionGrid({ items }: { items: [string, unknown][] }) {
         </div>
       ))}
     </dl>
-  );
-}
-
-function SectionTitle({ children }: { children: string }) {
-  return (
-    <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">
-      {children}
-    </h2>
   );
 }
 
@@ -725,32 +342,6 @@ function formatDate(value: string | null | undefined, locale: string) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
-}
-
-function formatCountryLabel(
-  country:
-    | { code: string; name: string; native_name?: string | null }
-    | null
-    | undefined,
-) {
-  if (!country) {
-    return "";
-  }
-  return country.native_name
-    ? `${country.native_name} (${country.code})`
-    : `${country.name} (${country.code})`;
-}
-
-function formatLocaleLabel(
-  localeOption:
-    | { code: string; name: string; native_name?: string | null }
-    | null
-    | undefined,
-) {
-  if (!localeOption) {
-    return "";
-  }
-  return localeOption.native_name || localeOption.name || localeOption.code;
 }
 
 function formatPhoneDisplay(

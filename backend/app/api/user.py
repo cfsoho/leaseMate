@@ -22,12 +22,24 @@ from app.db.schemas.user import (
     UserUpdate,
     UserRead,
 )
+from app.db.schemas.user_delegation import (
+    UserDelegationCreate,
+    UserDelegationRead,
+    UserDelegationUpdate,
+)
 from app.services.user_service import (
     create_user,
     get_user,
+    get_users,
     get_users_page,
     update_user,
     delete_user,
+)
+from app.services.user_delegation_service import (
+    create_user_delegation,
+    delete_user_delegation,
+    list_user_delegations,
+    update_user_delegation,
 )
 from app.services.user_auth_service import activate_user, deactivate_user
 
@@ -80,13 +92,34 @@ def email_link_stats(
     return get_email_link_dashboard_stats(db)
 
 
+@router.get("/select-options", response_model=List[UserRead])
+def list_select_options(
+    created_by_current_user: bool = Query(default=False),
+    current_user=Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    return get_users(
+        db,
+        skip=0,
+        limit=1000,
+        created_by_user_id=(
+            current_user.id if created_by_current_user else None
+        ),
+    )
+
+
 @router.post("", response_model=UserRead)
 def create(
     payload: UserCreate,
+    current_user=Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     try:
-        user, _temporary_password = create_user(db, payload)
+        user, _temporary_password = create_user(
+            db,
+            payload,
+            created_by_user_id=current_user.id,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -138,6 +171,69 @@ def list_login_sessions(
         raise HTTPException(status_code=404, detail="User not found")
 
     return list_user_login_sessions(db, user_id)
+
+
+@router.get("/{user_id}/delegations", response_model=List[UserDelegationRead])
+def list_delegations(
+    user_id: UUID,
+    db: Session = Depends(get_db)
+):
+    if not get_user(db, user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return list_user_delegations(db, user_id)
+
+
+@router.post("/{user_id}/delegations", response_model=UserDelegationRead)
+def create_delegation(
+    user_id: UUID,
+    payload: UserDelegationCreate,
+    current_user=Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    try:
+        return create_user_delegation(
+            db,
+            user_id,
+            payload,
+            delegate_created_by_user_id=current_user.id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.put(
+    "/{user_id}/delegations/{delegation_id}",
+    response_model=UserDelegationRead
+)
+def update_delegation(
+    user_id: UUID,
+    delegation_id: UUID,
+    payload: UserDelegationUpdate,
+    db: Session = Depends(get_db)
+):
+    delegation = update_user_delegation(db, user_id, delegation_id, payload)
+
+    if not delegation:
+        raise HTTPException(status_code=404, detail="Delegation not found")
+
+    return delegation
+
+
+@router.delete("/{user_id}/delegations/{delegation_id}")
+def delete_delegation(
+    user_id: UUID,
+    delegation_id: UUID,
+    db: Session = Depends(get_db)
+):
+    deleted = delete_user_delegation(db, user_id, delegation_id)
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Delegation not found")
+
+    return {
+        "message": "Delegation deleted successfully"
+    }
 
 
 @router.get("/{user_id}", response_model=UserRead)

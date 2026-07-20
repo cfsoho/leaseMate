@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown } from "lucide-react";
 
 import { changeCurrentUserPassword, getCurrentUser } from "../../features/auth/authApi";
 import { useTranslation } from "../../lib/i18n/useTranslation";
 import { Button } from "../ui/Button";
+import { CollapsibleCard } from "../ui/CollapsibleCard";
 import { getPasswordGenerationLabels } from "../ui/GeneratePasswordButton";
 import { Modal } from "../ui/Modal";
 import { PasswordInput } from "../ui/PasswordInput";
@@ -81,32 +81,13 @@ export function AccountPasswordSection() {
   const isPasswordFormDisabled = changePassword.isPending || currentUser.isLoading;
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white">
-      <button
-        aria-expanded={isOpen}
-        className="flex w-full cursor-pointer items-start justify-between gap-4 p-5 text-left"
-        type="button"
-        onClick={() => setIsOpen((current) => !current)}
+    <>
+      <CollapsibleCard
+        isOpen={isOpen}
+        title={t("profile.passwordSection")}
+        description={t("profile.passwordDescription")}
+        onOpenChange={setIsOpen}
       >
-        <span className="grid gap-1">
-          <span className="text-sm font-bold uppercase tracking-wide text-slate-500">
-            {t("profile.passwordSection")}
-          </span>
-          <span className="text-sm font-normal leading-relaxed text-slate-600">
-            {t("profile.passwordDescription")}
-          </span>
-        </span>
-        <ChevronDown
-          aria-hidden="true"
-          className={[
-            "mt-0.5 shrink-0 text-slate-500 transition-transform",
-            isOpen ? "rotate-180" : "",
-          ].join(" ")}
-          size={18}
-        />
-      </button>
-      {isOpen && (
-        <div className="grid gap-4 px-5 pb-5">
           {currentUser.isLoading && (
             <PasswordNotice message={t("profile.loading")} />
           )}
@@ -126,6 +107,7 @@ export function AccountPasswordSection() {
           {user && (
         <form
           className="grid gap-3"
+          noValidate
           onSubmit={(event) => {
             event.preventDefault();
             const nextErrors = validatePasswordChangeForm(passwordForm, {
@@ -225,8 +207,7 @@ export function AccountPasswordSection() {
           </div>
         </form>
           )}
-        </div>
-      )}
+      </CollapsibleCard>
       {passwordMessage && isPasswordErrorModalOpen && (
         <Modal title={t("profile.passwordUpdateFailedTitle")}>
           <p className="mt-2 text-sm font-normal leading-relaxed text-slate-700">
@@ -254,7 +235,7 @@ export function AccountPasswordSection() {
           </div>
         </Modal>
       )}
-    </section>
+    </>
   );
 }
 

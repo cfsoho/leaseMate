@@ -15,6 +15,7 @@ import type {
   ProfileCountry,
   ResetPasswordResponse,
   SessionActionResponse,
+  SystemSetupStatus,
   ThemePreference,
   UserLegalName,
   UserLegalNamePayload,
@@ -46,6 +47,12 @@ export function getBootstrapLocales() {
 
 export function getBootstrapDefaultLocale() {
   return apiRequest<BootstrapDefaultLocale>("/user-auth/bootstrap-default-locale");
+}
+
+export function getSystemSetupStatus() {
+  return apiRequest<SystemSetupStatus>("/user-auth/system-setup-status", {
+    auth: true,
+  });
 }
 
 export function getProfileCountries() {

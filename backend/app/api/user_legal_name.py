@@ -31,16 +31,20 @@ def create(
     payload: UserLegalNameCreate,
     db: Session = Depends(get_db)
 ):
-    return create_user_legal_name(db, payload)
+    try:
+        return create_user_legal_name(db, payload)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
 
 
 @router.get("", response_model=List[UserLegalNameRead])
 def list_all(
     skip: int = 0,
     limit: int = 100,
+    user_id: Optional[UUID] = None,
     db: Session = Depends(get_db)
 ):
-    return get_user_legal_names(db, skip, limit)
+    return get_user_legal_names(db, skip, limit, user_id)
 
 
 @router.get("/{legal_name_id}", response_model=UserLegalNameRead)
@@ -65,7 +69,10 @@ def update(
     payload: UserLegalNameUpdate,
     db: Session = Depends(get_db)
 ):
-    legal_name = update_user_legal_name(db, legal_name_id, payload)
+    try:
+        legal_name = update_user_legal_name(db, legal_name_id, payload)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
 
     if not legal_name:
         raise HTTPException(

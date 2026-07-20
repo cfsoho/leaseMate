@@ -765,8 +765,12 @@ export function ReferenceListsPage() {
           firstPage: t("grid.firstPage"),
           lastPage: t("grid.lastPage"),
           nextPage: t("grid.nextPage"),
+          paginationMode: t("grid.pagination"),
           previousPage: t("grid.previousPage"),
           rows: t("grid.rows"),
+          showAllMode: t("grid.showAllRows"),
+          switchToPagination: t("grid.switchToPagination"),
+          switchToShowAll: t("grid.switchToShowAll"),
         }}
         pageSize={pageSize}
         records={visibleRecords}
@@ -1690,6 +1694,7 @@ function ReferenceRecordForm({
   return (
     <form
       className="grid gap-4"
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
         const validationError = validateReferenceForm(value, fields, mode, t);
@@ -1766,7 +1771,6 @@ function ReferenceRecordForm({
               {field.type === "textarea" ? (
                 <textarea
                   className="min-h-24 resize-y rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-950 outline-none focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10"
-                  required={mode !== "search" && field.required}
                   value={String(value[field.name] ?? "")}
                   onChange={(event) =>
                     setValue((currentValue) => ({
@@ -1860,7 +1864,6 @@ function ReferenceRecordForm({
               ) : field.type === "select" ? (
                 <select
                   className="min-h-10 rounded-md border border-slate-300 bg-white px-3 text-sm font-normal text-slate-950 outline-none focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10"
-                  required={mode !== "search" && field.required}
                   value={String(value[field.name] ?? "")}
                   onChange={(event) =>
                     setValue((currentValue) => {
@@ -1887,7 +1890,6 @@ function ReferenceRecordForm({
               ) : (
                 <input
                   className="min-h-10 rounded-md border border-slate-300 bg-white px-3 text-sm font-normal text-slate-950 outline-none focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10"
-                  required={mode !== "search" && field.required}
                   type={field.type === "number" ? "number" : "text"}
                   value={String(value[field.name] ?? "")}
                   onChange={(event) =>

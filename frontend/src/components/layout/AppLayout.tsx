@@ -2,7 +2,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getCurrentUser } from "../../features/auth/authApi";
+import { getCurrentUser, getSystemSetupStatus } from "../../features/auth/authApi";
 import {
   consumeTransitionFlag,
   LOGIN_TO_APP_TRANSITION_KEY,
@@ -16,6 +16,7 @@ import {
 import { API_ACTIVITY_EVENT } from "../../lib/api/client";
 import { formatDeviceTitle } from "../../lib/device/deviceDisplay";
 import { clearStoredLocale } from "../../lib/i18n/LocaleProvider";
+import { ForcedLightTheme } from "../../lib/theme/ForcedLightTheme";
 import { useLocaleContext } from "../../lib/i18n/localeContext";
 import { isSupportedLocale } from "../../lib/i18n/localeUtils";
 import { useTranslation } from "../../lib/i18n/useTranslation";
@@ -26,6 +27,7 @@ import {
   type RealtimeEvent,
 } from "../../lib/realtime/realtimeClient";
 import { EmailVerificationPrompt } from "../auth/EmailVerificationPrompt";
+import { AuthCard } from "../auth/AuthCard";
 import { Modal } from "../ui/Modal";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
@@ -59,6 +61,23 @@ export function AppLayout() {
     refetchOnWindowFocus: true,
     retry: false,
   });
+  const isAdmin = currentUser.data?.role_code === "ADMIN";
+  const systemSetupStatus = useQuery({
+    queryKey: ["system-setup-status"],
+    queryFn: getSystemSetupStatus,
+    enabled: hasAccessToken && currentUser.isSuccess,
+    refetchOnWindowFocus: true,
+    retry: false,
+  });
+  const isSystemSetupLocked = Boolean(
+    isAdmin && systemSetupStatus.data && !systemSetupStatus.data.system_ready,
+  );
+  const isRegularUserSystemSetupLocked = Boolean(
+    currentUser.data &&
+      !isAdmin &&
+      systemSetupStatus.data &&
+      !systemSetupStatus.data.system_ready,
+  );
 
   useEffect(() => {
     const handleAuthTokenChange = () => {
@@ -128,6 +147,14 @@ export function AppLayout() {
           });
         }
       }
+
+      if (realtimeEvent?.type === "system_setup_changed") {
+        queryClient.invalidateQueries({ queryKey: ["system-setup-status"] });
+        queryClient.invalidateQueries({ queryKey: ["system-settings", "email"] });
+        queryClient.invalidateQueries({
+          queryKey: ["system-settings", "email", "status"],
+        });
+      }
     });
 
     const intervalId = window.setInterval(sendActivity, 30000);
@@ -149,6 +176,14 @@ export function AppLayout() {
   }, [location.hash, location.pathname, location.search]);
 
   useEffect(() => {
+    if (location.hash) {
+      return;
+    }
+
+    scrollPageToTop();
+  }, [location.hash, location.pathname]);
+
+  useEffect(() => {
     if (currentUser.isError && !getAccessToken()) {
       setHasAccessToken(false);
     }
@@ -166,35 +201,103 @@ export function AppLayout() {
   }, [currentUser.data?.preferred_locale_code, locale, setLocale]);
 
   useEffect(() => {
-    if (currentUser.data?.email_verified_at) {
+    if (currentUser.data?.email_verified_at || isAdmin) {
       setIsVerificationModalOpen(false);
     }
-  }, [currentUser.data?.email_verified_at]);
+  }, [currentUser.data?.email_verified_at, isAdmin]);
 
   useEffect(() => {
     if (
       currentUser.data &&
+      !isAdmin &&
+      !isRegularUserSystemSetupLocked &&
       !currentUser.data.email_verified_at &&
       location.pathname !== "/dashboard"
     ) {
       setIsVerificationModalOpen(true);
       navigate("/dashboard", { replace: true });
     }
-  }, [currentUser.data, location.pathname, navigate]);
+  }, [
+    currentUser.data,
+    isAdmin,
+    isRegularUserSystemSetupLocked,
+    location.pathname,
+    navigate,
+  ]);
+
+  useEffect(() => {
+    if (isSystemSetupLocked && location.pathname !== "/settings") {
+      navigate("/settings", { replace: true });
+    }
+  }, [isSystemSetupLocked, location.pathname, navigate]);
 
   useEffect(() => {
     if (
       currentUser.data?.password_must_change &&
+      !isRegularUserSystemSetupLocked &&
       location.pathname !== "/profile"
     ) {
       navigate("/profile", { replace: true });
     }
-  }, [currentUser.data?.password_must_change, location.pathname, navigate]);
+  }, [
+    currentUser.data?.password_must_change,
+    isRegularUserSystemSetupLocked,
+    location.pathname,
+    navigate,
+  ]);
+
+  function handleBlockedUserLogout() {
+    clearStoredLocale();
+    clearTokens();
+    queryClient.removeQueries({ queryKey: ["current-user"] });
+    navigate("/login", { replace: true });
+  }
+
+  if (isRegularUserSystemSetupLocked) {
+    return (
+      <ForcedLightTheme>
+        <AuthCard
+          eyebrow={t("auth.adminSetupRequiredEyebrow")}
+          title={t("auth.adminSetupRequiredTitle")}
+          footer={
+            <button
+              className="lm-button lm-button-primary flex min-h-9 w-full items-center justify-center rounded-md px-3 text-sm"
+              type="button"
+              onClick={handleBlockedUserLogout}
+            >
+              {t("shell.logOut")}
+            </button>
+          }
+        >
+          <p className="text-sm leading-relaxed text-slate-600">
+            {t("auth.adminSetupRequiredBody")}
+          </p>
+        </AuthCard>
+      </ForcedLightTheme>
+    );
+  }
+
+  if (isSystemSetupLocked) {
+    return (
+      <div
+        className={[
+          "h-dvh overflow-hidden bg-slate-50 dark:bg-slate-950",
+          shouldFadeIn ? "app-login-enter" : "",
+        ].join(" ")}
+      >
+        <main className="app-main h-full min-w-0 overflow-y-auto">
+          <div className="app-route-outlet">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div
       className={[
-        "grid min-h-screen bg-slate-50",
+        "grid h-dvh overflow-hidden bg-slate-50",
         shouldFadeIn ? "app-login-enter" : "",
         isSidebarCollapsed
           ? "lg:grid-cols-[76px_minmax(0,1fr)]"
@@ -202,14 +305,15 @@ export function AppLayout() {
       ].join(" ")}
     >
       <Sidebar
+        adminSetupOnly={isSystemSetupLocked}
         isCollapsed={isSidebarCollapsed}
         onExpandCollapsed={() => setIsSidebarCollapsed(false)}
         onToggleCollapsed={() => setIsSidebarCollapsed((current) => !current)}
       />
-      <div className="min-w-0">
-        <TopBar />
-        <main className="min-w-0 px-4 py-5 sm:px-5 lg:px-6 lg:py-6">
-          <div className="mx-auto grid max-w-[1600px] gap-6">
+      <div className="flex min-h-0 min-w-0 flex-col">
+        <TopBar adminSetupOnly={isSystemSetupLocked} />
+        <main className="app-main min-h-0 min-w-0 flex-1 overflow-y-auto">
+          <div className="app-route-outlet">
             <Outlet />
           </div>
         </main>
@@ -240,4 +344,16 @@ function parseRealtimeEvent(value: string): RealtimeEvent | null {
   } catch {
     return null;
   }
+}
+
+function scrollPageToTop() {
+  const resetScroll = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  };
+
+  resetScroll();
+  window.requestAnimationFrame(resetScroll);
+  window.setTimeout(resetScroll, 50);
 }

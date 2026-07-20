@@ -75,17 +75,29 @@ const ResetPasswordPage = lazyNamed(
   () => import("../pages/ResetPasswordPage"),
   "ResetPasswordPage",
 );
+const SettingsPage = lazyNamed(
+  () => import("../pages/SettingsPage"),
+  "SettingsPage",
+);
+const SystemEmailVerificationPage = lazyNamed(
+  () => import("../pages/SystemEmailVerificationPage"),
+  "SystemEmailVerificationPage",
+);
 const UnderConstructionPage = lazyNamed<UnderConstructionPageProps>(
   () => import("../pages/UnderConstructionPage"),
   "UnderConstructionPage",
 );
 const UsersPage = lazyNamed(() => import("../pages/UsersPage"), "UsersPage");
+const UserDetailPage = lazyNamed(
+  () => import("../pages/UserDetailPage"),
+  "UserDetailPage",
+);
 
 function withRouteFallback(element: ReactNode) {
   return (
     <Suspense
       fallback={
-        <div className="grid min-h-[220px] place-items-center">
+        <div className="grid min-h-[calc(100dvh-8rem)] place-items-center">
           <span
             aria-label="Loading"
             className="size-8 animate-spin rounded-full border-2 border-slate-300 border-t-slate-950"
@@ -144,13 +156,13 @@ export const router = createBrowserRouter([
         element: withRouteFallback(<ReferenceListsPage />),
       },
       { path: "users", element: withRouteFallback(<UsersPage />) },
-      { path: "email-links", element: withRouteFallback(<EmailLinksPage />) },
       {
-        path: "settings",
-        element: withRouteFallback(
-          <UnderConstructionPage titleKey="nav.settings" />,
-        ),
+        path: "users/create",
+        element: withRouteFallback(<UserDetailPage />),
       },
+      { path: "users/:userId", element: withRouteFallback(<UserDetailPage />) },
+      { path: "email-links", element: withRouteFallback(<EmailLinksPage />) },
+      { path: "settings", element: withRouteFallback(<SettingsPage />) },
       { path: "*", element: withRouteFallback(<NotFoundPage />) },
     ],
   },
@@ -207,6 +219,16 @@ export const router = createBrowserRouter([
             <EmailConfirmationPage />
           </RouteLocaleProvider>
         </BootstrapRedirectGate>
+      </ForcedLightTheme>,
+    ),
+  },
+  {
+    path: "/settings/email/verify/:token",
+    element: withRouteFallback(
+      <ForcedLightTheme>
+        <RouteLocaleProvider>
+          <SystemEmailVerificationPage />
+        </RouteLocaleProvider>
       </ForcedLightTheme>,
     ),
   },

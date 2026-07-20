@@ -39,7 +39,6 @@ type UserFormProps = {
   syncLocaleToUi?: boolean;
   requireEmailConfirmation?: boolean;
   roleOptions?: { label: string; value: string }[];
-  showInvitationHelp?: boolean;
   showPhone?: boolean;
   showPassword?: boolean;
   onCancel?: () => void;
@@ -73,7 +72,6 @@ export function UserForm({
   syncLocaleToUi = true,
   requireEmailConfirmation = false,
   roleOptions = [],
-  showInvitationHelp = true,
   showPhone = true,
   showPassword = true,
   onCancel,
@@ -264,7 +262,7 @@ export function UserForm({
   const fieldGridClass =
     density === "compact" ? "grid gap-3 lg:grid-cols-2" : "grid gap-4 lg:grid-cols-2";
   return (
-    <form className={density === "compact" ? "grid gap-4" : "grid gap-6"} onSubmit={handleSubmit}>
+    <form className={density === "compact" ? "grid gap-4" : "grid gap-6"} noValidate onSubmit={handleSubmit}>
       {submitError && (
         <FormAlert>{submitError}</FormAlert>
       )}
@@ -311,12 +309,6 @@ export function UserForm({
       </section>
 
       <section className={sectionClass}>
-        <SectionTitle title={t("form.login")} />
-        {!showPassword && showInvitationHelp && (
-          <p className="text-sm font-normal leading-relaxed text-slate-500">
-            {t("users.invitationPasswordHelp")}
-          </p>
-        )}
         <Field
           density={density}
           error={errors.email}

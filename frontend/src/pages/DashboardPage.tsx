@@ -6,7 +6,6 @@ import {
   Building2,
   CheckCircle2,
   KeyRound,
-  MailCheck,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
@@ -27,14 +26,18 @@ import {
   registerCurrentUserPasskey,
 } from "../features/auth/passkeys";
 import type { CurrentUserReadiness } from "../features/auth/authTypes";
+import { getSystemEmailSettingsStatus } from "../features/settings/settingsApi";
 import { getEmailLinkDashboardStats } from "../features/users/usersApi";
 import { getAccessToken } from "../lib/auth/tokenStorage";
 import { useTranslation } from "../lib/i18n/useTranslation";
 import { Button } from "../components/ui/Button";
+import { CollapsibleCard } from "../components/ui/CollapsibleCard";
+import { CollapsibleCardContainer } from "../components/ui/CollapsibleCardContainer";
 import { Modal } from "../components/ui/Modal";
 
 const SETUP_COMPLETED_CARD_SEEN_KEY = "leasemate.dashboard.setupCompletedCardSeen";
 const READINESS_COMPLETED_KEY_PREFIX = "leasemate.dashboard.readinessComplete";
+const noopOpenChange = () => undefined;
 
 export function DashboardPage() {
   const location = useLocation();
@@ -63,6 +66,7 @@ export function DashboardPage() {
     enabled: hasToken,
     retry: false,
   });
+  const isAdmin = currentUser.data?.role_code === "ADMIN";
   const readiness = useQuery({
     queryKey: ["current-user", "readiness"],
     queryFn: getCurrentUserReadiness,
@@ -75,7 +79,17 @@ export function DashboardPage() {
   const emailLinkStats = useQuery({
     queryKey: ["users", "email-links", "stats"],
     queryFn: getEmailLinkDashboardStats,
-    enabled: hasToken && currentUser.isSuccess && Boolean(currentUser.data?.email_verified_at),
+    enabled:
+      hasToken &&
+      currentUser.isSuccess &&
+      Boolean(currentUser.data?.email_verified_at) &&
+      isAdmin,
+    retry: false,
+  });
+  const emailSettingsStatus = useQuery({
+    queryKey: ["system-settings", "email", "status"],
+    queryFn: getSystemEmailSettingsStatus,
+    enabled: hasToken && currentUser.isSuccess && isAdmin,
     retry: false,
   });
   const passkeys = useQuery({
@@ -204,10 +218,6 @@ export function DashboardPage() {
         <EmailVerificationPrompt currentUser={currentUser.data} />
       )}
 
-      {readiness.isSuccess && !readinessIsComplete && (
-        <DashboardReadiness readiness={readiness.data} />
-      )}
-
       {showSmtpWarning && (
         <section className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-950">
           <AlertTriangle aria-hidden="true" className="mt-0.5 shrink-0" size={20} />
@@ -220,98 +230,130 @@ export function DashboardPage() {
         </section>
       )}
 
-      {showBackendStatus && (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
-          <article className="flex items-start gap-3.5 rounded-lg border border-slate-200 bg-white p-[18px]">
-            <ShieldCheck aria-hidden="true" size={22} />
+      {emailSettingsStatus.isSuccess && !emailSettingsStatus.data.is_ready && (
+        <section className="flex flex-wrap items-start justify-between gap-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-950 dark:border-amber-400/40 dark:bg-amber-950/30 dark:text-amber-100">
+          <div className="flex items-start gap-3">
+            <AlertTriangle
+              aria-hidden="true"
+              className="mt-0.5 shrink-0"
+              size={20}
+            />
             <div>
-              <h2 className="mb-2 font-bold text-slate-950">
-                {t("dashboard.backendConnection")}
+              <h2 className="font-bold">
+                {t("dashboard.emailSettingsMissingTitle")}
               </h2>
-              <p className="leading-relaxed text-slate-500">
-                {backendStatusMessage}
-              </p>
-            </div>
-          </article>
-        </div>
-      )}
-
-      {emailLinkStats.isSuccess && (
-        <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-[18px]">
-          <div className="flex items-start gap-3.5">
-            <MailCheck aria-hidden="true" className="mt-0.5 shrink-0" size={22} />
-            <div>
-              <h2 className="font-bold text-slate-950">
-                {t("dashboard.emailLinkStatsTitle")}
-              </h2>
-              <p className="mt-1 text-sm leading-relaxed text-slate-500">
-                {t("dashboard.emailLinkStatsDescription")}
+              <p className="mt-1 text-sm leading-relaxed text-amber-900 dark:text-amber-100">
+                {t("dashboard.emailSettingsMissingMessage")}
               </p>
             </div>
           </div>
-
-          <div className="grid gap-3 md:grid-cols-3">
-            <DashboardStat
-              label={t("dashboard.emailLinksActive")}
-              value={emailLinkStats.data.active_link_count}
-            />
-            <DashboardStat
-              label={t("dashboard.emailLinksExpiringToday")}
-              value={emailLinkStats.data.expiring_today_count}
-            />
-            <DashboardStat
-              tone={
-                emailLinkStats.data.attention_required_count > 0
-                  ? "danger"
-                  : "normal"
-              }
-              label={t("dashboard.emailLinksNeedAttention")}
-              value={emailLinkStats.data.attention_required_count}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <DashboardBar
-              label={t("dashboard.emailLinksActive")}
-              max={Math.max(
-                emailLinkStats.data.active_link_count,
-                emailLinkStats.data.attention_required_count,
-                emailLinkStats.data.expiring_today_count,
-                1,
-              )}
-              value={emailLinkStats.data.active_link_count}
-            />
-            <DashboardBar
-              label={t("dashboard.emailLinksExpiringToday")}
-              max={Math.max(
-                emailLinkStats.data.active_link_count,
-                emailLinkStats.data.attention_required_count,
-                emailLinkStats.data.expiring_today_count,
-                1,
-              )}
-              value={emailLinkStats.data.expiring_today_count}
-            />
-            <DashboardBar
-              danger
-              label={t("dashboard.emailLinksNeedAttention")}
-              max={Math.max(
-                emailLinkStats.data.active_link_count,
-                emailLinkStats.data.attention_required_count,
-                emailLinkStats.data.expiring_today_count,
-                1,
-              )}
-              value={emailLinkStats.data.attention_required_count}
-            />
-          </div>
-
           <Link
-            className="w-fit text-sm font-semibold text-slate-700 underline-offset-4 hover:text-slate-950 hover:underline"
-            to="/email-links"
+            className="lm-button lm-button-primary inline-flex min-h-8 items-center justify-center gap-1.5 rounded-md px-2.5 text-sm"
+            to="/settings"
           >
-            {t("dashboard.viewEmailLinks")}
+            {t("dashboard.openSettings")}
           </Link>
         </section>
       )}
+
+      {(readiness.isSuccess && !readinessIsComplete) ||
+      showBackendStatus ||
+      emailLinkStats.isSuccess ? (
+        <CollapsibleCardContainer>
+          {readiness.isSuccess && !readinessIsComplete && (
+            <DashboardReadiness readiness={readiness.data} />
+          )}
+
+          {showBackendStatus && (
+            <CollapsibleCard
+              collapsible={false}
+              isOpen
+              onOpenChange={noopOpenChange}
+              title={t("dashboard.backendConnection")}
+            >
+              <div className="flex items-start gap-3.5">
+                <ShieldCheck aria-hidden="true" size={22} />
+                <div>
+                  <p className="leading-relaxed text-slate-500">
+                    {backendStatusMessage}
+                  </p>
+                </div>
+              </div>
+            </CollapsibleCard>
+          )}
+
+          {emailLinkStats.isSuccess && (
+            <CollapsibleCard
+              collapsible={false}
+              description={t("dashboard.emailLinkStatsDescription")}
+              isOpen
+              onOpenChange={noopOpenChange}
+              title={t("dashboard.emailLinkStatsTitle")}
+            >
+              <div className="grid gap-3 md:grid-cols-3">
+                <DashboardStat
+                  label={t("dashboard.emailLinksActive")}
+                  value={emailLinkStats.data.active_link_count}
+                />
+                <DashboardStat
+                  label={t("dashboard.emailLinksExpiringToday")}
+                  value={emailLinkStats.data.expiring_today_count}
+                />
+                <DashboardStat
+                  tone={
+                    emailLinkStats.data.attention_required_count > 0
+                      ? "danger"
+                      : "normal"
+                  }
+                  label={t("dashboard.emailLinksNeedAttention")}
+                  value={emailLinkStats.data.attention_required_count}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <DashboardBar
+                  label={t("dashboard.emailLinksActive")}
+                  max={Math.max(
+                    emailLinkStats.data.active_link_count,
+                    emailLinkStats.data.attention_required_count,
+                    emailLinkStats.data.expiring_today_count,
+                    1,
+                  )}
+                  value={emailLinkStats.data.active_link_count}
+                />
+                <DashboardBar
+                  label={t("dashboard.emailLinksExpiringToday")}
+                  max={Math.max(
+                    emailLinkStats.data.active_link_count,
+                    emailLinkStats.data.attention_required_count,
+                    emailLinkStats.data.expiring_today_count,
+                    1,
+                  )}
+                  value={emailLinkStats.data.expiring_today_count}
+                />
+                <DashboardBar
+                  danger
+                  label={t("dashboard.emailLinksNeedAttention")}
+                  max={Math.max(
+                    emailLinkStats.data.active_link_count,
+                    emailLinkStats.data.attention_required_count,
+                    emailLinkStats.data.expiring_today_count,
+                    1,
+                  )}
+                  value={emailLinkStats.data.attention_required_count}
+                />
+              </div>
+
+              <Link
+                className="w-fit text-sm font-semibold text-slate-700 underline-offset-4 hover:text-slate-950 hover:underline"
+                to="/email-links"
+              >
+                {t("dashboard.viewEmailLinks")}
+              </Link>
+            </CollapsibleCard>
+          )}
+        </CollapsibleCardContainer>
+      ) : null}
 
       {shouldPromptForPasskey && (
         <Modal title="Create a passkey?">
@@ -388,27 +430,24 @@ function DashboardReadiness({
   const completedCount = items.filter((item) => item.count > 0).length;
 
   return (
-    <section className="grid gap-4 rounded-lg border border-slate-200 bg-white p-[18px] dark:border-slate-700 dark:bg-slate-900">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="font-bold text-slate-950 dark:text-slate-100">
-            {t("dashboard.readinessTitle")}
-          </h2>
-          <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-            {t("dashboard.readinessDescription")}
-          </p>
-        </div>
+    <CollapsibleCard
+      action={
         <div className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
           {completedCount} / {items.length}
         </div>
-      </div>
-
+      }
+      collapsible={false}
+      description={t("dashboard.readinessDescription")}
+      isOpen
+      onOpenChange={noopOpenChange}
+      title={t("dashboard.readinessTitle")}
+    >
       <div className="grid gap-3 md:grid-cols-3">
         {items.map((item) => (
           <DashboardReadinessItem key={item.label} {...item} />
         ))}
       </div>
-    </section>
+    </CollapsibleCard>
   );
 }
 

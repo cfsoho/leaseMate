@@ -41,6 +41,42 @@ export type UserLoginSession = {
   revoked_at?: string | null;
 };
 
+export type UserDelegation = {
+  id: string;
+  subject_user_id: string;
+  delegate_user_id: string;
+  relationship_type?: string | null;
+  can_view_legal_names: boolean;
+  can_manage_legal_names: boolean;
+  can_view_bank_accounts: boolean;
+  can_manage_bank_accounts: boolean;
+  can_create_properties_for_subject: boolean;
+  is_active: boolean;
+  subject_family_name: string;
+  subject_given_name: string;
+  subject_email: string;
+  delegate_family_name: string;
+  delegate_given_name: string;
+  delegate_email: string;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
+export type CreateUserDelegationPayload = {
+  delegate_user_id: string;
+  relationship_type?: string | null;
+  can_view_legal_names: boolean;
+  can_manage_legal_names: boolean;
+  can_view_bank_accounts: boolean;
+  can_manage_bank_accounts: boolean;
+  can_create_properties_for_subject: boolean;
+  is_active: boolean;
+};
+
+export type UpdateUserDelegationPayload = Partial<
+  Omit<CreateUserDelegationPayload, "delegate_user_id">
+>;
+
 export type UserListParams = {
   page: number;
   pageSize: number;
@@ -90,10 +126,77 @@ export function listUsers(params: UserListParams) {
   });
 }
 
+export function getUser(id: string) {
+  return apiRequest<CurrentUser>(`/users/${id}`, {
+    auth: true,
+  });
+}
+
+export function listUserSelectOptions(params?: {
+  createdByCurrentUser?: boolean;
+}) {
+  const searchParams = new URLSearchParams();
+
+  if (params?.createdByCurrentUser) {
+    searchParams.set("created_by_current_user", "true");
+  }
+
+  const query = searchParams.toString();
+
+  return apiRequest<CurrentUser[]>(
+    `/users/select-options${query ? `?${query}` : ""}`,
+    {
+      auth: true,
+    },
+  );
+}
+
 export function listUserLoginSessions(userId: string) {
   return apiRequest<UserLoginSession[]>(`/users/${userId}/login-sessions`, {
     auth: true,
   });
+}
+
+export function listUserDelegations(userId: string) {
+  return apiRequest<UserDelegation[]>(`/users/${userId}/delegations`, {
+    auth: true,
+  });
+}
+
+export function createUserDelegation(
+  userId: string,
+  payload: CreateUserDelegationPayload,
+) {
+  return apiRequest<UserDelegation>(`/users/${userId}/delegations`, {
+    auth: true,
+    method: "POST",
+    body: payload,
+  });
+}
+
+export function updateUserDelegation(
+  userId: string,
+  delegationId: string,
+  payload: UpdateUserDelegationPayload,
+) {
+  return apiRequest<UserDelegation>(
+    `/users/${userId}/delegations/${delegationId}`,
+    {
+      auth: true,
+      method: "PUT",
+      body: payload,
+    },
+  );
+}
+
+export function deleteUserDelegation(userId: string, delegationId: string) {
+  return apiRequest<{ message: string }>(
+    `/users/${userId}/delegations/${delegationId}`,
+    {
+      auth: true,
+      method: "DELETE",
+    },
+  );
 }
 
 function appendSearchParam(

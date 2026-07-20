@@ -31,6 +31,7 @@ from app.db.schemas.user_auth import (
     RefreshTokenRequest,
     ResetPasswordRequest,
     ResetPasswordResponse,
+    SystemSetupStatusResponse,
     UserLoginSessionResponse,
     UserPasskeyResponse,
 )
@@ -50,6 +51,7 @@ from app.services.user_legal_name_service import (
     create_user_legal_name,
     delete_user_legal_name,
     get_user_legal_name,
+    get_inactive_user_legal_name_match,
     get_user_legal_names_for_user,
     update_user_legal_name,
 )
@@ -89,6 +91,10 @@ from app.services.user_auth_service import (
     verify_passkey_registration,
 )
 from app.services.realtime_manager import realtime_manager
+from app.services.system_settings_service import (
+    get_or_create_email_system_setting,
+    is_system_email_settings_ready,
+)
 
 
 router = APIRouter(prefix="/user-auth", tags=["User Auth"])
@@ -143,6 +149,20 @@ def bootstrap_status(db: Session = Depends(get_db)):
     }
 
 
+@router.get("/system-setup-status", response_model=SystemSetupStatusResponse)
+def system_setup_status(
+    _current_user=Depends(require_current_user),
+    db: Session = Depends(get_db),
+):
+    email_ready = is_system_email_settings_ready(
+        get_or_create_email_system_setting(db)
+    )
+    return {
+        "email_settings_ready": email_ready,
+        "system_ready": email_ready,
+    }
+
+
 @router.get("/bootstrap-locales", response_model=list[BootstrapLocaleResponse])
 def bootstrap_locales(db: Session = Depends(get_db)):
     return get_bootstrap_locales(db)
@@ -178,16 +198,10 @@ async def bootstrap_admin(
     db: Session = Depends(get_db)
 ):
     try:
-        user, token_record, raw_token = bootstrap_admin_user(db, payload)
+        user = bootstrap_admin_user(db, payload)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
 
-    verification_url = build_email_confirmation_url(raw_token)
-    email_sent = send_email_confirmation(
-        user.email,
-        verification_url,
-        user.preferred_locale_code,
-    )
     access_token, refresh_token = issue_login_tokens(
         db=db,
         user=user,
@@ -199,9 +213,9 @@ async def bootstrap_admin(
         "user_id": user.id,
         "email": user.email,
         "status": user.status,
-        "email_sent": email_sent,
-        "verification_token_expires_at": token_record.expires_at,
-        "verification_url": verification_url,
+        "email_sent": False,
+        "verification_token_expires_at": None,
+        "verification_url": None,
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
@@ -355,6 +369,7 @@ def forgot_password(
         user.email,
         reset_url,
         user.preferred_locale_code,
+        db=db,
     )
 
     return {
@@ -693,12 +708,14 @@ def resend_email_confirmation(
             target_user.email,
             verification_url,
             target_user.preferred_locale_code,
+            db=db,
         )
         if target_user.password_must_change
         else send_email_confirmation(
             target_user.email,
             verification_url,
             target_user.preferred_locale_code,
+            db=db,
         )
     )
 
@@ -750,21 +767,39 @@ def my_legal_names(
     return get_user_legal_names_for_user(db, current_user.id)
 
 
+@router.get("/me/legal-names/inactive-match", response_model=UserLegalNameRead | None)
+def my_inactive_legal_name_match(
+    country_id: UUID,
+    locale_code: str,
+    current_user=Depends(require_current_user),
+    db: Session = Depends(get_db)
+):
+    return get_inactive_user_legal_name_match(
+        db,
+        current_user.id,
+        country_id,
+        locale_code,
+    )
+
+
 @router.post("/me/legal-names", response_model=UserLegalNameRead)
 def create_my_legal_name(
     payload: CurrentUserLegalNamePayload,
     current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    return create_user_legal_name(
-        db,
-        UserLegalNameCreate(
-            user_id=current_user.id,
-            country_id=payload.country_id,
-            locale_code=payload.locale_code,
-            full_name=payload.full_name,
-        ),
-    )
+    try:
+        return create_user_legal_name(
+            db,
+            UserLegalNameCreate(
+                user_id=current_user.id,
+                country_id=payload.country_id,
+                locale_code=payload.locale_code,
+                full_name=payload.full_name,
+            ),
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
 
 
 @router.put("/me/legal-names/{legal_name_id}", response_model=UserLegalNameRead)
@@ -779,15 +814,18 @@ def update_my_legal_name(
     if not legal_name or legal_name.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="User legal name not found")
 
-    updated = update_user_legal_name(
-        db,
-        legal_name_id,
-        UserLegalNameUpdate(
-            country_id=payload.country_id,
-            locale_code=payload.locale_code,
-            full_name=payload.full_name,
-        ),
-    )
+    try:
+        updated = update_user_legal_name(
+            db,
+            legal_name_id,
+            UserLegalNameUpdate(
+                country_id=payload.country_id,
+                locale_code=payload.locale_code,
+                full_name=payload.full_name,
+            ),
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
 
     if not updated:
         raise HTTPException(status_code=404, detail="User legal name not found")

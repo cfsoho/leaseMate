@@ -7,12 +7,14 @@ import { BrandMark } from "../ui/BrandMark";
 import { NavigationSections } from "./NavigationSections";
 
 type SidebarProps = {
+  adminSetupOnly?: boolean;
   isCollapsed: boolean;
   onExpandCollapsed: () => void;
   onToggleCollapsed: () => void;
 };
 
 export function Sidebar({
+  adminSetupOnly = false,
   isCollapsed,
   onExpandCollapsed,
   onToggleCollapsed,
@@ -31,12 +33,12 @@ export function Sidebar({
         ].join(" ")}
       >
         <NavLink
-          aria-label={t("nav.dashboard")}
+          aria-label={adminSetupOnly ? t("nav.adminSettings") : t("nav.dashboard")}
           className={[
             "flex min-h-11 items-center rounded-lg hover:bg-slate-100",
             isCollapsed ? "justify-center px-0" : "w-full gap-2.5 px-2",
           ].join(" ")}
-          to="/dashboard"
+          to={adminSetupOnly ? "/settings" : "/dashboard"}
         >
           <BrandMark size="sm" />
           <div className={isCollapsed ? "hidden" : "min-w-0"}>
@@ -57,6 +59,7 @@ export function Sidebar({
         ].join(" ")}
       >
         <NavigationSections
+          adminSetupOnly={adminSetupOnly}
           isCollapsed={isCollapsed}
           onExpandCollapsed={onExpandCollapsed}
         />

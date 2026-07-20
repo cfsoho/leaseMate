@@ -4,9 +4,12 @@ from app.db.models.user_refresh_token import UserRefreshToken
 from app.db.models.user_passkey import UserPasskey
 from app.db.models.user_webauthn_challenge import UserWebAuthnChallenge
 from app.db.models.user_legal_name import UserLegalName
+from app.db.models.user_delegation import UserDelegation
+from app.db.models.system_setting import SystemSetting
 from app.db.models.ref.role import Role
 from app.db.models.ref.region import Region
 from app.db.models.ref.status_code import StatusCode
+from app.db.models.property_building import PropertyBuilding
 from app.db.models.property import Property
 from app.db.models.property_access import PropertyAccess
 from app.db.models.ref.property_access_level import PropertyAccessLevel

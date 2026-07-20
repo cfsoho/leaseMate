@@ -1,70 +1,53 @@
-import os
 import smtplib
 import logging
 from email.message import EmailMessage
 
+from sqlalchemy.orm import Session
+
 from app.services.email_templates.email_confirmation import (
-    EMAIL_CONFIRMATION_TEMPLATES,
     PASSWORD_RESET_TEMPLATES,
-    USER_INVITATION_TEMPLATES,
+    build_email_confirmation_message,
+    build_user_invitation_message,
 )
+from app.services.system_settings_service import get_smtp_config
 
 
 logger = logging.getLogger(__name__)
-SMTP_HOST = os.getenv("SMTP_HOST")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
 
 
-def get_smtp_identity(identity: str = "noreply") -> tuple[str | None, str | None, str]:
-    if identity == "system":
-        return (
-            os.getenv("SMTP_SYSTEM_USER"),
-            os.getenv("SMTP_SYSTEM_PASSWORD"),
-            os.getenv("SMTP_SYSTEM_FROM", "system@leasemate.local"),
-        )
-
-    return (
-        os.getenv("SMTP_NOREPLY_USER") or os.getenv("SMTP_USER") or os.getenv("SMTP_USERNAME"),
-        os.getenv("SMTP_NOREPLY_PASSWORD") or os.getenv("SMTP_PASSWORD"),
-        (
-            os.getenv("SMTP_NOREPLY_FROM")
-            or os.getenv("SMTP_FROM")
-            or os.getenv("SMTP_FROM_EMAIL")
-            or "no-reply@leasemate.local"
-        ),
-    )
-
-
-def email_enabled(identity: str = "noreply") -> bool:
-    smtp_user, smtp_password, _smtp_from = get_smtp_identity(identity)
-    return bool(SMTP_HOST and smtp_user and smtp_password)
+def email_enabled(identity: str = "noreply", db: Session | None = None) -> bool:
+    config = get_smtp_config(db, identity)
+    return bool(config.host and config.user and config.password and config.from_address)
 
 
 def send_email(
     to_email: str,
     subject: str,
     body: str,
-    identity: str = "noreply"
+    html_body: str | None = None,
+    identity: str = "noreply",
+    db: Session | None = None,
 ) -> bool:
-    smtp_user, smtp_password, smtp_from = get_smtp_identity(identity)
+    config = get_smtp_config(db, identity)
 
-    if not email_enabled(identity):
+    if not (config.host and config.user and config.password and config.from_address):
         return False
 
     message = EmailMessage()
-    message["From"] = smtp_from
+    message["From"] = config.from_address
     message["To"] = to_email
     message["Subject"] = subject
     message.set_content(body)
+    if html_body:
+        message.add_alternative(html_body, subtype="html")
 
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
-            if SMTP_USE_TLS:
+        with smtplib.SMTP(config.host, config.port) as smtp:
+            if config.use_tls:
                 smtp.starttls()
-            smtp.login(smtp_user, smtp_password.replace(" ", ""))
+            smtp.login(config.user, config.password.replace(" ", ""))
             smtp.send_message(message)
-    except smtplib.SMTPException:
+    except (OSError, smtplib.SMTPException):
         logger.exception("SMTP email delivery failed")
         return False
 
@@ -75,16 +58,19 @@ def send_email_confirmation(
     to_email: str,
     verification_url: str,
     locale_code: str | None = None,
+    db: Session | None = None,
 ) -> bool:
-    message = EMAIL_CONFIRMATION_TEMPLATES.get(
-        locale_code or "",
-        EMAIL_CONFIRMATION_TEMPLATES["en"],
+    subject, body, html_body = build_email_confirmation_message(
+        verification_url=verification_url,
+        locale_code=locale_code,
     )
 
     return send_email(
         to_email=to_email,
-        subject=message["subject"],
-        body=message["body"].format(verification_url=verification_url),
+        subject=subject,
+        body=body,
+        html_body=html_body,
+        db=db,
     )
 
 
@@ -92,17 +78,20 @@ def send_user_invitation(
     to_email: str,
     verification_url: str,
     locale_code: str | None = None,
+    db: Session | None = None,
 ) -> bool:
-    message = USER_INVITATION_TEMPLATES.get(
-        locale_code or "",
-        USER_INVITATION_TEMPLATES["en"],
+    subject, body, html_body = build_user_invitation_message(
+        verification_url=verification_url,
+        locale_code=locale_code,
     )
 
     return send_email(
         to_email=to_email,
-        subject=message["subject"],
-        body=message["body"].format(verification_url=verification_url),
+        subject=subject,
+        body=body,
+        html_body=html_body,
         identity="system",
+        db=db,
     )
 
 
@@ -110,6 +99,7 @@ def send_password_reset(
     to_email: str,
     reset_url: str,
     locale_code: str | None = None,
+    db: Session | None = None,
 ) -> bool:
     message = PASSWORD_RESET_TEMPLATES.get(
         locale_code or "",
@@ -121,4 +111,5 @@ def send_password_reset(
         subject=message["subject"],
         body=message["body"].format(reset_url=reset_url),
         identity="system",
+        db=db,
     )

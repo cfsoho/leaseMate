@@ -15,6 +15,7 @@ import type { TranslationKey } from "../../lib/i18n/translations";
 export const mainNavItems = [
   { labelKey: "nav.dashboard", href: "/dashboard", icon: Home },
   { labelKey: "nav.bankAccounts", childLabelKey: "bankAccounts.transactions", href: "/bank-accounts", icon: Landmark },
+  { labelKey: "nav.users", href: "/users", icon: Users },
   { labelKey: "nav.properties", href: "/properties", icon: Building2 },
   { labelKey: "nav.leases", href: "/leases", icon: FileText },
   { labelKey: "nav.expenses", href: "/expenses", icon: ReceiptText },
@@ -22,9 +23,12 @@ export const mainNavItems = [
 ] satisfies NavItem[];
 
 export const adminNavItems = [
-  { labelKey: "nav.users", href: "/users", icon: Users },
   { labelKey: "nav.emailLinks", href: "/email-links", icon: MailCheck },
   { labelKey: "nav.settings", href: "/settings", icon: Settings },
+] satisfies NavItem[];
+
+export const adminSetupNavItems = [
+  { labelKey: "nav.adminSettings", href: "/settings", icon: Settings },
 ] satisfies NavItem[];
 
 export const referenceNavItem = {

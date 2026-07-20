@@ -1,9 +1,6 @@
 import uuid
 
-from sqlalchemy import (
-    Column, String, ForeignKey,
-    Numeric, Date, DateTime, func
-)
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Numeric, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -18,17 +15,16 @@ class Property(Base):
     # Display/property nickname
     name = Column(String(100), nullable=False)
 
-    building_name = Column(String(100), nullable=True)
-    address = Column(String(255), nullable=True)
-    district = Column(String(100), nullable=True)
-    city = Column(String(100), nullable=True, index=True)
-    zipcode = Column(String(20), nullable=True)
-
-    # Physical/legal country of the property
-    country_id = Column(
+    # Shared building/location record.
+    #
+    # Multiple properties can belong to the same building.
+    # Examples:
+    # - several condo units in the same Bangkok building
+    # - several Tokyo apartments in the same mansion
+    building_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("ref.countries.id"),
-        nullable=True,
+        ForeignKey("property_buildings.id"),
+        nullable=False,
         index=True
     )
 
@@ -64,10 +60,6 @@ class Property(Base):
     purchase_fx_rate = Column(Numeric(12, 6), nullable=True)
     purchase_date = Column(Date, nullable=True)
 
-    # Geo coordinates
-    latitude = Column(Numeric(10, 8), nullable=True)
-    longitude = Column(Numeric(11, 8), nullable=True)
-
     # Property lifecycle status.
     status_id = Column(
         UUID(as_uuid=True),
@@ -84,7 +76,7 @@ class Property(Base):
         onupdate=func.now()
     )
 
-    country = relationship("Country", back_populates="properties")
+    building = relationship("PropertyBuilding", back_populates="properties")
     owner_user = relationship("User", back_populates="properties_owned")
     legal_name = relationship("UserLegalName")
 

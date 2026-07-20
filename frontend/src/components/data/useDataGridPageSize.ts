@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 const GRID_SCROLL_OFFSET_PX = 260;
 const GRID_HEADER_HEIGHT_PX = 42;
-const GRID_ROW_HEIGHT_PX = 45;
-const MIN_PAGE_SIZE = 10;
+const GRID_ROW_HEIGHT_PX = 58;
+const MIN_PAGE_SIZE = 1;
 
 export function useDataGridPageSize() {
   const [calculatedPageSize, setCalculatedPageSize] = useState(calculatePageSize);

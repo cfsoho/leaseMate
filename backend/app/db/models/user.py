@@ -84,6 +84,15 @@ class User(Base):
         index=True
     )
 
+    # Admin/operator user who created this individual record.
+    # Null means the record was created by bootstrap, seed, or older data.
+    created_by_user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True
+    )
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     updated_at = Column(
@@ -122,11 +131,29 @@ class User(Base):
         cascade="all, delete-orphan"
     )
 
+    delegations_given = relationship(
+        "UserDelegation",
+        foreign_keys="UserDelegation.delegate_user_id",
+        back_populates="delegate_user",
+        cascade="all, delete-orphan"
+    )
+
+    delegations_received = relationship(
+        "UserDelegation",
+        foreign_keys="UserDelegation.subject_user_id",
+        back_populates="subject_user",
+        cascade="all, delete-orphan"
+    )
+
     verification_tokens = relationship(
         "UserVerificationToken",
         back_populates="user",
         cascade="all, delete-orphan"
     )
+
+    @property
+    def role_code(self):
+        return self.role.code if self.role else None
 
     refresh_tokens = relationship(
         "UserRefreshToken",

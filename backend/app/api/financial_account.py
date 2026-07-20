@@ -14,10 +14,10 @@ from app.db.schemas.financial_account import (
 )
 from app.services.financial_account_service import (
     create_financial_account,
-    delete_financial_account_for_user,
-    get_financial_account_for_user,
-    get_financial_accounts_for_user,
-    update_financial_account_for_user,
+    delete_financial_account,
+    get_financial_account,
+    get_financial_accounts,
+    update_financial_account,
 )
 
 router = APIRouter(
@@ -33,8 +33,9 @@ def create(
     current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    validate_legal_name_owner(db, payload.legal_name_id, current_user.id)
-    payload.user_id = current_user.id
+    target_user_id = payload.user_id or current_user.id
+    validate_legal_name_owner(db, payload.legal_name_id, target_user_id)
+    payload.user_id = target_user_id
     try:
         return create_financial_account(db, payload)
     except ValueError as exc:
@@ -45,19 +46,17 @@ def create(
 def list_all(
     skip: int = 0,
     limit: int = 100,
-    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    return get_financial_accounts_for_user(db, current_user.id, skip, limit)
+    return get_financial_accounts(db, skip, limit)
 
 
 @router.get("/{account_id}", response_model=FinancialAccountRead)
 def get_one(
     account_id: UUID,
-    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    account = get_financial_account_for_user(db, account_id, current_user.id)
+    account = get_financial_account(db, account_id)
 
     if not account:
         raise HTTPException(
@@ -72,15 +71,26 @@ def get_one(
 def update(
     account_id: UUID,
     payload: FinancialAccountUpdate,
-    current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    validate_legal_name_owner(db, payload.legal_name_id, current_user.id)
+    existing_account = get_financial_account(db, account_id)
+
+    if not existing_account:
+        raise HTTPException(
+            status_code=404,
+            detail="Financial account not found"
+        )
+
+    target_user_id = payload.user_id or existing_account.user_id
+    validate_legal_name_owner(
+        db,
+        payload.legal_name_id or existing_account.legal_name_id,
+        target_user_id,
+    )
     try:
-        account = update_financial_account_for_user(
+        account = update_financial_account(
             db,
             account_id,
-            current_user.id,
             payload,
         )
     except ValueError as exc:
@@ -101,10 +111,9 @@ def delete(
     current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    deleted = delete_financial_account_for_user(
+    deleted = delete_financial_account(
         db,
         account_id,
-        current_user.id,
         current_user.id,
     )
 
@@ -140,5 +149,5 @@ def validate_legal_name_owner(
     if not exists:
         raise HTTPException(
             status_code=400,
-            detail="Legal name does not belong to the current user",
+            detail="Legal name does not belong to the selected user",
         )

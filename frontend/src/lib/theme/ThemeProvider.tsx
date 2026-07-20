@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { PropsWithChildren } from "react";
 
 import { getCurrentUser, updateCurrentUser } from "../../features/auth/authApi";
+import type { CurrentUser } from "../../features/auth/authTypes";
 import { AUTH_TOKEN_CHANGE_EVENT, getAccessToken } from "../auth/tokenStorage";
 import {
   ThemeContext,
@@ -50,6 +51,8 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
   const [fallbackPreference, setFallbackPreference] =
     useState<ThemePreference>("light");
+  const [optimisticPreference, setOptimisticPreference] =
+    useState<ThemePreference | null>(null);
   const [forcedTheme, setForcedTheme] =
     useState<ResolvedTheme | null>(getForcedTheme);
   const [isAuthenticated, setIsAuthenticated] = useState(hasAccessToken);
@@ -63,9 +66,9 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   });
 
   const userPreference = currentUser.data?.theme_preference;
-  const preference = isThemePreference(userPreference)
-    ? userPreference
-    : fallbackPreference;
+  const preference =
+    optimisticPreference ??
+    (isThemePreference(userPreference) ? userPreference : fallbackPreference);
 
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
     resolveTheme(preference),
@@ -75,8 +78,29 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   const updateThemePreference = useMutation({
     mutationFn: (nextPreference: ThemePreference) =>
       updateCurrentUser({ theme_preference: nextPreference }),
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["current-user"], updatedUser);
+    onMutate: async (nextPreference) => {
+      await queryClient.cancelQueries({ queryKey: ["current-user"] });
+      const previousUser =
+        queryClient.getQueryData<CurrentUser>(["current-user"]);
+      queryClient.setQueryData<CurrentUser | undefined>(
+        ["current-user"],
+        (oldUser) =>
+          oldUser ? { ...oldUser, theme_preference: nextPreference } : oldUser,
+      );
+      return { previousUser };
+    },
+    onSuccess: (updatedUser, nextPreference) => {
+      queryClient.setQueryData<CurrentUser>(["current-user"], {
+        ...updatedUser,
+        theme_preference: nextPreference,
+      });
+      setOptimisticPreference(null);
+    },
+    onError: (_error, _nextPreference, context) => {
+      if (context?.previousUser) {
+        queryClient.setQueryData(["current-user"], context.previousUser);
+      }
+      setOptimisticPreference(null);
     },
   });
 
@@ -92,6 +116,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
       const hasToken = hasAccessToken();
       setIsAuthenticated(hasToken);
       if (!hasToken) {
+        setOptimisticPreference(null);
         queryClient.removeQueries({ queryKey: ["current-user"] });
       }
     };
@@ -126,6 +151,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
       resolvedTheme: effectiveTheme,
       setPreference: (nextPreference: ThemePreference) => {
         setFallbackPreference(nextPreference);
+        setOptimisticPreference(nextPreference);
         if (hasAccessToken()) {
           updateThemePreference.mutate(nextPreference);
         }

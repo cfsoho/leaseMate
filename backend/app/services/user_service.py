@@ -27,12 +27,17 @@ def get_default_created_user_role_id(db: Session) -> UUID:
     return role.id
 
 
-def create_user(db: Session, payload: UserCreate) -> tuple[User, Optional[str]]:
+def create_user(
+    db: Session,
+    payload: UserCreate,
+    created_by_user_id: Optional[UUID] = None,
+) -> tuple[User, Optional[str]]:
     data = payload.model_dump()
     raw_password = data.pop("password") or generate_temporary_password()
     data.pop("role_id", None)
     data["role_id"] = get_default_created_user_role_id(db)
     data["status"] = USER_STATUS_NEEDS_EMAIL_VERIFICATION
+    data["created_by_user_id"] = created_by_user_id
     password_must_change = payload.password is None
 
     user = User(
@@ -56,10 +61,20 @@ def get_user_by_email(db: Session, email: str) -> Optional[User]:
     return db.query(User).filter(User.email == email).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+def get_users(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    created_by_user_id: Optional[UUID] = None,
+):
+    query = db.query(User).filter(User.is_deleted.is_(False))
+
+    if created_by_user_id:
+        query = query.filter(User.created_by_user_id == created_by_user_id)
+
     return (
-        db.query(User)
-        .filter(User.is_deleted.is_(False))
+        query
+        .order_by(asc(User.family_name), asc(User.given_name), asc(User.email))
         .offset(skip)
         .limit(limit)
         .all()

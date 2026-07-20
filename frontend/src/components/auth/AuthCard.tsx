@@ -58,7 +58,7 @@ export function AuthCard({
   return (
     <main className="grid min-h-screen place-items-center p-6">
       {as === "form" ? (
-        <form className={cardClassName} onSubmit={onSubmit}>
+        <form className={cardClassName} noValidate onSubmit={onSubmit}>
           {content}
         </form>
       ) : (

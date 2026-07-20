@@ -10,6 +10,11 @@ class BootstrapStatusResponse(BaseModel):
     bootstrap_required: bool
 
 
+class SystemSetupStatusResponse(BaseModel):
+    email_settings_ready: bool
+    system_ready: bool
+
+
 class BootstrapLocaleResponse(BaseModel):
     code: str
     name: str
@@ -37,8 +42,8 @@ class BootstrapAdminResponse(BaseModel):
     email: EmailStr
     status: str
     email_sent: bool
-    verification_token_expires_at: datetime
-    verification_url: str
+    verification_token_expires_at: Optional[datetime] = None
+    verification_url: Optional[str] = None
     access_token: str
     refresh_token: str
     token_type: str = "bearer"

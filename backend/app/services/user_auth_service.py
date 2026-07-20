@@ -299,7 +299,7 @@ def invalidate_user_sessions(db: Session, user: User) -> None:
 def bootstrap_admin_user(
     db: Session,
     payload: BootstrapAdminRequest
-) -> tuple[User, UserVerificationToken, str]:
+) -> User:
     if admin_exists(db):
         raise ValueError("Admin user already exists")
 
@@ -337,13 +337,7 @@ def bootstrap_admin_user(
     db.refresh(user)
     set_admin_exists_cache(True)
 
-    token_record, raw_token = create_email_confirmation_token_record(
-        db,
-        user,
-        EMAIL_CONFIRMATION_EXPIRE_HOURS,
-    )
-
-    return user, token_record, raw_token
+    return user
 
 
 def authenticate_user(

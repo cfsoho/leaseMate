@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { useTranslation } from "../../lib/i18n/useTranslation";
 import {
   adminNavItems,
+  adminSetupNavItems,
   mainNavItems,
   referenceNavItem,
   referenceNavItems,
@@ -12,12 +13,14 @@ import {
 import type { NavItem } from "./navigation";
 
 type NavigationSectionsProps = {
+  adminSetupOnly?: boolean;
   isCollapsed?: boolean;
   onExpandCollapsed?: () => void;
   onNavigate?: () => void;
 };
 
 export function NavigationSections({
+  adminSetupOnly = false,
   isCollapsed = false,
   onExpandCollapsed,
   onNavigate,
@@ -40,22 +43,25 @@ export function NavigationSections({
 
   return (
     <>
-      <NavSection
-        isCollapsed={isCollapsed}
-        items={mainNavItems}
-        title={t("nav.workspace")}
-        onNavigate={closeOpenAccordion}
-      />
+      {!adminSetupOnly && (
+        <NavSection
+          isCollapsed={isCollapsed}
+          items={mainNavItems}
+          title={t("nav.workspace")}
+          onNavigate={closeOpenAccordion}
+        />
+      )}
       <AdminNavSection
         isReferenceActive={isReferenceActive}
-        isReferenceOpen={isReferenceOpen}
+        isReferenceOpen={adminSetupOnly ? false : isReferenceOpen}
         isCollapsed={isCollapsed}
-        items={adminNavItems}
+        items={adminSetupOnly ? adminSetupNavItems : adminNavItems}
         title={t("nav.admin")}
         onExpandCollapsed={onExpandCollapsed}
         onNavigate={closeOpenAccordion}
         onReferenceOpenChange={setIsReferenceOpen}
         onReferenceNavigate={onNavigate}
+        showReference={!adminSetupOnly}
       />
     </>
   );
@@ -139,9 +145,11 @@ function AdminNavSection({
   onNavigate,
   onReferenceNavigate,
   onReferenceOpenChange,
+  showReference,
 }: NavSectionProps & {
   isReferenceActive: boolean;
   isReferenceOpen: boolean;
+  showReference?: boolean;
   onReferenceNavigate?: () => void;
   onReferenceOpenChange: (isOpen: boolean) => void;
 }) {
@@ -158,6 +166,7 @@ function AdminNavSection({
         </p>
       )}
 
+      {showReference !== false && (
       <div className="grid gap-1">
         <button
           aria-expanded={isReferenceOpen}
@@ -240,6 +249,7 @@ function AdminNavSection({
           </div>
         )}
       </div>
+      )}
 
       {items.map((item) => (
         <NavLink

@@ -12,10 +12,11 @@ import {
 import type { DataGridColumn, DataGridSortState } from "./dataTypes";
 import { getDataGridRowStateClassName } from "./dataGridRowState";
 
-const GRID_HEADER_HEIGHT_PX = 42;
-const GRID_ROW_HEIGHT_PX = 45;
+const FALLBACK_GRID_HEADER_HEIGHT_PX = 42;
+const FALLBACK_GRID_ROW_HEIGHT_PX = 56;
 const MIN_GRID_BODY_HEIGHT_PX = 160;
 const FALLBACK_GRID_BOTTOM_PADDING_PX = 24;
+const GRID_VIEWPORT_FIT_BUFFER_PX = 12;
 
 type DataGridProps<TRecord extends { id: string }> = {
   columns: DataGridColumn<TRecord>[];
@@ -40,19 +41,29 @@ type DataGridProps<TRecord extends { id: string }> = {
 
 export type DataGridPaginationLabels = {
   firstPage: string;
+  paginationMode: string;
   previousPage: string;
   nextPage: string;
   lastPage: string;
   rows: string;
+  showAllMode: string;
+  switchToPagination: string;
+  switchToShowAll: string;
 };
 
 const defaultPaginationLabels: DataGridPaginationLabels = {
   firstPage: "First page",
+  paginationMode: "Pagination",
   previousPage: "Previous page",
   nextPage: "Next page",
   lastPage: "Last page",
   rows: "Rows",
+  showAllMode: "Show all rows",
+  switchToPagination: "Click to use pagination",
+  switchToShowAll: "Click to show all records",
 };
+
+type DataGridPageMode = "pagination" | "show-all";
 
 export function DataGrid<TRecord extends { id: string }>({
   columns,
@@ -77,8 +88,10 @@ export function DataGrid<TRecord extends { id: string }>({
   const [internalPageIndex, setInternalPageIndex] = useState(0);
   const [internalSortState, setInternalSortState] = useState<DataGridSortState>(null);
   const [internalPageSize, setInternalPageSize] = useState<number | null>(null);
+  const [pageMode, setPageMode] = useState<DataGridPageMode>("pagination");
   const [viewportPageSize, setViewportPageSize] = useState<number | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
+  const bodyRef = useRef<HTMLDivElement | null>(null);
   const footerRef = useRef<HTMLDivElement | null>(null);
   const labels = { ...defaultPaginationLabels, ...paginationLabels };
   const activePageIndex = pageIndex ?? internalPageIndex;
@@ -87,14 +100,11 @@ export function DataGrid<TRecord extends { id: string }>({
   const recordCount = totalRecords ?? records.length;
   const requestedPageSize =
     internalPageSize ?? pageSize ?? (fitViewport && viewportPageSize ? viewportPageSize : 10);
+  const maxSelectablePageSize = getMaxSelectablePageSize(recordCount);
   const effectivePageSize =
-    recordCount > 0
-      ? Math.min(requestedPageSize, recordCount)
-      : requestedPageSize;
-  const pageSizeOptions = useMemo(
-    () => buildPageSizeOptions(recordCount, requestedPageSize),
-    [recordCount, requestedPageSize],
-  );
+    pageMode === "show-all"
+      ? maxSelectablePageSize
+      : Math.min(requestedPageSize, maxSelectablePageSize);
   const sortedRecords = useMemo(() => {
     if (isServerPaged) {
       return records;
@@ -176,6 +186,12 @@ export function DataGrid<TRecord extends { id: string }>({
     }
   }, [recordCount, requestedPageSize, setGridPageSize]);
 
+  useEffect(() => {
+    if (pageMode === "show-all" && recordCount > 0 && requestedPageSize !== recordCount) {
+      setGridPageSize(recordCount, { keepPage: true });
+    }
+  }, [pageMode, recordCount, requestedPageSize, setGridPageSize]);
+
   useLayoutEffect(() => {
     if (!fitViewport) {
       return undefined;
@@ -194,14 +210,26 @@ export function DataGrid<TRecord extends { id: string }>({
         : FALLBACK_GRID_BOTTOM_PADDING_PX;
       const footerHeight = footerRef.current?.getBoundingClientRect().height ?? 48;
       const gridTop = gridElement.getBoundingClientRect().top;
-      const availableGridHeight = window.innerHeight - gridTop - bottomPadding;
+      const availableGridHeight =
+        window.innerHeight - gridTop - bottomPadding - GRID_VIEWPORT_FIT_BUFFER_PX;
       const nextBodyHeight = Math.max(
         MIN_GRID_BODY_HEIGHT_PX,
         Math.floor(availableGridHeight - footerHeight),
       );
+      gridElement.style.height = `${Math.floor(availableGridHeight)}px`;
+
+      const bodyElement = bodyRef.current;
+      const headerHeight =
+        bodyElement?.querySelector(".data-grid-head")?.getBoundingClientRect()
+          .height ?? FALLBACK_GRID_HEADER_HEIGHT_PX;
+      const rowHeight =
+        Math.ceil(
+          bodyElement?.querySelector(".data-grid-row")?.getBoundingClientRect()
+            .height ?? FALLBACK_GRID_ROW_HEIGHT_PX,
+        );
       const nextPageSize = Math.max(
         1,
-        Math.floor((nextBodyHeight - GRID_HEADER_HEIGHT_PX) / GRID_ROW_HEIGHT_PX),
+        Math.floor((nextBodyHeight - headerHeight) / rowHeight),
       );
 
       setViewportPageSize((current) =>
@@ -220,6 +248,9 @@ export function DataGrid<TRecord extends { id: string }>({
 
     window.addEventListener("resize", measureGrid);
     return () => {
+      if (gridRef.current) {
+        gridRef.current.style.height = "";
+      }
       resizeObserver?.disconnect();
       window.removeEventListener("resize", measureGrid);
     };
@@ -255,12 +286,27 @@ export function DataGrid<TRecord extends { id: string }>({
     }
   }
 
+  function handlePageModeChange(nextMode: DataGridPageMode) {
+    if (pageMode === nextMode) {
+      return;
+    }
+
+    setPageMode(nextMode);
+    if (nextMode === "show-all") {
+      setGridPageSize(maxSelectablePageSize);
+      return;
+    }
+
+    setGridPageSize(viewportPageSize ?? pageSize ?? 10);
+  }
+
   return (
     <div
       ref={gridRef}
       className="data-grid"
     >
       <div
+        ref={bodyRef}
         className={[
           fitViewport ? "data-grid-body-fit" : heightClassName,
           "data-grid-body",
@@ -342,11 +388,17 @@ export function DataGrid<TRecord extends { id: string }>({
                 {columns.map((column) => (
                   <td
                     key={column.key}
-                    className="data-grid-cell"
+                    className={[
+                      "data-grid-cell",
+                      column.key === "actions" ? "data-grid-cell-actions" : "",
+                    ].join(" ")}
                   >
                     <div
                       className={[
                         "data-grid-cell-content",
+                        column.key === "actions"
+                          ? "data-grid-cell-content-actions"
+                          : "",
                         getColumnAlignClassName(column.align),
                       ].join(" ")}
                     >
@@ -369,65 +421,74 @@ export function DataGrid<TRecord extends { id: string }>({
         className="data-grid-footer"
       >
         <div className="data-grid-footer-summary">
-          <p className="data-grid-record-count">
-            {recordCount === 0 ? "0 / 0" : `${pageStart + 1}-${pageEnd} / ${recordCount}`}
-          </p>
-          <label className="data-grid-page-size-label">
-            <span>{labels.rows}</span>
-            <select
-              className="data-grid-page-size-select"
-              value={String(effectivePageSize)}
-              onChange={(event) => setGridPageSize(Number(event.target.value))}
-            >
-              {pageSizeOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+          <label className="data-grid-page-mode-switch">
+            <input
+              className="data-grid-page-mode-input"
+              type="checkbox"
+              aria-label={pageMode === "show-all" ? labels.switchToPagination : labels.switchToShowAll}
+              checked={pageMode === "pagination"}
+              onChange={(event) =>
+                handlePageModeChange(event.target.checked ? "pagination" : "show-all")
+              }
+            />
+            <span className="data-grid-page-mode-track" aria-hidden="true">
+              <span className="data-grid-page-mode-thumb" />
+            </span>
+            <span className="lm-icon-button-tooltip data-grid-page-mode-tooltip">
+              {pageMode === "show-all" ? labels.switchToPagination : labels.switchToShowAll}
+            </span>
           </label>
+          <p className="data-grid-record-count">
+            {pageMode === "pagination"
+              ? recordCount === 0
+                ? "0 / 0"
+                : `${pageStart + 1}-${pageEnd} / ${recordCount}`
+              : recordCount}
+          </p>
         </div>
-        <div className="data-grid-pagination">
-          <button
-            aria-label={labels.firstPage}
-            className="data-grid-page-button"
-            disabled={currentPageIndex === 0}
-            type="button"
-            onClick={() => setPage(0)}
-          >
-            <ChevronsLeft aria-hidden="true" size={16} />
-          </button>
-          <button
-            aria-label={labels.previousPage}
-            className="data-grid-page-button"
-            disabled={currentPageIndex === 0}
-            type="button"
-            onClick={() => setPage(Math.max(currentPageIndex - 1, 0))}
-          >
-            <ChevronLeft aria-hidden="true" size={16} />
-          </button>
-          <span className="data-grid-page-count">
-            {recordCount === 0 ? 0 : currentPageIndex + 1} / {pageCount}
-          </span>
-          <button
-            aria-label={labels.nextPage}
-            className="data-grid-page-button"
-            disabled={currentPageIndex >= pageCount - 1}
-            type="button"
-            onClick={() => setPage(Math.min(currentPageIndex + 1, pageCount - 1))}
-          >
-            <ChevronRight aria-hidden="true" size={16} />
-          </button>
-          <button
-            aria-label={labels.lastPage}
-            className="data-grid-page-button"
-            disabled={currentPageIndex >= pageCount - 1}
-            type="button"
-            onClick={() => setPage(pageCount - 1)}
-          >
-            <ChevronsRight aria-hidden="true" size={16} />
-          </button>
-        </div>
+        {pageMode === "pagination" && (
+          <div className="data-grid-pagination">
+            <button
+              aria-label={labels.firstPage}
+              className="data-grid-page-button data-grid-page-button-edge"
+              disabled={currentPageIndex === 0}
+              type="button"
+              onClick={() => setPage(0)}
+            >
+              <ChevronsLeft aria-hidden="true" size={16} />
+            </button>
+            <button
+              aria-label={labels.previousPage}
+              className="data-grid-page-button"
+              disabled={currentPageIndex === 0}
+              type="button"
+              onClick={() => setPage(Math.max(currentPageIndex - 1, 0))}
+            >
+              <ChevronLeft aria-hidden="true" size={16} />
+            </button>
+            <span className="data-grid-page-count">
+              {recordCount === 0 ? 0 : currentPageIndex + 1} / {pageCount}
+            </span>
+            <button
+              aria-label={labels.nextPage}
+              className="data-grid-page-button"
+              disabled={currentPageIndex >= pageCount - 1}
+              type="button"
+              onClick={() => setPage(Math.min(currentPageIndex + 1, pageCount - 1))}
+            >
+              <ChevronRight aria-hidden="true" size={16} />
+            </button>
+            <button
+              aria-label={labels.lastPage}
+              className="data-grid-page-button data-grid-page-button-edge"
+              disabled={currentPageIndex >= pageCount - 1}
+              type="button"
+              onClick={() => setPage(pageCount - 1)}
+            >
+              <ChevronsRight aria-hidden="true" size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -458,33 +519,8 @@ function getColumnWidthClassName(width?: string) {
   }
 }
 
-function buildPageSizeOptions(recordCount: number, requestedPageSize: number) {
-  const baseOptions = [10, 15, 25, 50, 100];
-  const maxRecordCount = Math.max(recordCount, 0);
-  const options = new Set<number>();
-
-  baseOptions.forEach((option) => {
-    if (maxRecordCount === 0 || option <= maxRecordCount) {
-      options.add(option);
-    }
-  });
-
-  if (requestedPageSize > 0 && (maxRecordCount === 0 || requestedPageSize <= maxRecordCount)) {
-    options.add(requestedPageSize);
-  }
-
-  if (maxRecordCount > 0 && options.size === 0) {
-    options.add(maxRecordCount);
-  }
-
-  if (
-    maxRecordCount > 0 &&
-    (maxRecordCount <= 100 || requestedPageSize > maxRecordCount)
-  ) {
-    options.add(maxRecordCount);
-  }
-
-  return [...options].sort((left, right) => left - right);
+function getMaxSelectablePageSize(recordCount: number) {
+  return recordCount > 0 ? Math.max(1, recordCount) : 1;
 }
 
 function getSortValue<TRecord>(

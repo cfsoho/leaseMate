@@ -32,7 +32,7 @@ export function addLocalNotification(
   const notifications = readNotifications(userKey);
   const nextNotification: LocalNotification = {
     ...notification,
-    id: crypto.randomUUID(),
+    id: createNotificationId(),
     createdAt: new Date().toISOString(),
     readAt: null,
   };
@@ -92,11 +92,75 @@ function readNotifications(userKey: string): LocalNotification[] {
   }
 
   try {
-    const parsed = JSON.parse(rawValue) as LocalNotification[];
-    return Array.isArray(parsed) ? parsed : [];
+    const parsed = JSON.parse(rawValue) as unknown;
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .map(normalizeNotification)
+      .filter((notification): notification is LocalNotification =>
+        Boolean(notification),
+      );
   } catch {
     return [];
   }
+}
+
+function normalizeNotification(value: unknown): LocalNotification | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const notification = value as Partial<LocalNotification>;
+  if (
+    typeof notification.id !== "string" ||
+    !isNotificationKind(notification.kind)
+  ) {
+    return null;
+  }
+
+  return {
+    id: notification.id,
+    kind: notification.kind,
+    createdAt:
+      typeof notification.createdAt === "string"
+        ? notification.createdAt
+        : new Date().toISOString(),
+    readAt:
+      typeof notification.readAt === "string" || notification.readAt === null
+        ? notification.readAt
+        : null,
+    targetPath:
+      typeof notification.targetPath === "string" &&
+      notification.targetPath.length > 0
+        ? notification.targetPath
+        : "/devices#devices",
+    payload:
+      notification.payload && typeof notification.payload === "object"
+        ? normalizePayload(notification.payload)
+        : undefined,
+  };
+}
+
+function normalizePayload(value: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.entries(value).filter(
+      (entry): entry is [string, string] => typeof entry[1] === "string",
+    ),
+  );
+}
+
+function isNotificationKind(value: unknown): value is LocalNotificationKind {
+  return value === "device_login" || value === "related_user_login";
+}
+
+function createNotificationId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `notification-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 function writeNotifications(

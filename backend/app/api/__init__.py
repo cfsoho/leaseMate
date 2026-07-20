@@ -17,6 +17,7 @@ from app.api.ledger_entry import router as ledger_entry_router
 from app.api.ref.locale import router as locale_router
 from app.api.payment import router as payment_router
 from app.api.payment_coverage import router as payment_coverage_router
+from app.api.property_building import router as property_building_router
 from app.api.property import router as property_router
 from app.api.property_access import router as property_access_router
 from app.api.recurring_expense_schedule import router as recurring_expense_schedule_router
@@ -27,6 +28,8 @@ from app.api.ref.ref_code import router as ref_code_router
 from app.api.ref.region import router as region_router
 from app.api.reminder import router as reminder_router
 from app.api.ref.status_code import router as status_code_router
+from app.api.system_settings import public_router as system_settings_public_router
+from app.api.system_settings import router as system_settings_router
 from app.api.tax_record import router as tax_record_router
 from app.api.ref.translation import router as setup_list_translation_router
 from app.api.user_legal_name import router as user_legal_name_router
@@ -56,6 +59,7 @@ all_routers = [
     locale_router,
     payment_router,
     payment_coverage_router,
+    property_building_router,
     property_router,
     property_access_router,
     recurring_expense_schedule_router,
@@ -67,6 +71,8 @@ all_routers = [
     role_router,
     setup_list_translation_router,
     status_code_router,
+    system_settings_public_router,
+    system_settings_router,
     tax_record_router,
     user_legal_name_router,
     utility_type_router,

@@ -113,7 +113,10 @@ def get_financial_account(
 ) -> Optional[FinancialAccount]:
     return (
         db.query(FinancialAccount)
-        .filter(FinancialAccount.id == account_id)
+        .filter(
+            FinancialAccount.id == account_id,
+            FinancialAccount.is_deleted.is_(False),
+        )
         .first()
     )
 
@@ -141,6 +144,8 @@ def get_financial_accounts(
 ):
     return (
         db.query(FinancialAccount)
+        .filter(FinancialAccount.is_deleted.is_(False))
+        .order_by(FinancialAccount.is_active.desc(), FinancialAccount.created_at.desc())
         .offset(skip)
         .limit(limit)
         .all()

@@ -19,6 +19,9 @@ export const localeOptionLabels: Record<SupportedLocale, string> = {
 export type TranslationKey =
   | "app.subtitle"
   | "auth.adminCreated"
+  | "auth.adminSetupRequiredBody"
+  | "auth.adminSetupRequiredEyebrow"
+  | "auth.adminSetupRequiredTitle"
   | "auth.backToLogin"
   | "auth.closeTab"
   | "auth.closeTabFallback"
@@ -84,6 +87,7 @@ export type TranslationKey =
   | "bankAccounts.empty"
   | "bankAccounts.loading"
   | "bankAccounts.loadingTransactions"
+  | "bankAccounts.legalNameMissingForCountry"
   | "bankAccounts.notes"
   | "bankAccounts.noTransactions"
   | "bankAccounts.referenceNo"
@@ -111,6 +115,8 @@ export type TranslationKey =
   | "dashboard.emailLinksNeedAttention"
   | "dashboard.emailLinkStatsDescription"
   | "dashboard.emailLinkStatsTitle"
+  | "dashboard.emailSettingsMissingMessage"
+  | "dashboard.emailSettingsMissingTitle"
   | "dashboard.emailNotVerifiedMessage"
   | "dashboard.emailNotVerifiedTitle"
   | "dashboard.keepCurrentEmail"
@@ -130,6 +136,7 @@ export type TranslationKey =
   | "dashboard.verifyEmailFirst"
   | "dashboard.verifyEmailModalWait"
   | "dashboard.viewEmailLinks"
+  | "dashboard.openSettings"
   | "field.name"
   | "form.contactPreferences"
   | "form.confirmPassword"
@@ -166,10 +173,15 @@ export type TranslationKey =
   | "grid.firstPage"
   | "grid.lastPage"
   | "grid.nextPage"
+  | "grid.pagination"
   | "grid.previousPage"
   | "grid.rows"
   | "grid.selectAllColumns"
+  | "grid.showAllRows"
+  | "grid.switchToPagination"
+  | "grid.switchToShowAll"
   | "nav.admin"
+  | "nav.adminSettings"
   | "nav.bankAccounts"
   | "nav.dashboard"
   | "nav.documents"
@@ -385,6 +397,70 @@ export type TranslationKey =
   | "security.privateNetworkIp"
   | "security.remove"
   | "security.unableToUpdateDevices"
+  | "settings.clearSavedPassword"
+  | "settings.description"
+  | "settings.emailDescription"
+  | "settings.emailIncomplete"
+  | "settings.emailSaved"
+  | "settings.emailSavedAndVerified"
+  | "settings.emailSavedButTestFailed"
+  | "settings.emailSavedTesting"
+  | "settings.emailTestSent"
+  | "settings.emailTitle"
+  | "settings.emailVerificationChecking"
+  | "settings.emailVerificationClose"
+  | "settings.emailVerificationEyebrow"
+  | "settings.emailVerificationFailed"
+  | "settings.emailVerificationPartialSuccess"
+  | "settings.emailVerificationSuccess"
+  | "settings.emailVerificationTitle"
+  | "settings.emailVerified"
+  | "settings.fromAddress"
+  | "settings.noreplyDescription"
+  | "settings.noreplySection"
+  | "settings.password"
+  | "settings.passwordSaved"
+  | "settings.replacePassword"
+  | "settings.replacePasswordHelp"
+  | "settings.save"
+  | "settings.saving"
+  | "settings.smtpProvider"
+  | "settings.smtpHost"
+  | "settings.smtpPort"
+  | "settings.smtpSection"
+  | "settings.smtpTls"
+  | "settings.smtpUser"
+  | "settings.storageDescription"
+  | "settings.storageIncomplete"
+  | "settings.storageLocalDescription"
+  | "settings.storageLocalFolder"
+  | "settings.storageLocalFolderHelp"
+  | "settings.storageLocalFolderInvalid"
+  | "settings.storageLocalSection"
+  | "settings.storageProvider"
+  | "settings.storageProviderLocalMount"
+  | "settings.storageProviderS3"
+  | "settings.storageProviderSection"
+  | "settings.storageS3AccessKeyId"
+  | "settings.storageS3BasePrefix"
+  | "settings.storageS3Bucket"
+  | "settings.storageS3Description"
+  | "settings.storageS3EndpointUrl"
+  | "settings.storageS3PathStyle"
+  | "settings.storageS3Region"
+  | "settings.storageS3SecretAccessKey"
+  | "settings.storageS3SecretHelp"
+  | "settings.storageS3Section"
+  | "settings.storageSavedAndVerified"
+  | "settings.storageSavedButTestFailed"
+  | "settings.storageSavedTesting"
+  | "settings.storageTitle"
+  | "settings.storageVerified"
+  | "settings.systemDescription"
+  | "settings.systemSection"
+  | "settings.testEmail"
+  | "settings.testingEmail"
+  | "settings.testingStorage"
   | "users.accessSection"
   | "users.activateConfirmBody"
   | "users.activateConfirmTitle"
@@ -445,6 +521,9 @@ export const translations: Record<
   en: {
     "app.subtitle": "Property Management",
     "auth.adminCreated": "Admin created. You are signed in now.",
+    "auth.adminSetupRequiredBody": "LeaseMate is not ready yet. An administrator must verify the admin settings before other users can use this site.",
+    "auth.adminSetupRequiredEyebrow": "LeaseMate setup",
+    "auth.adminSetupRequiredTitle": "Setup is not verified",
     "auth.closeTab": "Close this tab",
     "auth.closeTabFallback": "If the tab stays open, you can close it from your browser.",
     "auth.createAdmin": "Create admin user",
@@ -510,6 +589,7 @@ export const translations: Record<
     "bankAccounts.empty": "No bank accounts found.",
     "bankAccounts.loading": "Loading bank accounts...",
     "bankAccounts.loadingTransactions": "Loading transactions...",
+    "bankAccounts.legalNameMissingForCountry": "Your legal name for {country} is not found. Please go to Profile to add your legal name for this country.",
     "bankAccounts.noTransactions": "No transactions found.",
     "bankAccounts.notes": "Notes",
     "bankAccounts.referenceNo": "Reference no.",
@@ -537,6 +617,8 @@ export const translations: Record<
     "dashboard.emailLinksNeedAttention": "Unverified over 7 days",
     "dashboard.emailLinkStatsDescription": "Admin-only snapshot of email verification status and accounts that may need follow-up.",
     "dashboard.emailLinkStatsTitle": "Email verification",
+    "dashboard.emailSettingsMissingMessage": "Save the SMTP settings and send a test email before LeaseMate is opened for normal use.",
+    "dashboard.emailSettingsMissingTitle": "Admin settings need verification",
     "dashboard.emailNotVerifiedMessage": "Please verify your email before using the rest of LeaseMate. You can stay here, resend the email, or log out.",
     "dashboard.emailNotVerifiedTitle": "Email not verified yet",
     "dashboard.keepCurrentEmail": "Keep current email",
@@ -556,6 +638,7 @@ export const translations: Record<
     "dashboard.verifyEmailFirst": "Please verify your email first.",
     "dashboard.verifyEmailModalWait": "This message will disappear automatically once the verification link is confirmed.",
     "dashboard.viewEmailLinks": "Open auth control",
+    "dashboard.openSettings": "Open settings",
     "field.name": "Name",
     "form.contactPreferences": "Preferences",
     "form.confirmPassword": "Confirm password",
@@ -592,10 +675,15 @@ export const translations: Record<
     "grid.firstPage": "First page",
     "grid.lastPage": "Last page",
     "grid.nextPage": "Next page",
+    "grid.pagination": "Pagination",
     "grid.previousPage": "Previous page",
     "grid.rows": "Rows",
     "grid.selectAllColumns": "Select all",
+    "grid.showAllRows": "Show all rows",
+    "grid.switchToPagination": "Click to use pagination",
+    "grid.switchToShowAll": "Click to show all records",
     "nav.admin": "Admin",
+    "nav.adminSettings": "Admin Settings",
     "nav.bankAccounts": "Bank accounts",
     "nav.dashboard": "Dashboard",
     "nav.documents": "Documents",
@@ -619,8 +707,72 @@ export const translations: Record<
     "nav.ref.translations": "Translations",
     "nav.ref.utilityTypes": "Utility types",
     "nav.settings": "Settings",
-    "nav.users": "Users",
+    "nav.users": "Individuals",
     "nav.workspace": "Workspace",
+    "settings.clearSavedPassword": "Clear saved password",
+    "settings.description": "Configure the system services LeaseMate needs before normal use.",
+    "settings.emailDescription": "Set the SMTP accounts LeaseMate uses for verification, password reset, and system email.",
+    "settings.emailIncomplete": "Email settings are not verified yet. Save the settings and send a test email.",
+    "settings.emailSaved": "Email settings saved.",
+    "settings.emailSavedAndVerified": "Email settings saved and SMTP connection verified.",
+    "settings.emailSavedButTestFailed": "Email settings were saved, but the SMTP test failed.",
+    "settings.emailSavedTesting": "Email settings saved. Testing the SMTP connection now...",
+    "settings.emailTestSent": "Test email sent.",
+    "settings.emailTitle": "SMTP Settings",
+    "settings.emailVerificationChecking": "Checking the email verification link...",
+    "settings.emailVerificationClose": "Close this tab",
+    "settings.emailVerificationEyebrow": "Admin settings",
+    "settings.emailVerificationFailed": "This email settings verification link is invalid or expired. Sign in as admin and send a new verification email from Settings.",
+    "settings.emailVerificationPartialSuccess": "This SMTP account is verified. LeaseMate will unlock after both the no-reply and system accounts are verified.",
+    "settings.emailVerificationSuccess": "Email settings are verified. The original LeaseMate window will unlock automatically.",
+    "settings.emailVerificationTitle": "Verify email settings",
+    "settings.emailVerified": "Email settings are verified.",
+    "settings.fromAddress": "From address",
+    "settings.noreplyDescription": "Used for verification and password reset email.",
+    "settings.noreplySection": "No-reply email",
+    "settings.password": "Password",
+    "settings.passwordSaved": "Password saved",
+    "settings.replacePassword": "Replace password",
+    "settings.replacePasswordHelp": "Enter a new password only when you want to replace the saved one.",
+    "settings.save": "Save",
+    "settings.saving": "Saving...",
+    "settings.smtpProvider": "SMTP service",
+    "settings.smtpHost": "SMTP host",
+    "settings.smtpPort": "SMTP port",
+    "settings.smtpSection": "SMTP server",
+    "settings.smtpTls": "Use TLS",
+    "settings.smtpUser": "SMTP user",
+    "settings.storageDescription": "Storage setup will be required before document workflows are enabled.",
+    "settings.storageIncomplete": "Storage settings are not verified yet. Save the settings to test storage access.",
+    "settings.storageLocalDescription": "Use this when Docker mounts your NAS or local storage into the LeaseMate container.",
+    "settings.storageLocalFolder": "Folder inside mounted storage",
+    "settings.storageLocalFolderHelp": "LeaseMate stores documents under the Docker storage mount. Example: documents.",
+    "settings.storageLocalFolderInvalid": "Folder inside mounted storage must be relative and cannot contain ..",
+    "settings.storageLocalSection": "Local mount",
+    "settings.storageProvider": "Storage provider",
+    "settings.storageProviderLocalMount": "Local mount / NAS",
+    "settings.storageProviderS3": "Amazon S3 / S3-compatible",
+    "settings.storageProviderSection": "Storage provider",
+    "settings.storageS3AccessKeyId": "Access key ID",
+    "settings.storageS3BasePrefix": "Folder prefix",
+    "settings.storageS3Bucket": "Bucket",
+    "settings.storageS3Description": "Use this for Amazon S3 or S3-compatible providers. Verification will be enabled after the S3 storage adapter is connected.",
+    "settings.storageS3EndpointUrl": "Endpoint URL",
+    "settings.storageS3PathStyle": "Use path-style URLs",
+    "settings.storageS3Region": "Region",
+    "settings.storageS3SecretAccessKey": "Secret access key",
+    "settings.storageS3SecretHelp": "Enter a new secret key only when you want to replace the saved one.",
+    "settings.storageS3Section": "S3 storage",
+    "settings.storageSavedAndVerified": "Storage settings saved and storage access verified.",
+    "settings.storageSavedButTestFailed": "Storage settings were saved, but the storage test failed.",
+    "settings.storageSavedTesting": "Storage settings saved. Testing storage access now...",
+    "settings.storageTitle": "Storage settings",
+    "settings.storageVerified": "Storage settings are verified.",
+    "settings.systemDescription": "Used for operational system email sent by LeaseMate.",
+    "settings.systemSection": "System email",
+    "settings.testEmail": "Send test email",
+    "settings.testingEmail": "Sending test email...",
+    "settings.testingStorage": "Testing storage...",
     "page.backToDashboard": "Back to dashboard",
     "page.notFoundBody": "LeaseMate could not find a page for this URL.",
     "page.notFoundTitle": "Page not found",
@@ -829,7 +981,7 @@ export const translations: Record<
     "users.deleteConfirmBody": "Delete this user? Active verification emails for this user will become invalid.",
     "users.deleteConfirmTitle": "Delete user",
     "users.deleteUser": "Delete user",
-    "users.description": "Manage user accounts, login status, and preferred language.",
+    "users.description": "Manage individuals, preferred language and other things.",
     "users.deviceInfo": "Device",
     "users.editUser": "Edit user",
     "users.emailConfirmationMismatch": "Enter the new email again to confirm it.",
@@ -867,6 +1019,9 @@ export const translations: Record<
   ja: {
     "app.subtitle": "物件管理",
     "auth.adminCreated": "管理者を作成しました。ログイン済みです。",
+    "auth.adminSetupRequiredBody": "LeaseMate はまだ利用できません。管理者が管理設定を確認するまで、他のユーザーはこのサイトを使用できません。",
+    "auth.adminSetupRequiredEyebrow": "LeaseMate 初期設定",
+    "auth.adminSetupRequiredTitle": "設定がまだ確認されていません",
     "auth.closeTab": "このタブを閉じる",
     "auth.closeTabFallback": "タブが閉じない場合は、ブラウザから閉じてください。",
     "auth.createAdmin": "管理者ユーザーを作成",
@@ -932,6 +1087,7 @@ export const translations: Record<
     "bankAccounts.empty": "銀行口座が見つかりません。",
     "bankAccounts.loading": "銀行口座を読み込み中...",
     "bankAccounts.loadingTransactions": "取引を読み込み中...",
+    "bankAccounts.legalNameMissingForCountry": "{country} 用のあなたの法定氏名が見つかりません。プロフィールでこの国の法定氏名を追加してください。",
     "bankAccounts.noTransactions": "取引はありません。",
     "bankAccounts.notes": "メモ",
     "bankAccounts.referenceNo": "参照番号",
@@ -959,6 +1115,8 @@ export const translations: Record<
     "dashboard.emailLinksNeedAttention": "7日以上未確認",
     "dashboard.emailLinkStatsDescription": "メール確認の状態とフォローが必要な可能性のあるアカウントを管理者だけに表示します。",
     "dashboard.emailLinkStatsTitle": "メール確認",
+    "dashboard.emailSettingsMissingMessage": "通常利用を開始する前に、SMTP 設定を保存し、テストメールを送信してください。",
+    "dashboard.emailSettingsMissingTitle": "管理設定の確認が必要です",
     "dashboard.emailNotVerifiedMessage": "LeaseMate の他の機能を使う前にメールを確認してください。ここで再送するか、ログアウトできます。",
     "dashboard.emailNotVerifiedTitle": "メールがまだ確認されていません",
     "dashboard.keepCurrentEmail": "現在のメールアドレスを使う",
@@ -978,6 +1136,7 @@ export const translations: Record<
     "dashboard.verifyEmailFirst": "先にメールを確認してください。",
     "dashboard.verifyEmailModalWait": "確認リンクが完了すると、このメッセージは自動で消えます。",
     "dashboard.viewEmailLinks": "認証管理を開く",
+    "dashboard.openSettings": "設定を開く",
     "field.name": "名称",
     "form.contactPreferences": "設定",
     "form.confirmPassword": "パスワード確認",
@@ -1014,10 +1173,15 @@ export const translations: Record<
     "grid.firstPage": "最初のページ",
     "grid.lastPage": "最後のページ",
     "grid.nextPage": "次のページ",
+    "grid.pagination": "ページ表示",
     "grid.previousPage": "前のページ",
     "grid.rows": "表示件数",
     "grid.selectAllColumns": "すべて選択",
+    "grid.showAllRows": "すべて表示",
+    "grid.switchToPagination": "クリックしてページ表示に戻す",
+    "grid.switchToShowAll": "クリックしてすべてのレコードを表示",
     "nav.admin": "管理",
+    "nav.adminSettings": "管理設定",
     "nav.bankAccounts": "銀行口座",
     "nav.dashboard": "ダッシュボード",
     "nav.documents": "書類",
@@ -1041,8 +1205,72 @@ export const translations: Record<
     "nav.ref.translations": "翻訳",
     "nav.ref.utilityTypes": "公共料金種別",
     "nav.settings": "設定",
-    "nav.users": "ユーザー",
+    "nav.users": "個人",
     "nav.workspace": "ワークスペース",
+    "settings.clearSavedPassword": "保存済みパスワードを削除",
+    "settings.description": "LeaseMate を通常利用する前に必要なシステムサービスを設定します。",
+    "settings.emailDescription": "認証、パスワード再設定、システムメールに使用する SMTP アカウントを設定します。",
+    "settings.emailIncomplete": "メール設定はまだ確認されていません。設定を保存し、テストメールを送信してください。",
+    "settings.emailSaved": "メール設定を保存しました。",
+    "settings.emailSavedAndVerified": "メール設定を保存し、SMTP 接続を確認しました。",
+    "settings.emailSavedButTestFailed": "メール設定は保存されましたが、SMTP テストに失敗しました。",
+    "settings.emailSavedTesting": "メール設定を保存しました。SMTP 接続を確認しています...",
+    "settings.emailTestSent": "テストメールを送信しました。",
+    "settings.emailTitle": "SMTP 設定",
+    "settings.emailVerificationChecking": "メール設定の確認リンクを確認しています...",
+    "settings.emailVerificationClose": "このタブを閉じる",
+    "settings.emailVerificationEyebrow": "管理設定",
+    "settings.emailVerificationFailed": "このメール設定確認リンクは無効または期限切れです。管理者としてログインし、設定画面から新しい確認メールを送信してください。",
+    "settings.emailVerificationPartialSuccess": "この SMTP アカウントを確認しました。no-reply と system の両方のアカウントが確認されると LeaseMate を利用できます。",
+    "settings.emailVerificationSuccess": "メール設定を確認しました。元の LeaseMate 画面は自動的に利用可能になります。",
+    "settings.emailVerificationTitle": "メール設定を確認",
+    "settings.emailVerified": "メール設定は確認済みです。",
+    "settings.fromAddress": "送信元アドレス",
+    "settings.noreplyDescription": "認証メールとパスワード再設定メールに使用します。",
+    "settings.noreplySection": "No-reply メール",
+    "settings.password": "パスワード",
+    "settings.passwordSaved": "パスワード保存済み",
+    "settings.replacePassword": "パスワードを変更",
+    "settings.replacePasswordHelp": "保存済みのパスワードを変更する場合だけ、新しいパスワードを入力してください。",
+    "settings.save": "保存",
+    "settings.saving": "保存中...",
+    "settings.smtpProvider": "SMTP サービス",
+    "settings.smtpHost": "SMTP ホスト",
+    "settings.smtpPort": "SMTP ポート",
+    "settings.smtpSection": "SMTP サーバー",
+    "settings.smtpTls": "TLS を使用",
+    "settings.smtpUser": "SMTP ユーザー",
+    "settings.storageDescription": "書類ワークフローを有効にする前にストレージ設定が必要になります。",
+    "settings.storageIncomplete": "ストレージ設定はまだ確認されていません。設定を保存してストレージ接続をテストしてください。",
+    "settings.storageLocalDescription": "Docker が NAS またはローカルストレージを LeaseMate コンテナにマウントしている場合に使用します。",
+    "settings.storageLocalFolder": "マウント済みストレージ内のフォルダ",
+    "settings.storageLocalFolderHelp": "LeaseMate は Docker のストレージマウント配下に書類を保存します。例: documents",
+    "settings.storageLocalFolderInvalid": "マウント済みストレージ内のフォルダは相対パスで、.. を含めることはできません。",
+    "settings.storageLocalSection": "ローカルマウント",
+    "settings.storageProvider": "ストレージ方式",
+    "settings.storageProviderLocalMount": "ローカルマウント / NAS",
+    "settings.storageProviderS3": "Amazon S3 / S3 互換",
+    "settings.storageProviderSection": "ストレージ方式",
+    "settings.storageS3AccessKeyId": "アクセスキー ID",
+    "settings.storageS3BasePrefix": "フォルダプレフィックス",
+    "settings.storageS3Bucket": "バケット",
+    "settings.storageS3Description": "Amazon S3 または S3 互換プロバイダーで使用します。S3 ストレージアダプター接続後に確認できるようになります。",
+    "settings.storageS3EndpointUrl": "エンドポイント URL",
+    "settings.storageS3PathStyle": "パス形式 URL を使用",
+    "settings.storageS3Region": "リージョン",
+    "settings.storageS3SecretAccessKey": "シークレットアクセスキー",
+    "settings.storageS3SecretHelp": "保存済みのシークレットキーを変更する場合だけ、新しいキーを入力してください。",
+    "settings.storageS3Section": "S3 ストレージ",
+    "settings.storageSavedAndVerified": "ストレージ設定を保存し、アクセスを確認しました。",
+    "settings.storageSavedButTestFailed": "ストレージ設定は保存されましたが、ストレージテストに失敗しました。",
+    "settings.storageSavedTesting": "ストレージ設定を保存しました。アクセスを確認しています...",
+    "settings.storageTitle": "ストレージ設定",
+    "settings.storageVerified": "ストレージ設定は確認済みです。",
+    "settings.systemDescription": "LeaseMate が送信する運用メールに使用します。",
+    "settings.systemSection": "システムメール",
+    "settings.testEmail": "テストメールを送信",
+    "settings.testingEmail": "テストメール送信中...",
+    "settings.testingStorage": "ストレージ確認中...",
     "page.backToDashboard": "ダッシュボードに戻る",
     "page.notFoundBody": "この URL に対応するページが見つかりません。",
     "page.notFoundTitle": "ページが見つかりません",
@@ -1251,7 +1479,7 @@ export const translations: Record<
     "users.deleteConfirmBody": "このユーザーを削除しますか？このユーザーの有効な確認メールは無効になります。",
     "users.deleteConfirmTitle": "ユーザーを削除",
     "users.deleteUser": "ユーザーを削除",
-    "users.description": "ユーザーアカウント、ログイン状態、表示言語を管理します。",
+    "users.description": "個人情報、ログイン権限、表示言語を管理します。",
     "users.deviceInfo": "端末",
     "users.editUser": "ユーザーを編集",
     "users.emailConfirmationMismatch": "確認のため、新しいメールをもう一度入力してください。",
@@ -1289,6 +1517,9 @@ export const translations: Record<
   "zh-Hant-TW": {
     "app.subtitle": "物業管理",
     "auth.adminCreated": "管理員已建立，並已登入。",
+    "auth.adminSetupRequiredBody": "LeaseMate 尚未準備好。管理員必須先完成管理設定驗證，其他使用者才能使用此網站。",
+    "auth.adminSetupRequiredEyebrow": "LeaseMate 初始設定",
+    "auth.adminSetupRequiredTitle": "設定尚未完成驗證",
     "auth.closeTab": "關閉此分頁",
     "auth.closeTabFallback": "如果分頁沒有關閉，可以從瀏覽器關閉。",
     "auth.createAdmin": "建立管理員使用者",
@@ -1354,6 +1585,7 @@ export const translations: Record<
     "bankAccounts.empty": "找不到銀行帳戶。",
     "bankAccounts.loading": "正在載入銀行帳戶...",
     "bankAccounts.loadingTransactions": "正在載入交易...",
+    "bankAccounts.legalNameMissingForCountry": "找不到你在 {country} 使用的法定姓名。請到個人資料新增此國家的法定姓名。",
     "bankAccounts.noTransactions": "沒有交易紀錄。",
     "bankAccounts.notes": "備註",
     "bankAccounts.referenceNo": "參考編號",
@@ -1381,6 +1613,8 @@ export const translations: Record<
     "dashboard.emailLinksNeedAttention": "超過 7 天未驗證",
     "dashboard.emailLinkStatsDescription": "只供管理員查看電子郵件驗證狀態，以及可能需要跟進的帳戶。",
     "dashboard.emailLinkStatsTitle": "電子郵件驗證",
+    "dashboard.emailSettingsMissingMessage": "請先儲存 SMTP 設定並送出測試郵件，LeaseMate 才會開放一般使用。",
+    "dashboard.emailSettingsMissingTitle": "管理設定需要驗證",
     "dashboard.emailNotVerifiedMessage": "使用 LeaseMate 其他功能前，請先驗證電子郵件。你可以留在這裡重新寄送，或登出。",
     "dashboard.emailNotVerifiedTitle": "電子郵件尚未驗證",
     "dashboard.keepCurrentEmail": "使用目前的電子郵件",
@@ -1400,6 +1634,7 @@ export const translations: Record<
     "dashboard.verifyEmailFirst": "請先驗證電子郵件。",
     "dashboard.verifyEmailModalWait": "驗證連結完成後，此訊息會自動消失。",
     "dashboard.viewEmailLinks": "開啟認證管理",
+    "dashboard.openSettings": "開啟設定",
     "field.name": "名稱",
     "form.contactPreferences": "偏好設定",
     "form.confirmPassword": "確認密碼",
@@ -1436,10 +1671,15 @@ export const translations: Record<
     "grid.firstPage": "第一頁",
     "grid.lastPage": "最後一頁",
     "grid.nextPage": "下一頁",
+    "grid.pagination": "分頁",
     "grid.previousPage": "上一頁",
     "grid.rows": "每頁筆數",
     "grid.selectAllColumns": "全選",
+    "grid.showAllRows": "顯示全部",
+    "grid.switchToPagination": "點擊使用分頁",
+    "grid.switchToShowAll": "點擊顯示所有記錄",
     "nav.admin": "管理",
+    "nav.adminSettings": "管理設定",
     "nav.bankAccounts": "銀行帳戶",
     "nav.dashboard": "儀表板",
     "nav.documents": "文件",
@@ -1463,8 +1703,72 @@ export const translations: Record<
     "nav.ref.translations": "翻譯",
     "nav.ref.utilityTypes": "公共事業類型",
     "nav.settings": "設定",
-    "nav.users": "使用者",
+    "nav.users": "個人",
     "nav.workspace": "工作區",
+    "settings.clearSavedPassword": "清除已儲存密碼",
+    "settings.description": "設定 LeaseMate 正常使用前所需的系統服務。",
+    "settings.emailDescription": "設定 LeaseMate 用於驗證、重設密碼和系統郵件的 SMTP 帳戶。",
+    "settings.emailIncomplete": "電子郵件設定尚未驗證。請先儲存設定並送出測試郵件。",
+    "settings.emailSaved": "電子郵件設定已儲存。",
+    "settings.emailSavedAndVerified": "電子郵件設定已儲存，SMTP 連線也已驗證。",
+    "settings.emailSavedButTestFailed": "電子郵件設定已儲存，但 SMTP 測試失敗。",
+    "settings.emailSavedTesting": "電子郵件設定已儲存。正在測試 SMTP 連線...",
+    "settings.emailTestSent": "測試郵件已送出。",
+    "settings.emailTitle": "SMTP 設定",
+    "settings.emailVerificationChecking": "正在檢查電子郵件設定驗證連結...",
+    "settings.emailVerificationClose": "關閉此分頁",
+    "settings.emailVerificationEyebrow": "管理設定",
+    "settings.emailVerificationFailed": "此電子郵件設定驗證連結無效或已過期。請以管理員登入，並從設定頁重新寄送驗證郵件。",
+    "settings.emailVerificationPartialSuccess": "此 SMTP 帳戶已驗證。no-reply 與 system 兩個帳戶都完成驗證後，LeaseMate 才會解除鎖定。",
+    "settings.emailVerificationSuccess": "電子郵件設定已驗證。原本的 LeaseMate 視窗會自動解除鎖定。",
+    "settings.emailVerificationTitle": "驗證電子郵件設定",
+    "settings.emailVerified": "電子郵件設定已驗證。",
+    "settings.fromAddress": "寄件地址",
+    "settings.noreplyDescription": "用於驗證和重設密碼郵件。",
+    "settings.noreplySection": "No-reply 郵件",
+    "settings.password": "密碼",
+    "settings.passwordSaved": "密碼已儲存",
+    "settings.replacePassword": "更換密碼",
+    "settings.replacePasswordHelp": "只有需要更換已儲存密碼時，才輸入新密碼。",
+    "settings.save": "儲存",
+    "settings.saving": "儲存中...",
+    "settings.smtpProvider": "SMTP 服務",
+    "settings.smtpHost": "SMTP 主機",
+    "settings.smtpPort": "SMTP 連接埠",
+    "settings.smtpSection": "SMTP 伺服器",
+    "settings.smtpTls": "使用 TLS",
+    "settings.smtpUser": "SMTP 使用者",
+    "settings.storageDescription": "啟用文件流程前需要先完成儲存設定。",
+    "settings.storageIncomplete": "儲存設定尚未驗證。請儲存設定以測試儲存存取。",
+    "settings.storageLocalDescription": "當 Docker 已把 NAS 或本機儲存掛載到 LeaseMate 容器時使用。",
+    "settings.storageLocalFolder": "掛載儲存內的資料夾",
+    "settings.storageLocalFolderHelp": "LeaseMate 會把文件存放在 Docker 儲存掛載內。例如：documents。",
+    "settings.storageLocalFolderInvalid": "掛載儲存內的資料夾必須是相對路徑，且不可包含 ..",
+    "settings.storageLocalSection": "本機掛載",
+    "settings.storageProvider": "儲存方式",
+    "settings.storageProviderLocalMount": "本機掛載 / NAS",
+    "settings.storageProviderS3": "Amazon S3 / S3 相容",
+    "settings.storageProviderSection": "儲存方式",
+    "settings.storageS3AccessKeyId": "Access key ID",
+    "settings.storageS3BasePrefix": "資料夾前綴",
+    "settings.storageS3Bucket": "Bucket",
+    "settings.storageS3Description": "適用於 Amazon S3 或 S3 相容服務。S3 儲存介面接上後即可進行驗證。",
+    "settings.storageS3EndpointUrl": "Endpoint URL",
+    "settings.storageS3PathStyle": "使用 path-style URL",
+    "settings.storageS3Region": "Region",
+    "settings.storageS3SecretAccessKey": "Secret access key",
+    "settings.storageS3SecretHelp": "只有需要更換已儲存 secret key 時，才輸入新的 secret key。",
+    "settings.storageS3Section": "S3 儲存",
+    "settings.storageSavedAndVerified": "儲存設定已儲存，存取也已驗證。",
+    "settings.storageSavedButTestFailed": "儲存設定已儲存，但儲存測試失敗。",
+    "settings.storageSavedTesting": "儲存設定已儲存。正在測試儲存存取...",
+    "settings.storageTitle": "儲存設定",
+    "settings.storageVerified": "儲存設定已驗證。",
+    "settings.systemDescription": "用於 LeaseMate 發送的系統作業郵件。",
+    "settings.systemSection": "系統郵件",
+    "settings.testEmail": "送出測試郵件",
+    "settings.testingEmail": "正在送出測試郵件...",
+    "settings.testingStorage": "正在測試儲存...",
     "page.backToDashboard": "返回儀表板",
     "page.notFoundBody": "LeaseMate 找不到此網址對應的頁面。",
     "page.notFoundTitle": "找不到頁面",
@@ -1673,7 +1977,7 @@ export const translations: Record<
     "users.deleteConfirmBody": "要刪除這個使用者嗎？這個使用者有效的驗證信都會失效。",
     "users.deleteConfirmTitle": "刪除使用者",
     "users.deleteUser": "刪除使用者",
-    "users.description": "管理使用者帳戶、登入狀態與偏好語言。",
+    "users.description": "管理個人資料、登入權限與偏好語言。",
     "users.deviceInfo": "裝置",
     "users.editUser": "編輯使用者",
     "users.emailConfirmationMismatch": "請再次輸入新電子郵件以確認。",
@@ -1711,6 +2015,9 @@ export const translations: Record<
   "zh-Hant-HK": {
     "app.subtitle": "物業管理",
     "auth.adminCreated": "管理員已建立，並已登入。",
+    "auth.adminSetupRequiredBody": "LeaseMate 尚未準備好。管理員必須先完成管理設定驗證，其他使用者先可以使用此網站。",
+    "auth.adminSetupRequiredEyebrow": "LeaseMate 初始設定",
+    "auth.adminSetupRequiredTitle": "設定尚未完成驗證",
     "auth.closeTab": "關閉此分頁",
     "auth.closeTabFallback": "如果分頁冇關閉，可以喺瀏覽器關閉。",
     "auth.createAdmin": "建立管理員用戶",
@@ -1776,6 +2083,7 @@ export const translations: Record<
     "bankAccounts.empty": "搵唔到銀行帳戶。",
     "bankAccounts.loading": "正在載入銀行帳戶...",
     "bankAccounts.loadingTransactions": "正在載入交易...",
+    "bankAccounts.legalNameMissingForCountry": "搵唔到你喺 {country} 使用嘅法定姓名。請到個人資料新增呢個國家嘅法定姓名。",
     "bankAccounts.noTransactions": "沒有交易紀錄。",
     "bankAccounts.notes": "備註",
     "bankAccounts.referenceNo": "參考編號",
@@ -1803,6 +2111,8 @@ export const translations: Record<
     "dashboard.emailLinksNeedAttention": "超過 7 日未驗證",
     "dashboard.emailLinkStatsDescription": "只供管理員查看電郵驗證狀態，以及可能需要跟進嘅帳戶。",
     "dashboard.emailLinkStatsTitle": "電郵驗證",
+    "dashboard.emailSettingsMissingMessage": "請先儲存 SMTP 設定並送出測試電郵，LeaseMate 先會開放一般使用。",
+    "dashboard.emailSettingsMissingTitle": "管理設定需要驗證",
     "dashboard.emailNotVerifiedMessage": "使用 LeaseMate 其他功能前，請先驗證電郵。你可以喺呢度重新寄送，或者登出。",
     "dashboard.emailNotVerifiedTitle": "電郵尚未驗證",
     "dashboard.keepCurrentEmail": "使用目前嘅電郵",
@@ -1822,6 +2132,7 @@ export const translations: Record<
     "dashboard.verifyEmailFirst": "請先驗證電郵。",
     "dashboard.verifyEmailModalWait": "驗證連結完成後，此訊息會自動消失。",
     "dashboard.viewEmailLinks": "開啟認證管理",
+    "dashboard.openSettings": "開啟設定",
     "field.name": "名稱",
     "form.contactPreferences": "偏好設定",
     "form.confirmPassword": "確認密碼",
@@ -1858,10 +2169,15 @@ export const translations: Record<
     "grid.firstPage": "第一頁",
     "grid.lastPage": "最後一頁",
     "grid.nextPage": "下一頁",
+    "grid.pagination": "分頁",
     "grid.previousPage": "上一頁",
     "grid.rows": "每頁筆數",
     "grid.selectAllColumns": "全選",
+    "grid.showAllRows": "顯示全部",
+    "grid.switchToPagination": "點擊使用分頁",
+    "grid.switchToShowAll": "點擊顯示所有記錄",
     "nav.admin": "管理",
+    "nav.adminSettings": "管理設定",
     "nav.bankAccounts": "銀行帳戶",
     "nav.dashboard": "儀表板",
     "nav.documents": "文件",
@@ -1885,8 +2201,72 @@ export const translations: Record<
     "nav.ref.translations": "翻譯",
     "nav.ref.utilityTypes": "公用服務類型",
     "nav.settings": "設定",
-    "nav.users": "用戶",
+    "nav.users": "個人",
     "nav.workspace": "工作區",
+    "settings.clearSavedPassword": "清除已儲存密碼",
+    "settings.description": "設定 LeaseMate 正常使用前需要嘅系統服務。",
+    "settings.emailDescription": "設定 LeaseMate 用於驗證、重設密碼同系統電郵嘅 SMTP 帳戶。",
+    "settings.emailIncomplete": "電郵設定尚未驗證。請先儲存設定並送出測試電郵。",
+    "settings.emailSaved": "電郵設定已儲存。",
+    "settings.emailSavedAndVerified": "電郵設定已儲存，SMTP 連線亦已驗證。",
+    "settings.emailSavedButTestFailed": "電郵設定已儲存，但 SMTP 測試失敗。",
+    "settings.emailSavedTesting": "電郵設定已儲存。正在測試 SMTP 連線...",
+    "settings.emailTestSent": "測試電郵已送出。",
+    "settings.emailTitle": "SMTP 設定",
+    "settings.emailVerificationChecking": "正在檢查電郵設定驗證連結...",
+    "settings.emailVerificationClose": "關閉此分頁",
+    "settings.emailVerificationEyebrow": "管理設定",
+    "settings.emailVerificationFailed": "此電郵設定驗證連結無效或已過期。請以管理員登入，並從設定頁重新寄送驗證電郵。",
+    "settings.emailVerificationPartialSuccess": "此 SMTP 帳戶已驗證。no-reply 同 system 兩個帳戶都完成驗證後，LeaseMate 先會解除鎖定。",
+    "settings.emailVerificationSuccess": "電郵設定已驗證。原本嘅 LeaseMate 視窗會自動解除鎖定。",
+    "settings.emailVerificationTitle": "驗證電郵設定",
+    "settings.emailVerified": "電郵設定已驗證。",
+    "settings.fromAddress": "寄件地址",
+    "settings.noreplyDescription": "用於驗證同重設密碼電郵。",
+    "settings.noreplySection": "No-reply 電郵",
+    "settings.password": "密碼",
+    "settings.passwordSaved": "密碼已儲存",
+    "settings.replacePassword": "更換密碼",
+    "settings.replacePasswordHelp": "只有需要更換已儲存密碼時，先輸入新密碼。",
+    "settings.save": "儲存",
+    "settings.saving": "儲存中...",
+    "settings.smtpProvider": "SMTP 服務",
+    "settings.smtpHost": "SMTP 主機",
+    "settings.smtpPort": "SMTP 連接埠",
+    "settings.smtpSection": "SMTP 伺服器",
+    "settings.smtpTls": "使用 TLS",
+    "settings.smtpUser": "SMTP 用戶",
+    "settings.storageDescription": "啟用文件流程前需要先完成儲存設定。",
+    "settings.storageIncomplete": "儲存設定尚未驗證。請儲存設定以測試儲存存取。",
+    "settings.storageLocalDescription": "當 Docker 已將 NAS 或本機儲存掛載到 LeaseMate 容器時使用。",
+    "settings.storageLocalFolder": "掛載儲存內嘅資料夾",
+    "settings.storageLocalFolderHelp": "LeaseMate 會將文件存放喺 Docker 儲存掛載內。例如：documents。",
+    "settings.storageLocalFolderInvalid": "掛載儲存內嘅資料夾必須係相對路徑，且不可包含 ..",
+    "settings.storageLocalSection": "本機掛載",
+    "settings.storageProvider": "儲存方式",
+    "settings.storageProviderLocalMount": "本機掛載 / NAS",
+    "settings.storageProviderS3": "Amazon S3 / S3 相容",
+    "settings.storageProviderSection": "儲存方式",
+    "settings.storageS3AccessKeyId": "Access key ID",
+    "settings.storageS3BasePrefix": "資料夾前綴",
+    "settings.storageS3Bucket": "Bucket",
+    "settings.storageS3Description": "適用於 Amazon S3 或 S3 相容服務。S3 儲存介面接上後即可進行驗證。",
+    "settings.storageS3EndpointUrl": "Endpoint URL",
+    "settings.storageS3PathStyle": "使用 path-style URL",
+    "settings.storageS3Region": "Region",
+    "settings.storageS3SecretAccessKey": "Secret access key",
+    "settings.storageS3SecretHelp": "只有需要更換已儲存 secret key 時，先輸入新嘅 secret key。",
+    "settings.storageS3Section": "S3 儲存",
+    "settings.storageSavedAndVerified": "儲存設定已儲存，存取亦已驗證。",
+    "settings.storageSavedButTestFailed": "儲存設定已儲存，但儲存測試失敗。",
+    "settings.storageSavedTesting": "儲存設定已儲存。正在測試儲存存取...",
+    "settings.storageTitle": "儲存設定",
+    "settings.storageVerified": "儲存設定已驗證。",
+    "settings.systemDescription": "用於 LeaseMate 發送嘅系統作業電郵。",
+    "settings.systemSection": "系統電郵",
+    "settings.testEmail": "送出測試電郵",
+    "settings.testingEmail": "正在送出測試電郵...",
+    "settings.testingStorage": "正在測試儲存...",
     "page.backToDashboard": "返回儀表板",
     "page.notFoundBody": "LeaseMate 搵唔到呢個網址對應嘅頁面。",
     "page.notFoundTitle": "搵唔到頁面",
@@ -2095,7 +2475,7 @@ export const translations: Record<
     "users.deleteConfirmBody": "要刪除呢個用戶嗎？呢個用戶有效嘅驗證電郵都會失效。",
     "users.deleteConfirmTitle": "刪除用戶",
     "users.deleteUser": "刪除用戶",
-    "users.description": "管理用戶帳戶、登入狀態同偏好語言。",
+    "users.description": "管理個人資料、登入權限同偏好語言。",
     "users.deviceInfo": "裝置",
     "users.editUser": "編輯用戶",
     "users.emailConfirmationMismatch": "請再次輸入新電郵以作確認。",
@@ -2133,6 +2513,9 @@ export const translations: Record<
   th: {
     "app.subtitle": "จัดการอสังหาริมทรัพย์",
     "auth.adminCreated": "สร้างผู้ดูแลแล้ว และคุณเข้าสู่ระบบแล้ว",
+    "auth.adminSetupRequiredBody": "LeaseMate ยังไม่พร้อมใช้งาน ผู้ดูแลระบบต้องยืนยันการตั้งค่าผู้ดูแลก่อน ผู้ใช้อื่นจึงจะใช้เว็บไซต์นี้ได้",
+    "auth.adminSetupRequiredEyebrow": "การตั้งค่า LeaseMate",
+    "auth.adminSetupRequiredTitle": "ยังไม่ได้ยืนยันการตั้งค่า",
     "auth.closeTab": "ปิดแท็บนี้",
     "auth.closeTabFallback": "ถ้าแท็บยังไม่ปิด คุณสามารถปิดจากเบราว์เซอร์ได้",
     "auth.createAdmin": "สร้างผู้ดูแลระบบ",
@@ -2198,6 +2581,7 @@ export const translations: Record<
     "bankAccounts.empty": "ไม่พบบัญชีธนาคาร",
     "bankAccounts.loading": "กำลังโหลดบัญชีธนาคาร...",
     "bankAccounts.loadingTransactions": "กำลังโหลดรายการ...",
+    "bankAccounts.legalNameMissingForCountry": "ไม่พบชื่อตามกฎหมายของคุณสำหรับ {country} โปรดไปที่โปรไฟล์เพื่อเพิ่มชื่อตามกฎหมายของประเทศนี้",
     "bankAccounts.noTransactions": "ไม่มีรายการธุรกรรม",
     "bankAccounts.notes": "หมายเหตุ",
     "bankAccounts.referenceNo": "เลขอ้างอิง",
@@ -2225,6 +2609,8 @@ export const translations: Record<
     "dashboard.emailLinksNeedAttention": "ยังไม่ยืนยันเกิน 7 วัน",
     "dashboard.emailLinkStatsDescription": "ภาพรวมสำหรับผู้ดูแลเกี่ยวกับสถานะการยืนยันอีเมลและบัญชีที่อาจต้องติดตาม",
     "dashboard.emailLinkStatsTitle": "การยืนยันอีเมล",
+    "dashboard.emailSettingsMissingMessage": "บันทึกการตั้งค่า SMTP และส่งอีเมลทดสอบก่อนเปิด LeaseMate ให้ใช้งานตามปกติ",
+    "dashboard.emailSettingsMissingTitle": "ต้องยืนยันการตั้งค่าผู้ดูแล",
     "dashboard.emailNotVerifiedMessage": "โปรดยืนยันอีเมลก่อนใช้ส่วนอื่นของ LeaseMate คุณสามารถอยู่หน้านี้ ส่งอีเมลใหม่ หรือออกจากระบบได้",
     "dashboard.emailNotVerifiedTitle": "ยังไม่ได้ยืนยันอีเมล",
     "dashboard.keepCurrentEmail": "ใช้อีเมลปัจจุบัน",
@@ -2244,6 +2630,7 @@ export const translations: Record<
     "dashboard.verifyEmailFirst": "โปรดยืนยันอีเมลก่อน",
     "dashboard.verifyEmailModalWait": "ข้อความนี้จะหายไปอัตโนมัติเมื่อยืนยันลิงก์เรียบร้อยแล้ว",
     "dashboard.viewEmailLinks": "เปิดการควบคุมการเข้าสู่ระบบ",
+    "dashboard.openSettings": "เปิดการตั้งค่า",
     "field.name": "ชื่อรายการ",
     "form.contactPreferences": "ค่ากำหนด",
     "form.confirmPassword": "ยืนยันรหัสผ่าน",
@@ -2280,10 +2667,15 @@ export const translations: Record<
     "grid.firstPage": "หน้าแรก",
     "grid.lastPage": "หน้าสุดท้าย",
     "grid.nextPage": "หน้าถัดไป",
+    "grid.pagination": "แบ่งหน้า",
     "grid.previousPage": "หน้าก่อนหน้า",
     "grid.rows": "จำนวนแถว",
     "grid.selectAllColumns": "เลือกทั้งหมด",
+    "grid.showAllRows": "แสดงทั้งหมด",
+    "grid.switchToPagination": "คลิกเพื่อใช้การแบ่งหน้า",
+    "grid.switchToShowAll": "คลิกเพื่อแสดงรายการทั้งหมด",
     "nav.admin": "ผู้ดูแล",
+    "nav.adminSettings": "การตั้งค่าผู้ดูแล",
     "nav.bankAccounts": "บัญชีธนาคาร",
     "nav.dashboard": "แดชบอร์ด",
     "nav.documents": "เอกสาร",
@@ -2307,8 +2699,72 @@ export const translations: Record<
     "nav.ref.translations": "คำแปล",
     "nav.ref.utilityTypes": "ประเภทสาธารณูปโภค",
     "nav.settings": "ตั้งค่า",
-    "nav.users": "ผู้ใช้",
+    "nav.users": "บุคคล",
     "nav.workspace": "พื้นที่ทำงาน",
+    "settings.clearSavedPassword": "ล้างรหัสผ่านที่บันทึกไว้",
+    "settings.description": "ตั้งค่าบริการระบบที่ LeaseMate ต้องใช้ก่อนเปิดใช้งานตามปกติ",
+    "settings.emailDescription": "ตั้งค่าบัญชี SMTP ที่ LeaseMate ใช้สำหรับการยืนยันตัวตน รีเซ็ตรหัสผ่าน และอีเมลระบบ",
+    "settings.emailIncomplete": "ยังไม่ได้ยืนยันการตั้งค่าอีเมล โปรดบันทึกการตั้งค่าและส่งอีเมลทดสอบ",
+    "settings.emailSaved": "บันทึกการตั้งค่าอีเมลแล้ว",
+    "settings.emailSavedAndVerified": "บันทึกการตั้งค่าอีเมลและยืนยันการเชื่อมต่อ SMTP แล้ว",
+    "settings.emailSavedButTestFailed": "บันทึกการตั้งค่าอีเมลแล้ว แต่การทดสอบ SMTP ล้มเหลว",
+    "settings.emailSavedTesting": "บันทึกการตั้งค่าอีเมลแล้ว กำลังทดสอบการเชื่อมต่อ SMTP...",
+    "settings.emailTestSent": "ส่งอีเมลทดสอบแล้ว",
+    "settings.emailTitle": "การตั้งค่า SMTP",
+    "settings.emailVerificationChecking": "กำลังตรวจสอบลิงก์ยืนยันการตั้งค่าอีเมล...",
+    "settings.emailVerificationClose": "ปิดแท็บนี้",
+    "settings.emailVerificationEyebrow": "การตั้งค่าผู้ดูแล",
+    "settings.emailVerificationFailed": "ลิงก์ยืนยันการตั้งค่าอีเมลนี้ไม่ถูกต้องหรือหมดอายุแล้ว โปรดเข้าสู่ระบบเป็นผู้ดูแลและส่งอีเมลยืนยันใหม่จากหน้าการตั้งค่า",
+    "settings.emailVerificationPartialSuccess": "ยืนยันบัญชี SMTP นี้แล้ว LeaseMate จะปลดล็อกเมื่อยืนยันทั้งบัญชี no-reply และ system แล้ว",
+    "settings.emailVerificationSuccess": "ยืนยันการตั้งค่าอีเมลแล้ว หน้าต่าง LeaseMate เดิมจะปลดล็อกโดยอัตโนมัติ",
+    "settings.emailVerificationTitle": "ยืนยันการตั้งค่าอีเมล",
+    "settings.emailVerified": "ยืนยันการตั้งค่าอีเมลแล้ว",
+    "settings.fromAddress": "ที่อยู่อีเมลผู้ส่ง",
+    "settings.noreplyDescription": "ใช้สำหรับอีเมลยืนยันตัวตนและรีเซ็ตรหัสผ่าน",
+    "settings.noreplySection": "อีเมล No-reply",
+    "settings.password": "รหัสผ่าน",
+    "settings.passwordSaved": "บันทึกรหัสผ่านแล้ว",
+    "settings.replacePassword": "เปลี่ยนรหัสผ่าน",
+    "settings.replacePasswordHelp": "กรอกรหัสผ่านใหม่เฉพาะเมื่อคุณต้องการแทนที่รหัสผ่านที่บันทึกไว้",
+    "settings.save": "บันทึก",
+    "settings.saving": "กำลังบันทึก...",
+    "settings.smtpProvider": "บริการ SMTP",
+    "settings.smtpHost": "SMTP host",
+    "settings.smtpPort": "SMTP port",
+    "settings.smtpSection": "SMTP server",
+    "settings.smtpTls": "ใช้ TLS",
+    "settings.smtpUser": "SMTP user",
+    "settings.storageDescription": "ต้องตั้งค่าพื้นที่จัดเก็บก่อนเปิดใช้ขั้นตอนงานเอกสาร",
+    "settings.storageIncomplete": "ยังไม่ได้ยืนยันการตั้งค่าพื้นที่จัดเก็บ โปรดบันทึกการตั้งค่าเพื่อทดสอบการเข้าถึงพื้นที่จัดเก็บ",
+    "settings.storageLocalDescription": "ใช้เมื่อติดตั้ง NAS หรือพื้นที่จัดเก็บภายในเครื่องเข้าไปในคอนเทนเนอร์ LeaseMate ผ่าน Docker",
+    "settings.storageLocalFolder": "โฟลเดอร์ในพื้นที่จัดเก็บที่ mount แล้ว",
+    "settings.storageLocalFolderHelp": "LeaseMate จะเก็บเอกสารใต้ storage mount ของ Docker ตัวอย่าง: documents",
+    "settings.storageLocalFolderInvalid": "โฟลเดอร์ในพื้นที่จัดเก็บที่ mount แล้วต้องเป็น path แบบ relative และห้ามมี ..",
+    "settings.storageLocalSection": "Local mount",
+    "settings.storageProvider": "ผู้ให้บริการพื้นที่จัดเก็บ",
+    "settings.storageProviderLocalMount": "Local mount / NAS",
+    "settings.storageProviderS3": "Amazon S3 / S3-compatible",
+    "settings.storageProviderSection": "ผู้ให้บริการพื้นที่จัดเก็บ",
+    "settings.storageS3AccessKeyId": "Access key ID",
+    "settings.storageS3BasePrefix": "Folder prefix",
+    "settings.storageS3Bucket": "Bucket",
+    "settings.storageS3Description": "ใช้สำหรับ Amazon S3 หรือผู้ให้บริการที่รองรับ S3 การยืนยันจะพร้อมใช้หลังจากเชื่อมต่อ storage adapter ของ S3",
+    "settings.storageS3EndpointUrl": "Endpoint URL",
+    "settings.storageS3PathStyle": "ใช้ path-style URLs",
+    "settings.storageS3Region": "Region",
+    "settings.storageS3SecretAccessKey": "Secret access key",
+    "settings.storageS3SecretHelp": "กรอก secret key ใหม่เฉพาะเมื่อต้องการแทนที่ค่าที่บันทึกไว้",
+    "settings.storageS3Section": "พื้นที่จัดเก็บ S3",
+    "settings.storageSavedAndVerified": "บันทึกการตั้งค่าพื้นที่จัดเก็บและยืนยันการเข้าถึงแล้ว",
+    "settings.storageSavedButTestFailed": "บันทึกการตั้งค่าพื้นที่จัดเก็บแล้ว แต่การทดสอบล้มเหลว",
+    "settings.storageSavedTesting": "บันทึกการตั้งค่าพื้นที่จัดเก็บแล้ว กำลังทดสอบการเข้าถึง...",
+    "settings.storageTitle": "การตั้งค่าพื้นที่จัดเก็บ",
+    "settings.storageVerified": "ยืนยันการตั้งค่าพื้นที่จัดเก็บแล้ว",
+    "settings.systemDescription": "ใช้สำหรับอีเมลระบบที่ LeaseMate ส่งออก",
+    "settings.systemSection": "อีเมลระบบ",
+    "settings.testEmail": "ส่งอีเมลทดสอบ",
+    "settings.testingEmail": "กำลังส่งอีเมลทดสอบ...",
+    "settings.testingStorage": "กำลังทดสอบพื้นที่จัดเก็บ...",
     "page.backToDashboard": "กลับไปแดชบอร์ด",
     "page.notFoundBody": "LeaseMate ไม่พบหน้าสำหรับ URL นี้",
     "page.notFoundTitle": "ไม่พบหน้า",
@@ -2517,7 +2973,7 @@ export const translations: Record<
     "users.deleteConfirmBody": "ลบผู้ใช้นี้หรือไม่? อีเมลยืนยันที่ยังใช้งานได้ของผู้ใช้นี้จะถูกยกเลิก",
     "users.deleteConfirmTitle": "ลบผู้ใช้",
     "users.deleteUser": "ลบผู้ใช้",
-    "users.description": "จัดการบัญชีผู้ใช้ สถานะการเข้าสู่ระบบ และภาษาที่ต้องการ",
+    "users.description": "จัดการข้อมูลบุคคล สิทธิ์เข้าสู่ระบบ และภาษาที่ต้องการ",
     "users.deviceInfo": "อุปกรณ์",
     "users.editUser": "แก้ไขผู้ใช้",
     "users.emailConfirmationMismatch": "กรุณากรอกอีเมลใหม่อีกครั้งเพื่อยืนยัน",

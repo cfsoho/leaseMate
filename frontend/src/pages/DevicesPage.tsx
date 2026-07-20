@@ -5,6 +5,7 @@ import { AccountPasskeysPanel } from "../components/account/AccountPasskeysPanel
 import { AccountPasswordSection } from "../components/account/AccountPasswordSection";
 import { LoginSessionsPanel } from "../components/account/LoginSessionsPanel";
 import { PageHeader } from "../components/layout/PageHeader";
+import { CollapsibleCardContainer } from "../components/ui/CollapsibleCardContainer";
 import { useTranslation } from "../lib/i18n/useTranslation";
 
 export function DevicesPage() {
@@ -24,17 +25,18 @@ export function DevicesPage() {
   }, [location.hash]);
 
   return (
-    <section className="grid gap-6">
-      <PageHeader
-        description={t("security.description")}
-        eyebrow={t("shell.user")}
-        title={t("shell.security")}
-      />
+    <CollapsibleCardContainer
+      header={
+        <PageHeader
+          description={t("security.description")}
+          eyebrow={t("shell.user")}
+          title={t("shell.security")}
+        />
+      }
+    >
       <AccountPasswordSection />
       <AccountPasskeysPanel />
-      <div id="devices">
-        <LoginSessionsPanel />
-      </div>
-    </section>
+      <LoginSessionsPanel id="devices" />
+    </CollapsibleCardContainer>
   );
 }

@@ -136,7 +136,10 @@
 }
 
 :root[data-theme="dark"] .data-grid-row:hover,
-:root[data-theme="dark"] .data-grid-row:hover > .data-grid-cell,
+:root[data-theme="dark"] .data-grid-row:hover > .data-grid-cell {
+  background-color: #1e293b !important;
+}
+
 :root[data-theme="dark"] .data-grid-row-selected,
 :root[data-theme="dark"] .data-grid-row-selected > .data-grid-cell,
 :root[data-theme="dark"] .data-grid-row-active-action,
@@ -158,21 +161,6 @@
   color: #cbd5e1;
 }
 
-:root[data-theme="dark"] .data-grid-page-size-label {
-  color: #cbd5e1;
-}
-
-:root[data-theme="dark"] .data-grid-page-size-select {
-  border-color: #475569;
-  background-color: #020617;
-  color: #e2e8f0;
-}
-
-:root[data-theme="dark"] .data-grid-page-size-select:focus {
-  border-color: #ffffff;
-  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.2);
-}
-
 :root[data-theme="dark"] .data-grid-page-button {
   border-color: #475569;
   background-color: #020617;
@@ -188,6 +176,32 @@
   color: #e2e8f0;
 }
 
+:root[data-theme="dark"] .data-grid-page-mode-switch {
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .data-grid-page-mode-track {
+  border-color: #475569;
+  background-color: #020617;
+}
+
+:root[data-theme="dark"] .data-grid-page-mode-thumb {
+  background-color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .data-grid-page-mode-input:checked + .data-grid-page-mode-track {
+  border-color: #ffffff;
+  background-color: #f8fafc;
+}
+
+:root[data-theme="dark"] .data-grid-page-mode-input:checked + .data-grid-page-mode-track .data-grid-page-mode-thumb {
+  background-color: #020617;
+}
+
+:root[data-theme="dark"] .data-grid-page-mode-input:focus-visible + .data-grid-page-mode-track {
+  outline-color: #f8fafc;
+}
+
 :root[data-theme="dark"] .data-grid-row-active-action button {
   border-color: #64748b !important;
   background-color: #020617 !important;
@@ -196,6 +210,20 @@
 
 :root[data-theme="dark"] .data-grid-row-active-action button:hover {
   background-color: #1e293b !important;
+}
+
+:root[data-theme="dark"] .data-grid-row-actions-menu {
+  border-color: #334155;
+  background-color: #020617;
+}
+
+:root[data-theme="dark"] .data-grid-row-actions-menu-item {
+  color: #e2e8f0;
+}
+
+:root[data-theme="dark"] .data-grid-row-actions-menu-item:hover {
+  background-color: #1e293b;
+  color: #ffffff;
 }
 
 :root[data-theme="dark"] .lm-button-primary,
@@ -342,6 +370,7 @@
 }
 
 :root[data-theme="dark"] .lm-searchable-select-option:hover,
+:root[data-theme="dark"] .lm-searchable-select-option-highlighted,
 :root[data-theme="dark"] .lm-searchable-select-option-selected {
   background-color: #1e293b;
   color: #ffffff;
@@ -436,58 +465,67 @@
 }
 
 :root[data-theme="dark"] .login-sessions-card {
-  border-color: #334155;
-  background-color: #111827;
+  border-color: #334155 !important;
+  background-color: #111827 !important;
 }
 
 :root[data-theme="dark"] .login-sessions-title {
-  color: #94a3b8;
+  color: #94a3b8 !important;
 }
 
 :root[data-theme="dark"] .login-sessions-description {
-  color: #cbd5e1;
+  color: #cbd5e1 !important;
 }
 
 :root[data-theme="dark"] .login-session-row {
-  border-color: #334155;
-  background-color: #0f172a;
+  border-color: #334155 !important;
+  background-color: #0f172a !important;
 }
 
 :root[data-theme="dark"] .login-session-icon {
-  background-color: #ffffff;
-  color: #020617;
+  background-color: #ffffff !important;
+  color: #020617 !important;
 }
 
 :root[data-theme="dark"] .login-session-icon svg {
-  color: currentColor;
-  stroke: currentColor;
+  display: block !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  color: currentColor !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+:root[data-theme="dark"] .login-session-icon svg * {
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 :root[data-theme="dark"] .login-session-name {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 :root[data-theme="dark"] .login-session-state {
-  color: #cbd5e1;
+  color: #cbd5e1 !important;
 }
 
 :root[data-theme="dark"] .login-session-current {
-  background-color: #334155;
-  color: #f8fafc;
+  background-color: #334155 !important;
+  color: #f8fafc !important;
 }
 
 :root[data-theme="dark"] .login-session-meta {
-  color: #94a3b8;
+  color: #94a3b8 !important;
 }
 
 :root[data-theme="dark"] .login-session-notice {
-  border-color: #334155;
-  background-color: #0f172a;
-  color: #cbd5e1;
+  border-color: #334155 !important;
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
 }
 
 :root[data-theme="dark"] .login-session-notice-error {
-  border-color: #7f1d1d;
-  background-color: #450a0a;
-  color: #fecaca;
+  border-color: #7f1d1d !important;
+  background-color: #450a0a !important;
+  color: #fecaca !important;
 }

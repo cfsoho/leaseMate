@@ -17,6 +17,7 @@ class FinancialAccountCreate(BaseModel):
 
 
 class FinancialAccountUpdate(BaseModel):
+    user_id: Optional[UUID] = None
     legal_name_id: Optional[UUID] = None
     financial_institution_branch_id: Optional[UUID] = None
     account_number: Optional[str] = None

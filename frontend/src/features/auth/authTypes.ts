@@ -3,6 +3,11 @@ export type BootstrapStatus = {
   bootstrap_required: boolean;
 };
 
+export type SystemSetupStatus = {
+  email_settings_ready: boolean;
+  system_ready: boolean;
+};
+
 export type BootstrapAdminResponse = {
   user_id: string;
   email: string;
@@ -98,6 +103,7 @@ export type CurrentUser = {
   phone?: string | null;
   phone_country_id?: string | null;
   role_id?: string | null;
+  role_code?: string | null;
   preferred_locale_code?: string | null;
   theme_preference?: ThemePreference | null;
   status?: string | null;

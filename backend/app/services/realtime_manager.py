@@ -48,5 +48,14 @@ class RealtimeConnectionManager:
         for websocket in stale_connections:
             self.disconnect(session_id, websocket)
 
+    async def send_to_all(
+        self,
+        event_type: str,
+        payload: dict[str, Any] | None = None,
+    ) -> None:
+        session_ids = list(self._connections.keys())
+        for session_id in session_ids:
+            await self.send_to_session(session_id, event_type, payload)
+
 
 realtime_manager = RealtimeConnectionManager()

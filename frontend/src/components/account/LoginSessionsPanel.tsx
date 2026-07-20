@@ -20,10 +20,15 @@ import { clearStoredLocale } from "../../lib/i18n/LocaleProvider";
 import type { TranslationKey } from "../../lib/i18n/translations";
 import { useTranslation } from "../../lib/i18n/useTranslation";
 import { Button } from "../ui/Button";
+import { CollapsibleCard } from "../ui/CollapsibleCard";
 
 const SESSION_FADE_MS = 2000;
 
-export function LoginSessionsPanel() {
+type LoginSessionsPanelProps = {
+  id?: string;
+};
+
+export function LoginSessionsPanel({ id }: LoginSessionsPanelProps) {
   const { locale, t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -123,16 +128,8 @@ export function LoginSessionsPanel() {
   }, [sessions.data]);
 
   return (
-    <section className="login-sessions-card grid gap-4 rounded-lg border p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="grid gap-1">
-          <h2 className="login-sessions-title text-sm font-bold uppercase tracking-wide">
-            {t("security.devicesTitle")}
-          </h2>
-          <p className="login-sessions-description m-0 text-sm font-normal leading-relaxed">
-            {t("security.devicesDescription")}
-          </p>
-        </div>
+    <CollapsibleCard
+      action={
         <div className="flex flex-wrap justify-end gap-2">
           {sessionCount > 1 && (
             <Button
@@ -156,7 +153,15 @@ export function LoginSessionsPanel() {
               : t("security.logOutAll")}
           </Button>
         </div>
-      </div>
+      }
+      className="login-sessions-card"
+      collapsible={false}
+      description={t("security.devicesDescription")}
+      id={id}
+      isOpen
+      onOpenChange={() => undefined}
+      title={t("security.devicesTitle")}
+    >
       <div className="grid gap-4">
         {sessions.isLoading && (
           <SessionNotice message={t("security.loadingDevices")} />
@@ -191,7 +196,7 @@ export function LoginSessionsPanel() {
           </div>
         )}
       </div>
-    </section>
+    </CollapsibleCard>
   );
 }
 

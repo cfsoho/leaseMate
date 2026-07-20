@@ -26,7 +26,7 @@ export function EntityForm<TPayload extends Record<string, unknown>>({
   }
 
   return (
-    <form className="grid gap-4" onSubmit={handleSubmit}>
+    <form className="grid gap-4" noValidate onSubmit={handleSubmit}>
       {fields.map((field) => (
         <label
           className="grid gap-2 text-sm font-bold text-slate-700"

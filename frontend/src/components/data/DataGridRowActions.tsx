@@ -121,10 +121,10 @@ export function DataGridRowActions<TRecord>({
 
   return (
     <div
-      className="flex justify-end gap-1"
+      className="data-grid-row-actions"
       onClick={(event) => event.stopPropagation()}
     >
-      <div className="hidden justify-end gap-1 md:flex">
+      <div className="data-grid-row-actions-desktop">
         {onEdit && !isInactive && (
           <IconButton label={labels.edit} onClick={() => onEdit(record)}>
             <Edit2 aria-hidden="true" size={16} />
@@ -157,7 +157,7 @@ export function DataGridRowActions<TRecord>({
           </IconButton>
         )}
       </div>
-      <div ref={menuRef} className="relative md:hidden">
+      <div ref={menuRef} className="data-grid-row-actions-mobile">
         <IconButton
           hideTooltip
           label="More"
@@ -166,11 +166,11 @@ export function DataGridRowActions<TRecord>({
           <EllipsisVertical aria-hidden="true" size={16} />
         </IconButton>
         {isMobileMenuOpen && (
-          <div className="absolute right-0 top-full z-40 mt-2 min-w-48 rounded-md border border-slate-200 bg-white py-1 text-sm shadow-lg">
+          <div className="data-grid-row-actions-menu">
             {actionItems.map((item) => (
               <button
                 key={item.label}
-                className="flex w-full items-center gap-2 whitespace-nowrap px-3 py-2 text-left font-normal text-slate-700 hover:bg-slate-100 hover:text-slate-950"
+                className="data-grid-row-actions-menu-item"
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false);

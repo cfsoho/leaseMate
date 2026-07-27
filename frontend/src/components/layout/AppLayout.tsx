@@ -78,6 +78,12 @@ export function AppLayout() {
       systemSetupStatus.data &&
       !systemSetupStatus.data.system_ready,
   );
+  const isEmailVerificationOnly = Boolean(
+    currentUser.data &&
+      !isRegularUserSystemSetupLocked &&
+      !isSystemSetupLocked &&
+      !currentUser.data.email_verified_at,
+  );
 
   useEffect(() => {
     const handleAuthTokenChange = () => {
@@ -201,16 +207,16 @@ export function AppLayout() {
   }, [currentUser.data?.preferred_locale_code, locale, setLocale]);
 
   useEffect(() => {
-    if (currentUser.data?.email_verified_at || isAdmin) {
+    if (currentUser.data?.email_verified_at) {
       setIsVerificationModalOpen(false);
     }
-  }, [currentUser.data?.email_verified_at, isAdmin]);
+  }, [currentUser.data?.email_verified_at]);
 
   useEffect(() => {
     if (
       currentUser.data &&
-      !isAdmin &&
       !isRegularUserSystemSetupLocked &&
+      !isSystemSetupLocked &&
       !currentUser.data.email_verified_at &&
       location.pathname !== "/dashboard"
     ) {
@@ -219,8 +225,8 @@ export function AppLayout() {
     }
   }, [
     currentUser.data,
-    isAdmin,
     isRegularUserSystemSetupLocked,
+    isSystemSetupLocked,
     location.pathname,
     navigate,
   ]);
@@ -306,12 +312,16 @@ export function AppLayout() {
     >
       <Sidebar
         adminSetupOnly={isSystemSetupLocked}
+        dashboardOnly={isEmailVerificationOnly}
         isCollapsed={isSidebarCollapsed}
         onExpandCollapsed={() => setIsSidebarCollapsed(false)}
         onToggleCollapsed={() => setIsSidebarCollapsed((current) => !current)}
       />
       <div className="flex min-h-0 min-w-0 flex-col">
-        <TopBar adminSetupOnly={isSystemSetupLocked} />
+        <TopBar
+          adminSetupOnly={isSystemSetupLocked}
+          dashboardOnly={isEmailVerificationOnly}
+        />
         <main className="app-main min-h-0 min-w-0 flex-1 overflow-y-auto">
           <div className="app-route-outlet">
             <Outlet />

@@ -40,13 +40,16 @@ class UserDelegation(Base):
     )
 
     # Human relationship label only, e.g. FAMILY, ASSISTANT, PROPERTY_MANAGER.
-    relationship_type = Column(String(50), nullable=True)
+    relationship_type = Column(String(50), nullable=False)
 
-    can_view_legal_names = Column(Boolean, nullable=False, default=True)
+    can_view_legal_names = Column(Boolean, nullable=False, default=False)
     can_manage_legal_names = Column(Boolean, nullable=False, default=False)
     can_view_bank_accounts = Column(Boolean, nullable=False, default=False)
     can_manage_bank_accounts = Column(Boolean, nullable=False, default=False)
-    can_create_properties_for_subject = Column(Boolean, nullable=False, default=False)
+    can_view_user_account_info = Column(Boolean, nullable=False, default=False)
+    can_manage_user_account_info = Column(Boolean, nullable=False, default=False)
+    can_view_properties = Column(Boolean, nullable=False, default=False)
+    can_manage_properties = Column(Boolean, nullable=False, default=False)
     is_active = Column(Boolean, nullable=False, default=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -65,6 +68,13 @@ class UserDelegation(Base):
         CheckConstraint(
             "subject_user_id <> delegate_user_id",
             name="ck_user_delegation_no_self",
+        ),
+        CheckConstraint(
+            "can_view_legal_names OR can_manage_legal_names "
+            "OR can_view_bank_accounts OR can_manage_bank_accounts "
+            "OR can_view_user_account_info OR can_manage_user_account_info "
+            "OR can_view_properties OR can_manage_properties",
+            name="ck_user_delegation_has_allowed_access",
         ),
     )
 

@@ -14,6 +14,7 @@ import type { NavItem } from "./navigation";
 
 type NavigationSectionsProps = {
   adminSetupOnly?: boolean;
+  dashboardOnly?: boolean;
   isCollapsed?: boolean;
   onExpandCollapsed?: () => void;
   onNavigate?: () => void;
@@ -21,6 +22,7 @@ type NavigationSectionsProps = {
 
 export function NavigationSections({
   adminSetupOnly = false,
+  dashboardOnly = false,
   isCollapsed = false,
   onExpandCollapsed,
   onNavigate,
@@ -46,23 +48,29 @@ export function NavigationSections({
       {!adminSetupOnly && (
         <NavSection
           isCollapsed={isCollapsed}
-          items={mainNavItems}
+          items={
+            dashboardOnly
+              ? mainNavItems.filter((item) => item.href === "/dashboard")
+              : mainNavItems
+          }
           title={t("nav.workspace")}
           onNavigate={closeOpenAccordion}
         />
       )}
-      <AdminNavSection
-        isReferenceActive={isReferenceActive}
-        isReferenceOpen={adminSetupOnly ? false : isReferenceOpen}
-        isCollapsed={isCollapsed}
-        items={adminSetupOnly ? adminSetupNavItems : adminNavItems}
-        title={t("nav.admin")}
-        onExpandCollapsed={onExpandCollapsed}
-        onNavigate={closeOpenAccordion}
-        onReferenceOpenChange={setIsReferenceOpen}
-        onReferenceNavigate={onNavigate}
-        showReference={!adminSetupOnly}
-      />
+      {!dashboardOnly && (
+        <AdminNavSection
+          isReferenceActive={isReferenceActive}
+          isReferenceOpen={adminSetupOnly ? false : isReferenceOpen}
+          isCollapsed={isCollapsed}
+          items={adminSetupOnly ? adminSetupNavItems : adminNavItems}
+          title={t("nav.admin")}
+          onExpandCollapsed={onExpandCollapsed}
+          onNavigate={closeOpenAccordion}
+          onReferenceOpenChange={setIsReferenceOpen}
+          onReferenceNavigate={onNavigate}
+          showReference={!adminSetupOnly}
+        />
+      )}
     </>
   );
 }

@@ -29,6 +29,7 @@ import {
   setRefreshToken,
 } from "../lib/auth/tokenStorage";
 import { resolveDefaultLocale } from "../lib/i18n/defaultLocale";
+import { hasStoredLocale } from "../lib/i18n/LocaleProvider";
 import { useLocaleContext } from "../lib/i18n/localeContext";
 import { useTranslation } from "../lib/i18n/useTranslation";
 
@@ -47,7 +48,8 @@ export function LoginPage() {
   );
   const [form, setForm] = useState({ email: lastLoginEmail, password: "" });
   const [stage, setStage] = useState<"email" | "password">("email");
-  const [passkeySupportMessage, setPasskeySupportMessage] = useState("");
+  const [showPasskeySupportMessage, setShowPasskeySupportMessage] =
+    useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [shouldEnter] = useState(() =>
     consumeTransitionFlag(LOGOUT_TO_LOGIN_TRANSITION_KEY),
@@ -63,12 +65,13 @@ export function LoginPage() {
   const currentYear = new Date().getFullYear();
   const authRedirectMessage = authRedirectReason
     ? t(
-        authRedirectReason === "session_revoked"
+        authRedirectReason === "email_changed"
+          ? "auth.emailChangedLogout"
+          : authRedirectReason === "session_revoked"
           ? "auth.sessionRevoked"
           : "auth.sessionExpired",
       )
     : "";
-
   const loginUser = useMutation({
     mutationFn: login,
     onSuccess: (tokens) => {
@@ -106,9 +109,15 @@ export function LoginPage() {
       startLoginTransition();
     },
   });
+  const loginErrorMessage = loginUser.isError
+    ? getLocalizedLoginError(loginUser.error.message)
+    : "";
+  const passkeyErrorMessage = loginWithPasskey.isError
+    ? getLocalizedLoginError(loginWithPasskey.error.message)
+    : "";
 
   useEffect(() => {
-    if (!bootstrapDefaultLocale.data) {
+    if (!bootstrapDefaultLocale.data || hasStoredLocale()) {
       return;
     }
 
@@ -150,9 +159,9 @@ export function LoginPage() {
   function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (stage === "email") {
-      setPasskeySupportMessage("");
+      setShowPasskeySupportMessage(false);
       if (!passkeysAreSupported()) {
-        setPasskeySupportMessage(t("auth.passkeyUnsupported"));
+        setShowPasskeySupportMessage(true);
         setStage("password");
         window.setTimeout(() => passwordInputRef.current?.focus(), 0);
         return;
@@ -204,21 +213,26 @@ export function LoginPage() {
       title={t("auth.loginTitle")}
       onSubmit={submitLogin}
     >
-      {authRedirectMessage && (
-        <FormAlert tone="info">{authRedirectMessage}</FormAlert>
+      {authRedirectMessage && <FormAlert messages={[authRedirectMessage]} />}
+      {loginErrorMessage && <FormAlert messages={[loginErrorMessage]} />}
+      {showPasskeySupportMessage && (
+        <FormAlert tone="info">{t("auth.passkeyUnsupported")}</FormAlert>
       )}
-      {loginUser.isError && <FormAlert>{loginUser.error.message}</FormAlert>}
-      {passkeySupportMessage && (
-        <FormAlert tone="info">{passkeySupportMessage}</FormAlert>
-      )}
-      {loginWithPasskey.isError && (
-        <FormAlert>{loginWithPasskey.error.message}</FormAlert>
-      )}
+      {passkeyErrorMessage && <FormAlert messages={[passkeyErrorMessage]} />}
 
       <label className="grid gap-2 text-sm font-bold text-slate-700">
         {t("form.email")}
         {displayedEmail && (stage === "password" || !isChangingEmail) ? (
           <>
+            <input
+              autoComplete="username"
+              className="sr-only"
+              name="username"
+              readOnly
+              tabIndex={-1}
+              type="email"
+              value={displayedEmail}
+            />
             <button
               className="min-h-[42px] rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-left font-normal text-slate-950 hover:border-slate-300 hover:bg-white focus:border-slate-950 focus:outline-none focus:ring-4 focus:ring-slate-950/10"
               type="button"
@@ -238,7 +252,8 @@ export function LoginPage() {
           <input
             ref={emailInputRef}
             className="min-h-[42px] w-full rounded-lg border border-slate-300 px-3 text-slate-950 outline-none focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10"
-            autoComplete="email"
+            autoComplete="username"
+            name="username"
             type="email"
             value={form.email}
             onChange={(event) =>
@@ -264,6 +279,7 @@ export function LoginPage() {
           autoComplete="current-password"
           inputClassName="min-h-[42px] w-full rounded-lg border border-slate-300 px-3 text-slate-950 outline-none focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10"
           label={t("form.password")}
+          name="password"
           ref={passwordInputRef}
           value={form.password}
           onChange={(password) =>
@@ -301,4 +317,27 @@ export function LoginPage() {
       )}
     </AuthCard>
   );
+
+  function getLocalizedLoginError(message: string) {
+    if (
+      message ===
+        "Passkeys need HTTPS on this browser. Use password login for now." ||
+      message === "PASSKEY_UNSUPPORTED"
+    ) {
+      return t("auth.passkeyUnsupported");
+    }
+
+    if (message === "EMAIL_NOT_VERIFIED") {
+      return t("auth.emailNotVerifiedLogin");
+    }
+
+    if (
+      message === "Invalid credentials or inactive user" ||
+      message.toLowerCase().includes("invalid credentials")
+    ) {
+      return t("auth.invalidCredentials");
+    }
+
+    return message;
+  }
 }

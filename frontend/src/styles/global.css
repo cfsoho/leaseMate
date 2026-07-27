@@ -65,13 +65,41 @@ textarea {
   align-items: start;
 }
 
+.lm-card-page-masonry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.lm-card-page-masonry-column {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 0.75rem;
+}
+
+.lm-card-page-compact.lm-card-page-masonry,
+.lm-card-page-compact .lm-card-page-masonry-column {
+  gap: 0.375rem;
+}
+
+.lm-card-page-masonry-item {
+  min-width: 0;
+}
+
 @media (min-width: 1536px) {
-  .lm-card-page {
+  .lm-card-page:not(.lm-card-page-masonry) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lm-card-page > * {
     min-width: 0;
+  }
+}
+
+@media (min-width: 1536px) {
+  .lm-card-page-masonry {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -228,12 +256,19 @@ textarea {
   display: grid;
   height: calc(100% - 42px);
   min-height: 240px;
-  place-items: center;
+  place-content: center;
+  gap: 0.35rem;
   padding-inline: 1rem;
   text-align: center;
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25rem;
+}
+
+.data-grid-empty-hint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1rem;
 }
 
 .data-grid-footer {
@@ -511,8 +546,44 @@ textarea {
   line-height: 1.25rem;
 }
 
+.lm-form-label-line {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.lm-form-label-required::after {
+  content: " *";
+  color: #dc2626;
+}
+
 .lm-form-required {
   color: #dc2626;
+}
+
+.lm-form-field-invalid,
+.lm-form-field-invalid .lm-form-label-line,
+.lm-form-field-invalid .lm-form-required {
+  color: #b91c1c;
+}
+
+.lm-form-field-invalid .lm-form-input,
+.lm-form-field-invalid .lm-form-textarea,
+.lm-form-field-invalid > input,
+.lm-form-field-invalid > select,
+.lm-form-field-invalid > textarea,
+.lm-form-field-invalid > button {
+  border-color: #dc2626;
+}
+
+.lm-form-field-invalid .lm-form-input:focus,
+.lm-form-field-invalid .lm-form-textarea:focus,
+.lm-form-field-invalid > input:focus,
+.lm-form-field-invalid > select:focus,
+.lm-form-field-invalid > textarea:focus,
+.lm-form-field-invalid > button:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgb(220 38 38 / 0.14);
 }
 
 .lm-form-input,

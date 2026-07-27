@@ -48,10 +48,21 @@ export const PasswordInput = forwardRef<HTMLInputElement, {
   onChange,
 }, ref) {
   const [isVisible, setIsVisible] = useState(false);
+  const inputName =
+    name ??
+    (autoComplete === "current-password"
+      ? "password"
+      : autoComplete === "new-password"
+        ? "new_password"
+        : undefined);
 
   return (
-    <label className="lm-form-label">
-      <span>
+    <label
+      className={["lm-form-label", error ? "lm-form-field-invalid" : ""]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <span className="lm-form-label-line">
         {label}
         {required && <span className="lm-form-required"> *</span>}
       </span>
@@ -61,7 +72,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, {
           className={`${inputClassName} lm-password-input`}
           disabled={disabled}
           maxLength={maxLength}
-          name={name}
+          name={inputName}
           ref={ref}
           type={isVisible ? "text" : "password"}
           value={value}

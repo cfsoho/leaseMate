@@ -1,5 +1,6 @@
 import type { FormEvent, ReactNode } from "react";
 
+import { AuthLanguageSelector } from "./AuthLanguageSelector";
 import { BrandMark } from "../ui/BrandMark";
 
 type AuthCardProps = {
@@ -56,14 +57,17 @@ export function AuthCard({
   ].join(" ");
 
   return (
-    <main className="grid min-h-screen place-items-center p-6">
-      {as === "form" ? (
-        <form className={cardClassName} noValidate onSubmit={onSubmit}>
-          {content}
-        </form>
-      ) : (
-        <section className={cardClassName}>{content}</section>
-      )}
-    </main>
+    <>
+      <AuthLanguageSelector />
+      <main className="grid min-h-screen place-items-center p-6">
+        {as === "form" ? (
+          <form className={cardClassName} noValidate onSubmit={onSubmit}>
+            {content}
+          </form>
+        ) : (
+          <section className={cardClassName}>{content}</section>
+        )}
+      </main>
+    </>
   );
 }

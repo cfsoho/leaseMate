@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.db.models.user_delegation import UserDelegation
 from app.db.schemas.user_delegation import (
+    ACCESS_FIELD_NAMES,
     UserDelegationCreate,
     UserDelegationRead,
     UserDelegationUpdate,
@@ -16,6 +17,20 @@ def _with_users(query):
     return query.options(
         joinedload(UserDelegation.subject_user),
         joinedload(UserDelegation.delegate_user),
+    )
+
+
+def _has_allowed_access_from_payload(payload: UserDelegationCreate) -> bool:
+    return any(getattr(payload, field_name) for field_name in ACCESS_FIELD_NAMES)
+
+
+def _has_allowed_access_after_update(
+    delegation: UserDelegation,
+    updates: dict,
+) -> bool:
+    return any(
+        bool(updates.get(field_name, getattr(delegation, field_name)))
+        for field_name in ACCESS_FIELD_NAMES
     )
 
 
@@ -35,9 +50,10 @@ def _serialize_delegation(delegation: UserDelegation) -> UserDelegationRead:
         can_manage_legal_names=delegation.can_manage_legal_names,
         can_view_bank_accounts=delegation.can_view_bank_accounts,
         can_manage_bank_accounts=delegation.can_manage_bank_accounts,
-        can_create_properties_for_subject=(
-            delegation.can_create_properties_for_subject
-        ),
+        can_view_user_account_info=delegation.can_view_user_account_info,
+        can_manage_user_account_info=delegation.can_manage_user_account_info,
+        can_view_properties=delegation.can_view_properties,
+        can_manage_properties=delegation.can_manage_properties,
         is_active=delegation.is_active,
         created_at=delegation.created_at,
         updated_at=delegation.updated_at,
@@ -69,6 +85,9 @@ def create_user_delegation(
     if subject_user_id == payload.delegate_user_id:
         raise ValueError("An individual cannot delegate records to themselves")
 
+    if not _has_allowed_access_from_payload(payload):
+        raise ValueError("Select at least one allowed access")
+
     if not get_user(db, subject_user_id):
         raise ValueError("Subject user not found")
 
@@ -79,6 +98,7 @@ def create_user_delegation(
 
     if (
         delegate_created_by_user_id
+        and delegate_user.id != delegate_created_by_user_id
         and delegate_user.created_by_user_id != delegate_created_by_user_id
     ):
         raise ValueError("Managed-by individual must be one you created")
@@ -102,7 +122,10 @@ def create_user_delegation(
         can_manage_legal_names=payload.can_manage_legal_names,
         can_view_bank_accounts=payload.can_view_bank_accounts,
         can_manage_bank_accounts=payload.can_manage_bank_accounts,
-        can_create_properties_for_subject=payload.can_create_properties_for_subject,
+        can_view_user_account_info=payload.can_view_user_account_info,
+        can_manage_user_account_info=payload.can_manage_user_account_info,
+        can_view_properties=payload.can_view_properties,
+        can_manage_properties=payload.can_manage_properties,
         is_active=payload.is_active,
     )
     db.add(delegation)
@@ -133,7 +156,12 @@ def update_user_delegation(
     if not delegation:
         return None
 
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    updates = payload.model_dump(exclude_unset=True)
+
+    if not _has_allowed_access_after_update(delegation, updates):
+        raise ValueError("Select at least one allowed access")
+
+    for field, value in updates.items():
         setattr(delegation, field, value)
 
     db.commit()

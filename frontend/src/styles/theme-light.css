@@ -148,6 +148,17 @@
   background-color: var(--lm-primary-bg-hover);
 }
 
+:root[data-theme="light"] .lm-button-warning {
+  border-color: #e11d48;
+  background-color: #e11d48;
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .lm-button-warning:hover:not(:disabled) {
+  border-color: #be123c;
+  background-color: #be123c;
+}
+
 :root[data-theme="light"] .lm-button-secondary,
 :root[data-theme="light"] .lm-icon-button-secondary {
   border-color: #cbd5e1;

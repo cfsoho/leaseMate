@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import Optional
 
-from sqlalchemy import asc, case, desc
+from sqlalchemy import asc, case, desc, or_
 from sqlalchemy.orm import Session
 
 from app.db.models.ref.role import Role
@@ -66,11 +66,16 @@ def get_users(
     skip: int = 0,
     limit: int = 100,
     created_by_user_id: Optional[UUID] = None,
+    include_user_id: Optional[UUID] = None,
 ):
     query = db.query(User).filter(User.is_deleted.is_(False))
 
     if created_by_user_id:
-        query = query.filter(User.created_by_user_id == created_by_user_id)
+        created_filter = User.created_by_user_id == created_by_user_id
+        if include_user_id:
+            query = query.filter(or_(created_filter, User.id == include_user_id))
+        else:
+            query = query.filter(created_filter)
 
     return (
         query
@@ -153,7 +158,8 @@ def get_users_page(
 def update_user(
     db: Session,
     user_id: UUID,
-    payload: UserUpdate
+    payload: UserUpdate,
+    require_email_verification_status: bool = True,
 ) -> Optional[User]:
     user = get_user(db, user_id)
 
@@ -170,7 +176,8 @@ def update_user(
             raise ValueError("Email is already used by another user")
 
         user.email_verified_at = None
-        user.status = USER_STATUS_NEEDS_EMAIL_VERIFICATION
+        if require_email_verification_status:
+            user.status = USER_STATUS_NEEDS_EMAIL_VERIFICATION
 
     for field, value in update_data.items():
         setattr(user, field, value)

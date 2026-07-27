@@ -50,7 +50,10 @@ export type UserDelegation = {
   can_manage_legal_names: boolean;
   can_view_bank_accounts: boolean;
   can_manage_bank_accounts: boolean;
-  can_create_properties_for_subject: boolean;
+  can_view_user_account_info: boolean;
+  can_manage_user_account_info: boolean;
+  can_view_properties: boolean;
+  can_manage_properties: boolean;
   is_active: boolean;
   subject_family_name: string;
   subject_given_name: string;
@@ -69,7 +72,10 @@ export type CreateUserDelegationPayload = {
   can_manage_legal_names: boolean;
   can_view_bank_accounts: boolean;
   can_manage_bank_accounts: boolean;
-  can_create_properties_for_subject: boolean;
+  can_view_user_account_info: boolean;
+  can_manage_user_account_info: boolean;
+  can_view_properties: boolean;
+  can_manage_properties: boolean;
   is_active: boolean;
 };
 

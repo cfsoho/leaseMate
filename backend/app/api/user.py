@@ -105,6 +105,9 @@ def list_select_options(
         created_by_user_id=(
             current_user.id if created_by_current_user else None
         ),
+        include_user_id=(
+            current_user.id if created_by_current_user else None
+        ),
     )
 
 
@@ -212,7 +215,10 @@ def update_delegation(
     payload: UserDelegationUpdate,
     db: Session = Depends(get_db)
 ):
-    delegation = update_user_delegation(db, user_id, delegation_id, payload)
+    try:
+        delegation = update_user_delegation(db, user_id, delegation_id, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     if not delegation:
         raise HTTPException(status_code=404, detail="Delegation not found")

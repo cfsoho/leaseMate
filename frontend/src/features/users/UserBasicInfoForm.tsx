@@ -20,6 +20,7 @@ type UserBasicInfoFormProps = {
   cancelLabel: string;
   countries: ProfileCountry[];
   disabled?: boolean;
+  emailEditable?: boolean;
   emailRequired?: boolean;
   locales: BootstrapLocale[];
   localeCode: string;
@@ -31,10 +32,17 @@ type UserBasicInfoFormProps = {
   onSubmit: (value: UserBasicInfoFormValue) => void;
 };
 
+type UserBasicInfoField =
+  | "email"
+  | "family_name"
+  | "given_name"
+  | "preferred_locale_code";
+
 export function UserBasicInfoForm({
   cancelLabel,
   countries,
   disabled = false,
+  emailEditable,
   emailRequired = false,
   locales,
   localeCode,
@@ -46,6 +54,8 @@ export function UserBasicInfoForm({
   onSubmit,
 }: UserBasicInfoFormProps) {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [invalidFields, setInvalidFields] = useState<UserBasicInfoField[]>([]);
+  const shouldShowEmail = emailEditable || emailRequired;
   const selectedLocaleCode = value.preferred_locale_code || localeCode;
   const orderedNameFields = useMemo(
     () => getOrderedNameFields(locales, selectedLocaleCode),
@@ -54,16 +64,23 @@ export function UserBasicInfoForm({
   const alertMessages = [...validationErrors, ...(submitError ? [submitError] : [])];
 
   function updateValue(next: Partial<UserBasicInfoFormValue>) {
+    const changedInvalidFields = userBasicInfoFields.filter((field) => field in next);
+    if (changedInvalidFields.length > 0) {
+      setInvalidFields((current) =>
+        current.filter((field) => !changedInvalidFields.includes(field)),
+      );
+    }
     onChange({ ...value, ...next });
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const nextErrors = validateUserBasicInfo(value, emailRequired);
-    setValidationErrors(nextErrors);
+    const nextValidation = validateUserBasicInfo(value, shouldShowEmail);
+    setValidationErrors(nextValidation.messages);
+    setInvalidFields(nextValidation.fields);
 
-    if (nextErrors.length > 0) {
+    if (nextValidation.messages.length > 0) {
       return;
     }
 
@@ -79,22 +96,14 @@ export function UserBasicInfoForm({
 
   return (
     <form className="grid gap-4" noValidate onSubmit={handleSubmit}>
-      {alertMessages.length > 0 && (
-        <FormAlert>
-          {alertMessages.length === 1 ? (
-            alertMessages[0]
-          ) : (
-            <ul className="list-disc pl-4">
-              {alertMessages.map((message) => (
-                <li key={message}>{message}</li>
-              ))}
-            </ul>
-          )}
-        </FormAlert>
-      )}
+      {alertMessages.length > 0 && <FormAlert messages={alertMessages} />}
 
       <div className="grid gap-4">
-        <FormField label="Preferred locale" required>
+        <FormField
+          invalid={invalidFields.includes("preferred_locale_code")}
+          label="Preferred locale"
+          required
+        >
           <select
             className="lm-form-input"
             disabled={disabled}
@@ -114,7 +123,12 @@ export function UserBasicInfoForm({
 
         <div className="grid items-start gap-4 md:grid-cols-2">
           {orderedNameFields.map((field) => (
-            <FormField key={field.name} label={field.label} required>
+            <FormField
+              invalid={invalidFields.includes(field.name)}
+              key={field.name}
+              label={field.label}
+              required
+            >
               <input
                 {...passwordManagerIgnoreProps}
                 className="lm-form-input"
@@ -127,8 +141,8 @@ export function UserBasicInfoForm({
           ))}
         </div>
 
-        {emailRequired && (
-          <FormField label="Email" required>
+        {shouldShowEmail && (
+          <FormField invalid={invalidFields.includes("email")} label="Email" required>
             <input
               {...passwordManagerIgnoreProps}
               autoCapitalize="none"
@@ -171,16 +185,22 @@ export function UserBasicInfoForm({
 
 function FormField({
   children,
+  invalid,
   label,
   required,
 }: {
   children: ReactNode;
+  invalid?: boolean;
   label: string;
   required?: boolean;
 }) {
   return (
-    <label className="lm-form-label">
-      <span>
+    <label
+      className={["lm-form-label", invalid ? "lm-form-field-invalid" : ""]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <span className="lm-form-label-line">
         {label}
         {required && <span className="lm-form-required"> *</span>}
       </span>
@@ -191,34 +211,47 @@ function FormField({
 
 function validateUserBasicInfo(
   value: UserBasicInfoFormValue,
-  emailRequired: boolean,
+  validateEmail: boolean,
 ) {
-  const errors: string[] = [];
+  const messages: string[] = [];
+  const fields: UserBasicInfoField[] = [];
 
   if (!value.preferred_locale_code.trim()) {
-    errors.push("Preferred locale is required.");
+    messages.push("Preferred locale is required.");
+    fields.push("preferred_locale_code");
   }
 
   if (!value.family_name.trim()) {
-    errors.push("Family name is required.");
+    messages.push("Family name is required.");
+    fields.push("family_name");
   }
 
   if (!value.given_name.trim()) {
-    errors.push("Given name is required.");
+    messages.push("Given name is required.");
+    fields.push("given_name");
   }
 
-  if (emailRequired) {
+  if (validateEmail) {
     const email = value.email?.trim() ?? "";
 
     if (!email) {
-      errors.push("Email is required.");
+      messages.push("Email is required.");
+      fields.push("email");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.push("Email format is not valid.");
+      messages.push("Email format is not valid.");
+      fields.push("email");
     }
   }
 
-  return errors;
+  return { fields, messages };
 }
+
+const userBasicInfoFields: UserBasicInfoField[] = [
+  "email",
+  "family_name",
+  "given_name",
+  "preferred_locale_code",
+];
 
 function getOrderedNameFields(
   locales: BootstrapLocale[],

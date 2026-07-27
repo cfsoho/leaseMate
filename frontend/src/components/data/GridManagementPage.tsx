@@ -19,9 +19,11 @@ type GridManagementPageProps<TRecord extends { id: string }> = {
   description?: string;
   emptyMessage?: string;
   errorMessage?: string;
+  filteredEmptyMessage?: string;
   fitViewport?: boolean;
   eyebrow?: string;
   getRowClassName?: (record: TRecord) => string;
+  hasActiveFilters?: boolean;
   heightClassName?: string;
   isRecordInactive?: (record: TRecord) => boolean;
   leadingActions?: ReactNode;
@@ -49,9 +51,11 @@ export function GridManagementPage<TRecord extends { id: string }>({
   description,
   emptyMessage,
   errorMessage,
+  filteredEmptyMessage,
   fitViewport = true,
   eyebrow,
   getRowClassName,
+  hasActiveFilters,
   heightClassName,
   isRecordInactive,
   leadingActions,
@@ -221,8 +225,10 @@ export function GridManagementPage<TRecord extends { id: string }>({
             activeRecordId={activeRecordId}
             columns={displayColumns}
             emptyMessage={emptyMessage}
+            filteredEmptyMessage={filteredEmptyMessage}
             fitViewport={fitViewport}
             getRowClassName={getRowClassName}
+            hasActiveFilters={hasActiveFilters}
             heightClassName={heightClassName}
             isRecordInactive={isRecordInactive}
             paginationLabels={paginationLabels}

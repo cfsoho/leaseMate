@@ -123,7 +123,7 @@ export function SettingsPage() {
   const [form, setForm] = useState<EmailSettingsForm>(emptyForm);
   const [saved, setSaved] = useState(false);
   const [saveTestCompleted, setSaveTestCompleted] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [emailSettingsOpen, setEmailSettingsOpen] = useState(true);
   const [emailSettingsOpenInitialized, setEmailSettingsOpenInitialized] =
     useState(false);
@@ -136,9 +136,9 @@ export function SettingsPage() {
   const [isStorageSettingsDirty, setIsStorageSettingsDirty] = useState(false);
   const [storageSaved, setStorageSaved] = useState(false);
   const [storageSaveTestCompleted, setStorageSaveTestCompleted] = useState(false);
-  const [storageValidationError, setStorageValidationError] = useState<
-    string | null
-  >(null);
+  const [storageValidationErrors, setStorageValidationErrors] = useState<
+    string[]
+  >([]);
   const settings = useQuery({
     queryKey: ["system-settings", "email"],
     queryFn: getSystemEmailSettings,
@@ -283,7 +283,7 @@ export function SettingsPage() {
     setIsEmailSettingsDirty(true);
     setSaved(false);
     setSaveTestCompleted(false);
-    setValidationError(null);
+    setValidationErrors([]);
     saveSettings.reset();
     testSettings.reset();
     setForm((current) => {
@@ -311,7 +311,7 @@ export function SettingsPage() {
     setIsEmailSettingsDirty(true);
     setSaved(false);
     setSaveTestCompleted(false);
-    setValidationError(null);
+    setValidationErrors([]);
     saveSettings.reset();
     testSettings.reset();
     setForm((current) => ({
@@ -338,14 +338,14 @@ export function SettingsPage() {
     setSaveTestCompleted(false);
     setEmailSettingsOpen(true);
 
-    const nextValidationError = validateEmailSettingsForm();
-    if (nextValidationError) {
+    const nextValidationErrors = validateEmailSettingsForm();
+    if (nextValidationErrors.length > 0) {
       setSaved(false);
-      setValidationError(nextValidationError);
+      setValidationErrors(nextValidationErrors);
       return;
     }
 
-    setValidationError(null);
+    setValidationErrors([]);
     const payload: SystemEmailSettingsUpdate = {
       smtp_host: form.smtp_host.trim() || null,
       smtp_port: Number(form.smtp_port),
@@ -370,7 +370,7 @@ export function SettingsPage() {
     setIsStorageSettingsDirty(true);
     setStorageSaved(false);
     setStorageSaveTestCompleted(false);
-    setStorageValidationError(null);
+    setStorageValidationErrors([]);
     saveStorageSettings.reset();
     testStorageSettings.reset();
     setStorageForm((current) => ({ ...current, [key]: value }));
@@ -383,14 +383,14 @@ export function SettingsPage() {
     setStorageSaveTestCompleted(false);
     setStorageSettingsOpen(true);
 
-    const nextValidationError = validateStorageSettingsForm();
-    if (nextValidationError) {
+    const nextValidationErrors = validateStorageSettingsForm();
+    if (nextValidationErrors.length > 0) {
       setStorageSaved(false);
-      setStorageValidationError(nextValidationError);
+      setStorageValidationErrors(nextValidationErrors);
       return;
     }
 
-    setStorageValidationError(null);
+    setStorageValidationErrors([]);
     const payload: SystemStorageSettingsUpdate = {
       provider: storageForm.provider,
       local_folder: storageForm.local_folder.trim() || null,
@@ -410,75 +410,78 @@ export function SettingsPage() {
   function validateEmailSettingsForm() {
     const required = t("form.requiredMessage");
     const missing = (label: string) => `${label}: ${required}`;
+    const errors: string[] = [];
 
     if (form.smtp_provider === OTHER_SMTP_PROVIDER_KEY) {
       if (!form.smtp_host.trim()) {
-        return missing(t("settings.smtpHost"));
+        errors.push(missing(t("settings.smtpHost")));
       }
       if (!form.smtp_port.trim()) {
-        return missing(t("settings.smtpPort"));
-      }
-      const port = Number(form.smtp_port);
-      if (!Number.isInteger(port) || port < 1 || port > 65535) {
-        return `${t("settings.smtpPort")}: 1-65535`;
+        errors.push(missing(t("settings.smtpPort")));
+      } else {
+        const port = Number(form.smtp_port);
+        if (!Number.isInteger(port) || port < 1 || port > 65535) {
+          errors.push(`${t("settings.smtpPort")}: 1-65535`);
+        }
       }
     }
 
     if (!form.noreply_user.trim()) {
-      return missing(`${t("settings.noreplySection")} - ${t("settings.smtpUser")}`);
+      errors.push(missing(`${t("settings.noreplySection")} - ${t("settings.smtpUser")}`));
     }
     if (!form.noreply_from.trim()) {
-      return missing(`${t("settings.noreplySection")} - ${t("settings.fromAddress")}`);
+      errors.push(missing(`${t("settings.noreplySection")} - ${t("settings.fromAddress")}`));
     }
     if (!settings.data?.noreply_password_set && !form.noreply_password) {
-      return missing(`${t("settings.noreplySection")} - ${t("settings.password")}`);
+      errors.push(missing(`${t("settings.noreplySection")} - ${t("settings.password")}`));
     }
     if (!form.system_user.trim()) {
-      return missing(`${t("settings.systemSection")} - ${t("settings.smtpUser")}`);
+      errors.push(missing(`${t("settings.systemSection")} - ${t("settings.smtpUser")}`));
     }
     if (!form.system_from.trim()) {
-      return missing(`${t("settings.systemSection")} - ${t("settings.fromAddress")}`);
+      errors.push(missing(`${t("settings.systemSection")} - ${t("settings.fromAddress")}`));
     }
     if (!settings.data?.system_password_set && !form.system_password) {
-      return missing(`${t("settings.systemSection")} - ${t("settings.password")}`);
+      errors.push(missing(`${t("settings.systemSection")} - ${t("settings.password")}`));
     }
 
-    return null;
+    return errors;
   }
 
   function validateStorageSettingsForm() {
     const required = t("form.requiredMessage");
     const missing = (label: string) => `${label}: ${required}`;
+    const errors: string[] = [];
 
     if (storageForm.provider === "LOCAL_MOUNT") {
       const localFolder = storageForm.local_folder.trim();
       if (!localFolder) {
-        return missing(t("settings.storageLocalFolder"));
+        errors.push(missing(t("settings.storageLocalFolder")));
       }
       if (localFolder.startsWith("/") || localFolder.split("/").includes("..")) {
-        return t("settings.storageLocalFolderInvalid");
+        errors.push(t("settings.storageLocalFolderInvalid"));
       }
     }
 
     if (storageForm.provider === "S3") {
       if (!storageForm.s3_bucket.trim()) {
-        return missing(t("settings.storageS3Bucket"));
+        errors.push(missing(t("settings.storageS3Bucket")));
       }
       if (!storageForm.s3_region.trim()) {
-        return missing(t("settings.storageS3Region"));
+        errors.push(missing(t("settings.storageS3Region")));
       }
       if (!storageForm.s3_access_key_id.trim()) {
-        return missing(t("settings.storageS3AccessKeyId"));
+        errors.push(missing(t("settings.storageS3AccessKeyId")));
       }
       if (
         !storageSettings.data?.s3_secret_access_key_set &&
         !storageForm.s3_secret_access_key
       ) {
-        return missing(t("settings.storageS3SecretAccessKey"));
+        errors.push(missing(t("settings.storageS3SecretAccessKey")));
       }
     }
 
-    return null;
+    return errors;
   }
 
   const disabled =
@@ -489,6 +492,16 @@ export function SettingsPage() {
     testStorageSettings.isPending;
   const canCollapseEmailSettings = Boolean(settings.data?.is_ready);
   const canCollapseStorageSettings = Boolean(storageSettings.data?.is_ready);
+  const emailAlertMessages = [
+    ...(settings.isError ? [settings.error.message] : []),
+    ...(saveSettings.isError ? [saveSettings.error.message] : []),
+    ...validationErrors,
+  ];
+  const storageAlertMessages = [
+    ...(storageSettings.isError ? [storageSettings.error.message] : []),
+    ...(saveStorageSettings.isError ? [saveStorageSettings.error.message] : []),
+    ...storageValidationErrors,
+  ];
 
   return (
     <CollapsibleCardContainer
@@ -514,11 +527,9 @@ export function SettingsPage() {
         }
       >
         <form className="grid gap-5" noValidate onSubmit={handleSubmit}>
-          {settings.isError && <FormAlert>{settings.error.message}</FormAlert>}
-          {saveSettings.isError && (
-            <FormAlert>{saveSettings.error.message}</FormAlert>
+          {emailAlertMessages.length > 0 && (
+            <FormAlert messages={emailAlertMessages} />
           )}
-          {validationError && <FormAlert>{validationError}</FormAlert>}
           {settings.data && !settings.data.is_ready && (
             <FormAlert tone="info">{t("settings.emailIncomplete")}</FormAlert>
           )}
@@ -675,14 +686,8 @@ export function SettingsPage() {
         }
       >
         <form className="grid gap-5" noValidate onSubmit={handleStorageSubmit}>
-          {storageSettings.isError && (
-            <FormAlert>{storageSettings.error.message}</FormAlert>
-          )}
-          {saveStorageSettings.isError && (
-            <FormAlert>{saveStorageSettings.error.message}</FormAlert>
-          )}
-          {storageValidationError && (
-            <FormAlert>{storageValidationError}</FormAlert>
+          {storageAlertMessages.length > 0 && (
+            <FormAlert messages={storageAlertMessages} />
           )}
           {storageSettings.data && !storageSettings.data.is_ready && (
             <FormAlert tone="info">{t("settings.storageIncomplete")}</FormAlert>
@@ -893,7 +898,7 @@ function SelectField({
 
   return (
     <label className="lm-form-label">
-      <span>{label}</span>
+      <span className="lm-form-label-line">{label}</span>
       <select className="lm-form-input" value={value} onChange={handleChange}>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -920,7 +925,7 @@ function SearchableSelectField({
 }) {
   return (
     <label className="lm-form-label">
-      <span>
+      <span className="lm-form-label-line">
         {label}
         {required && <span className="lm-form-required"> *</span>}
       </span>
@@ -954,7 +959,7 @@ function TextField({
 
   return (
     <label className="lm-form-label">
-      <span>
+      <span className="lm-form-label-line">
         {label}
         {required && <span className="lm-form-required"> *</span>}
       </span>

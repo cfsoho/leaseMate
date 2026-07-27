@@ -239,6 +239,17 @@
   background-color: var(--lm-primary-bg-hover);
 }
 
+:root[data-theme="dark"] .lm-button-warning {
+  border-color: #fb7185;
+  background-color: #fb7185;
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .lm-button-warning:hover:not(:disabled) {
+  border-color: #f43f5e;
+  background-color: #f43f5e;
+}
+
 :root[data-theme="dark"] .lm-button-secondary,
 :root[data-theme="dark"] .lm-icon-button-secondary {
   border-color: #475569;

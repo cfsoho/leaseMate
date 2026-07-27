@@ -38,9 +38,7 @@ export async function authenticateWithPasskey(email?: string) {
 
 export async function registerCurrentUserPasskey(name?: string) {
   if (!passkeysAreSupported()) {
-    throw new Error(
-      "Passkeys need HTTPS on this browser. Use password login for now.",
-    );
+    throw new Error("PASSKEY_UNSUPPORTED");
   }
 
   const { options } = await createPasskeyRegistrationOptions();

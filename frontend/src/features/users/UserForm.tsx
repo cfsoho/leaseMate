@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "../../components/ui/Button";
@@ -99,16 +99,30 @@ export function UserForm({
   const selectedLocaleForNameOrder = isSupportedLocale(value.preferred_locale_code)
     ? value.preferred_locale_code
     : locale;
-  const dbLocaleOptions = (bootstrapLocales.data ?? [])
-    .filter((localeOption) => isSupportedLocale(localeOption.code))
-    .map((localeOption) => ({
-      code: localeOption.code,
-      label: localeOption.native_name || localeOption.name,
-    }));
-  const fallbackLocaleOptions = supportedLocales.map((localeOption) => ({
-    code: localeOption,
-    label: localeOptionLabels[localeOption],
-  }));
+  const dbLocaleOptions = useMemo(
+    () =>
+      (bootstrapLocales.data ?? [])
+        .filter((localeOption) => isSupportedLocale(localeOption.code))
+        .map((localeOption) => ({
+          code: localeOption.code,
+          label:
+            getLocaleDisplayName(localeOption.code, locale) ||
+            localeOption.name ||
+            localeOption.native_name ||
+            localeOption.code,
+        })),
+    [bootstrapLocales.data, locale],
+  );
+  const fallbackLocaleOptions = useMemo(
+    () =>
+      supportedLocales.map((localeOption) => ({
+        code: localeOption,
+        label:
+          getLocaleDisplayName(localeOption, locale) ||
+          localeOptionLabels[localeOption],
+      })),
+    [locale],
+  );
   const visibleLocaleOptions =
     dbLocaleOptions.length > 0 ? dbLocaleOptions : fallbackLocaleOptions;
   const selectedLocaleOption = bootstrapLocales.data?.find(
@@ -119,6 +133,27 @@ export function UserForm({
       ? "family-first"
       : getNameOrder(selectedLocaleForNameOrder);
   const isFormDisabled = disabled || isSubmitLocked;
+  const errorLabels: Partial<Record<keyof UserFormValue, string>> = {
+    confirm_password: t("form.confirmPassword"),
+    email: t("form.email"),
+    family_name: t("form.familyName"),
+    given_name: t("form.givenName"),
+    password: t("form.password"),
+    preferred_locale_code: t("form.preferredLocale"),
+    role_id: t("users.role"),
+  };
+  const alertMessages = [
+    ...Object.entries(errors)
+      .filter(([, message]) => Boolean(message))
+      .map(
+        ([field, message]) =>
+          `${errorLabels[field as keyof UserFormValue] ?? field}: ${message}`,
+      ),
+    ...(confirmEmailError
+      ? [`${t("users.confirmNewEmail")}: ${confirmEmailError}`]
+      : []),
+    ...(submitError ? [submitError] : []),
+  ];
 
   useEffect(() => {
     if (!disabled) {
@@ -263,9 +298,7 @@ export function UserForm({
     density === "compact" ? "grid gap-3 lg:grid-cols-2" : "grid gap-4 lg:grid-cols-2";
   return (
     <form className={density === "compact" ? "grid gap-4" : "grid gap-6"} noValidate onSubmit={handleSubmit}>
-      {submitError && (
-        <FormAlert>{submitError}</FormAlert>
-      )}
+      {alertMessages.length > 0 && <FormAlert messages={alertMessages} />}
 
       <section className={sectionClass}>
         <SectionTitle title={t("form.contactPreferences")} />
@@ -437,11 +470,12 @@ function Field({
       className={[
         "grid content-start text-sm font-bold text-slate-700",
         density === "compact" ? "gap-1.5" : "gap-2",
+        error ? "lm-form-field-invalid" : "",
       ].join(" ")}
     >
-      <span>
+      <span className="lm-form-label-line">
         {label}
-        {required && <span className="text-red-600"> *</span>}
+        {required && <span className="lm-form-required"> *</span>}
       </span>
       {children}
       {density === "compact" ? (
@@ -465,6 +499,16 @@ function SectionTitle({ title }: { title: string }) {
 
 function getNameOrder(locale: SupportedLocale) {
   return locale === "en" || locale === "th" ? "given-first" : "family-first";
+}
+
+function getLocaleDisplayName(targetLocale: string, displayLocale: string) {
+  try {
+    return new Intl.DisplayNames([displayLocale], { type: "language" }).of(
+      targetLocale,
+    );
+  } catch {
+    return undefined;
+  }
 }
 
 function isValidEmail(email: string) {

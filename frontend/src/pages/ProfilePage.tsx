@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Edit2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "../components/ui/Button";
 import { CollapsibleCard } from "../components/ui/CollapsibleCard";
 import { CollapsibleCardContainer } from "../components/ui/CollapsibleCardContainer";
+import { FormAlert } from "../components/ui/FormAlert";
+import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
 import {
   formatPhoneForCountry,
@@ -20,18 +23,29 @@ import {
   updateCurrentUserLegalName,
   updateCurrentUser,
 } from "../features/auth/authApi";
+import { setAuthRedirectReason } from "../features/auth/authUiTransition";
 import type { ProfileCountry, UserLegalNamePayload } from "../features/auth/authTypes";
 import { LegalNamesCard } from "../features/legalNames/LegalNamesCard";
+import { UserDelegationsCard } from "../features/users/UserDelegationsCard";
 import {
   UserBasicInfoForm,
   type UserBasicInfoFormValue,
 } from "../features/users/UserBasicInfoForm";
+import {
+  createUserDelegation,
+  deleteUserDelegation,
+  listUserDelegations,
+  listUserSelectOptions,
+  updateUserDelegation,
+} from "../features/users/usersApi";
 import { formatPersonName } from "../lib/i18n/nameFormat";
 import { useTranslation } from "../lib/i18n/useTranslation";
+import { clearTokens, setLastLoginEmail } from "../lib/auth/tokenStorage";
 import { useTheme } from "../lib/theme/useTheme";
 import type { ThemePreference } from "../lib/theme/themeContext";
 
 export function ProfilePage() {
+  const navigate = useNavigate();
   const { locale, t } = useTranslation();
   const { preference: themePreference, setPreference: setThemePreference } =
     useTheme();
@@ -45,6 +59,9 @@ export function ProfilePage() {
     phone_country_id: "",
     preferred_locale_code: "",
   });
+  const [pendingEmailChange, setPendingEmailChange] = useState<
+    Parameters<typeof updateCurrentUser>[0] | null
+  >(null);
   const currentUser = useQuery({
     queryKey: ["current-user"],
     queryFn: getCurrentUser,
@@ -55,6 +72,16 @@ export function ProfilePage() {
     queryKey: ["current-user", "legal-names"],
     queryFn: getCurrentUserLegalNames,
     retry: false,
+  });
+  const users = useQuery({
+    queryKey: ["users", "select-options", "created-by-current-user"],
+    queryFn: () => listUserSelectOptions({ createdByCurrentUser: true }),
+    enabled: Boolean(user),
+  });
+  const delegations = useQuery({
+    queryKey: ["users", user?.id, "delegations"],
+    queryFn: () => listUserDelegations(user!.id),
+    enabled: Boolean(user?.id),
   });
   const locales = useQuery({
     queryKey: ["bootstrap-locales"],
@@ -83,8 +110,23 @@ export function ProfilePage() {
     : "";
   const updateProfile = useMutation({
     mutationFn: updateCurrentUser,
-    onSuccess: (updatedUser) => {
+    onSuccess: (updatedUser, payload) => {
+      const emailChanged = Boolean(
+        user?.email && payload.email && payload.email !== user.email,
+      );
+
+      if (emailChanged) {
+        setPendingEmailChange(null);
+        setLastLoginEmail(updatedUser.email);
+        setAuthRedirectReason("email_changed");
+        clearTokens();
+        queryClient.removeQueries({ queryKey: ["current-user"] });
+        navigate("/login", { replace: true });
+        return;
+      }
+
       queryClient.setQueryData(["current-user"], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ["current-user"] });
       setIsEditingUser(false);
     },
   });
@@ -112,6 +154,31 @@ export function ProfilePage() {
       queryClient.invalidateQueries({ queryKey: ["current-user", "legal-names"] });
     },
   });
+  const createDelegation = useMutation({
+    mutationFn: (payload: Parameters<typeof createUserDelegation>[1]) =>
+      createUserDelegation(user!.id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", user?.id, "delegations"] });
+    },
+  });
+  const updateDelegation = useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Parameters<typeof updateUserDelegation>[2];
+    }) => updateUserDelegation(user!.id, id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", user?.id, "delegations"] });
+    },
+  });
+  const deleteDelegation = useMutation({
+    mutationFn: (delegationId: string) => deleteUserDelegation(user!.id, delegationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", user?.id, "delegations"] });
+    },
+  });
   useEffect(() => {
     if (!user || isEditingUser) {
       return;
@@ -130,7 +197,8 @@ export function ProfilePage() {
 
   return (
     <CollapsibleCardContainer
-      className="gap-4"
+      className="lm-card-page-compact"
+      layout="masonry"
       header={
         <>
           <PageHeader
@@ -174,6 +242,7 @@ export function ProfilePage() {
                 cancelLabel={t("profile.cancel")}
                 countries={countries.data ?? []}
                 disabled={updateProfile.isPending}
+                emailEditable
                 localeCode={locale}
                 locales={locales.data ?? []}
                 submitError={
@@ -188,14 +257,22 @@ export function ProfilePage() {
                 onCancel={() => setIsEditingUser(false)}
                 onChange={setUserForm}
                 onSubmit={(nextValue) => {
-                  updateProfile.mutate({
+                  const payload = {
+                    email: nextValue.email,
                     family_name: nextValue.family_name,
                     given_name: nextValue.given_name,
                     phone: nextValue.phone || null,
                     phone_country_id: nextValue.phone_country_id || null,
                     preferred_locale_code:
                       nextValue.preferred_locale_code || null,
-                  });
+                  };
+
+                  if (user.email !== nextValue.email) {
+                    setPendingEmailChange(payload);
+                    return;
+                  }
+
+                  updateProfile.mutate(payload);
                 }}
               />
             ) : (
@@ -270,6 +347,20 @@ export function ProfilePage() {
             }
           />
 
+          <UserDelegationsCard
+            delegations={delegations.data ?? []}
+            description="Let another individual manage selected records for you. Use this when a trusted person helps manage your legal names, bank accounts, or properties."
+            isLoading={delegations.isLoading}
+            locale={userLocale}
+            subjectUser={user}
+            users={users.data ?? []}
+            onCreate={(payload) => createDelegation.mutateAsync(payload)}
+            onDelete={(id) => deleteDelegation.mutateAsync(id)}
+            onUpdate={(id, payload) =>
+              updateDelegation.mutateAsync({ id, payload })
+            }
+          />
+
           <CollapsibleCard
             collapsible={false}
             isOpen
@@ -284,6 +375,32 @@ export function ProfilePage() {
             />
           </CollapsibleCard>
         </>
+      )}
+
+      {pendingEmailChange && (
+        <Modal title={t("profile.emailChangeConfirmTitle")}>
+          {updateProfile.isError && (
+            <FormAlert messages={[updateProfile.error.message]} />
+          )}
+          <p className="text-sm leading-6 text-slate-600">
+            {t("profile.emailChangeConfirmBody")}
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button
+              disabled={updateProfile.isPending}
+              variant="secondary"
+              onClick={() => setPendingEmailChange(null)}
+            >
+              {t("profile.cancel")}
+            </Button>
+            <Button
+              disabled={updateProfile.isPending}
+              onClick={() => updateProfile.mutate(pendingEmailChange)}
+            >
+              {t("profile.emailChangeConfirmAction")}
+            </Button>
+          </div>
+        </Modal>
       )}
     </CollapsibleCardContainer>
   );

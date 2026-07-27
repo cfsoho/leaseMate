@@ -152,6 +152,25 @@ def get_financial_accounts(
     )
 
 
+def get_financial_accounts_for_users(
+    db: Session,
+    user_ids: list[UUID],
+    skip: int = 0,
+    limit: int = 100,
+):
+    return (
+        db.query(FinancialAccount)
+        .filter(
+            FinancialAccount.user_id.in_(user_ids),
+            FinancialAccount.is_deleted.is_(False),
+        )
+        .order_by(FinancialAccount.is_active.desc(), FinancialAccount.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
 def get_financial_accounts_for_user(
     db: Session,
     user_id: UUID,

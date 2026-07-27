@@ -30,12 +30,14 @@ export type TranslationKey =
   | "auth.createAdmin"
   | "auth.createAdminDescription"
   | "auth.creating"
+  | "auth.emailChangedLogout"
   | "auth.emailConfirmationChecking"
   | "auth.emailConfirmationAlreadyVerified"
   | "auth.emailConfirmationEyebrow"
   | "auth.emailConfirmationFailed"
   | "auth.emailConfirmationSuccess"
   | "auth.emailConfirmationTitle"
+  | "auth.emailNotVerifiedLogin"
   | "auth.forgotPassword"
   | "auth.forgotPasswordBody"
   | "auth.forgotPasswordSending"
@@ -44,6 +46,7 @@ export type TranslationKey =
   | "auth.forgotPasswordSubmit"
   | "auth.forgotPasswordTitle"
   | "auth.initialSetup"
+  | "auth.invalidCredentials"
   | "auth.loggingIn"
   | "auth.loginSaved"
   | "auth.loginTitle"
@@ -88,6 +91,7 @@ export type TranslationKey =
   | "bankAccounts.loading"
   | "bankAccounts.loadingTransactions"
   | "bankAccounts.legalNameMissingForCountry"
+  | "bankAccounts.legalNameManageablePeople"
   | "bankAccounts.notes"
   | "bankAccounts.noTransactions"
   | "bankAccounts.referenceNo"
@@ -225,6 +229,9 @@ export type TranslationKey =
   | "profile.deleting"
   | "profile.description"
   | "profile.edit"
+  | "profile.emailChangeConfirmAction"
+  | "profile.emailChangeConfirmBody"
+  | "profile.emailChangeConfirmTitle"
   | "profile.field.country"
   | "profile.field.countryId"
   | "profile.field.createdAt"
@@ -537,6 +544,7 @@ export const translations: Record<
     "auth.emailConfirmationFailed": "This verification link is invalid or expired. Please sign in and send a new one from the dashboard.",
     "auth.emailConfirmationSuccess": "Your email address is verified. You can continue using LeaseMate now.",
     "auth.emailConfirmationTitle": "Confirm email",
+    "auth.emailNotVerifiedLogin": "Your email address has not been verified yet. Please check your email and use the verification link before logging in.",
     "auth.forgotPassword": "Forgot password?",
     "auth.forgotPasswordBody": "Enter your verified email address. If it matches an active LeaseMate account, we will send a password reset link.",
     "auth.forgotPasswordSending": "Sending...",
@@ -544,7 +552,9 @@ export const translations: Record<
     "auth.forgotPasswordSentTitle": "Check your email",
     "auth.forgotPasswordSubmit": "Send reset link",
     "auth.forgotPasswordTitle": "Forgot password",
+    "auth.emailChangedLogout": "You were signed out because your email address changed. Please verify your new email before signing in again.",
     "auth.initialSetup": "Initial Setup",
+    "auth.invalidCredentials": "Email or password is incorrect.",
     "auth.loggingIn": "Logging in...",
     "auth.loginSaved": "Login saved.",
     "auth.loginTitle": "Log in",
@@ -589,7 +599,8 @@ export const translations: Record<
     "bankAccounts.empty": "No bank accounts found.",
     "bankAccounts.loading": "Loading bank accounts...",
     "bankAccounts.loadingTransactions": "Loading transactions...",
-    "bankAccounts.legalNameMissingForCountry": "Your legal name for {country} is not found. Please go to Profile to add your legal name for this country.",
+    "bankAccounts.legalNameMissingForCountry": "No legal name for {country} is available for bank accounts you can manage. Add your own legal name in Profile, or add one under Individuals for someone whose legal names you manage.",
+    "bankAccounts.legalNameManageablePeople": "You can add legal names for: {people}.",
     "bankAccounts.noTransactions": "No transactions found.",
     "bankAccounts.notes": "Notes",
     "bankAccounts.referenceNo": "Reference no.",
@@ -791,6 +802,9 @@ export const translations: Record<
     "profile.deleting": "Deleting...",
     "profile.description": "Your account record and related user data.",
     "profile.edit": "Edit",
+    "profile.emailChangeConfirmAction": "Change email",
+    "profile.emailChangeConfirmBody": "You will be signed out immediately. LeaseMate will send a verification link to the new email address, and you must verify it before using the site again.",
+    "profile.emailChangeConfirmTitle": "Change login email?",
     "profile.field.country": "Country",
     "profile.field.countryId": "Country ID",
     "profile.field.createdAt": "Created at",
@@ -1035,6 +1049,7 @@ export const translations: Record<
     "auth.emailConfirmationFailed": "この確認リンクは無効、または期限切れです。ログインしてダッシュボードから再送してください。",
     "auth.emailConfirmationSuccess": "メールアドレスを確認しました。LeaseMate を続けて利用できます。",
     "auth.emailConfirmationTitle": "メールを確認",
+    "auth.emailNotVerifiedLogin": "メールアドレスがまだ確認されていません。メールの確認リンクを開いてからログインしてください。",
     "auth.forgotPassword": "パスワードをお忘れですか？",
     "auth.forgotPasswordBody": "確認済みのメールアドレスを入力してください。有効な LeaseMate アカウントと一致した場合、パスワード再設定リンクを送信します。",
     "auth.forgotPasswordSending": "送信中...",
@@ -1042,7 +1057,9 @@ export const translations: Record<
     "auth.forgotPasswordSentTitle": "メールを確認してください",
     "auth.forgotPasswordSubmit": "再設定リンクを送信",
     "auth.forgotPasswordTitle": "パスワード再設定",
+    "auth.emailChangedLogout": "メールアドレスが変更されたためログアウトしました。再度ログインする前に、新しいメールアドレスを確認してください。",
     "auth.initialSetup": "初期設定",
+    "auth.invalidCredentials": "メールアドレスまたはパスワードが正しくありません。",
     "auth.loggingIn": "ログイン中...",
     "auth.loginSaved": "ログイン情報を保存しました。",
     "auth.loginTitle": "ログイン",
@@ -1087,7 +1104,8 @@ export const translations: Record<
     "bankAccounts.empty": "銀行口座が見つかりません。",
     "bankAccounts.loading": "銀行口座を読み込み中...",
     "bankAccounts.loadingTransactions": "取引を読み込み中...",
-    "bankAccounts.legalNameMissingForCountry": "{country} 用のあなたの法定氏名が見つかりません。プロフィールでこの国の法定氏名を追加してください。",
+    "bankAccounts.legalNameMissingForCountry": "{country} 用の管理可能な銀行口座に使える法定氏名が見つかりません。自分の法定氏名はプロフィールで、法定氏名を管理できる個人の分は個人ページで追加してください。",
+    "bankAccounts.legalNameManageablePeople": "法定氏名を追加できる個人: {people}。",
     "bankAccounts.noTransactions": "取引はありません。",
     "bankAccounts.notes": "メモ",
     "bankAccounts.referenceNo": "参照番号",
@@ -1289,6 +1307,9 @@ export const translations: Record<
     "profile.deleting": "削除中...",
     "profile.description": "アカウント情報と関連するユーザーデータです。",
     "profile.edit": "編集",
+    "profile.emailChangeConfirmAction": "メールを変更",
+    "profile.emailChangeConfirmBody": "すぐにログアウトされます。LeaseMate は新しいメールアドレスに確認リンクを送信します。サイトを再度使用する前に確認が必要です。",
+    "profile.emailChangeConfirmTitle": "ログイン用メールアドレスを変更しますか？",
     "profile.field.country": "国",
     "profile.field.countryId": "国 ID",
     "profile.field.createdAt": "作成日時",
@@ -1533,6 +1554,7 @@ export const translations: Record<
     "auth.emailConfirmationFailed": "此驗證連結無效或已過期。請登入後在儀表板重新寄送。",
     "auth.emailConfirmationSuccess": "你的電子郵件已完成驗證。現在可以繼續使用 LeaseMate。",
     "auth.emailConfirmationTitle": "驗證電子郵件",
+    "auth.emailNotVerifiedLogin": "你的電子郵件尚未完成驗證。請先到電子郵件中開啟驗證連結，再登入。",
     "auth.forgotPassword": "忘記密碼？",
     "auth.forgotPasswordBody": "請輸入已完成驗證的電子郵件。如果它對應到有效的 LeaseMate 帳戶，我們會寄出密碼重設連結。",
     "auth.forgotPasswordSending": "寄送中...",
@@ -1540,7 +1562,9 @@ export const translations: Record<
     "auth.forgotPasswordSentTitle": "請檢查電子郵件",
     "auth.forgotPasswordSubmit": "寄送重設連結",
     "auth.forgotPasswordTitle": "忘記密碼",
+    "auth.emailChangedLogout": "因為你的電子郵件已變更，所以已將你登出。請先驗證新的電子郵件，再重新登入。",
     "auth.initialSetup": "初始設定",
+    "auth.invalidCredentials": "電子郵件或密碼不正確。",
     "auth.loggingIn": "登入中...",
     "auth.loginSaved": "登入已儲存。",
     "auth.loginTitle": "登入",
@@ -1585,7 +1609,8 @@ export const translations: Record<
     "bankAccounts.empty": "找不到銀行帳戶。",
     "bankAccounts.loading": "正在載入銀行帳戶...",
     "bankAccounts.loadingTransactions": "正在載入交易...",
-    "bankAccounts.legalNameMissingForCountry": "找不到你在 {country} 使用的法定姓名。請到個人資料新增此國家的法定姓名。",
+    "bankAccounts.legalNameMissingForCountry": "找不到可用於你能管理之銀行帳戶的 {country} 法定姓名。你自己的法定姓名請到個人資料新增；你有法定姓名管理權限的個人請到個人頁面新增。",
+    "bankAccounts.legalNameManageablePeople": "你可以替以下個人新增法定姓名：{people}。",
     "bankAccounts.noTransactions": "沒有交易紀錄。",
     "bankAccounts.notes": "備註",
     "bankAccounts.referenceNo": "參考編號",
@@ -1787,6 +1812,9 @@ export const translations: Record<
     "profile.deleting": "刪除中...",
     "profile.description": "你的帳戶資料與相關使用者資料。",
     "profile.edit": "編輯",
+    "profile.emailChangeConfirmAction": "變更電子郵件",
+    "profile.emailChangeConfirmBody": "你會立即被登出。LeaseMate 會將驗證連結寄到新的電子郵件，完成驗證後才能再次使用網站。",
+    "profile.emailChangeConfirmTitle": "變更登入電子郵件？",
     "profile.field.country": "國家",
     "profile.field.countryId": "國家 ID",
     "profile.field.createdAt": "建立時間",
@@ -2031,6 +2059,7 @@ export const translations: Record<
     "auth.emailConfirmationFailed": "呢個驗證連結無效或已過期。請登入後喺儀表板重新寄送。",
     "auth.emailConfirmationSuccess": "你嘅電郵已完成驗證。可以繼續使用 LeaseMate。",
     "auth.emailConfirmationTitle": "驗證電郵",
+    "auth.emailNotVerifiedLogin": "你嘅電郵尚未完成驗證。請先喺電郵入面開啟驗證連結，再登入。",
     "auth.forgotPassword": "忘記密碼？",
     "auth.forgotPasswordBody": "請輸入已驗證嘅電郵。如果佢對應到有效嘅 LeaseMate 帳戶，我哋會寄出密碼重設連結。",
     "auth.forgotPasswordSending": "寄送中...",
@@ -2038,7 +2067,9 @@ export const translations: Record<
     "auth.forgotPasswordSentTitle": "請檢查電郵",
     "auth.forgotPasswordSubmit": "寄送重設連結",
     "auth.forgotPasswordTitle": "忘記密碼",
+    "auth.emailChangedLogout": "因為你嘅電郵已變更，所以已將你登出。請先驗證新電郵，再重新登入。",
     "auth.initialSetup": "初始設定",
+    "auth.invalidCredentials": "電郵或密碼唔正確。",
     "auth.loggingIn": "登入緊...",
     "auth.loginSaved": "登入已儲存。",
     "auth.loginTitle": "登入",
@@ -2083,7 +2114,8 @@ export const translations: Record<
     "bankAccounts.empty": "搵唔到銀行帳戶。",
     "bankAccounts.loading": "正在載入銀行帳戶...",
     "bankAccounts.loadingTransactions": "正在載入交易...",
-    "bankAccounts.legalNameMissingForCountry": "搵唔到你喺 {country} 使用嘅法定姓名。請到個人資料新增呢個國家嘅法定姓名。",
+    "bankAccounts.legalNameMissingForCountry": "搵唔到可用於你可管理銀行帳戶嘅 {country} 法定姓名。你自己嘅法定姓名請去個人資料新增；你有法定姓名管理權限嘅個人請去個人頁面新增。",
+    "bankAccounts.legalNameManageablePeople": "你可以替以下個人新增法定姓名：{people}。",
     "bankAccounts.noTransactions": "沒有交易紀錄。",
     "bankAccounts.notes": "備註",
     "bankAccounts.referenceNo": "參考編號",
@@ -2285,6 +2317,9 @@ export const translations: Record<
     "profile.deleting": "刪除中...",
     "profile.description": "你嘅帳戶資料同相關用戶資料。",
     "profile.edit": "編輯",
+    "profile.emailChangeConfirmAction": "變更電郵",
+    "profile.emailChangeConfirmBody": "你會即時被登出。LeaseMate 會將驗證連結寄到新電郵，完成驗證後先可以再次使用網站。",
+    "profile.emailChangeConfirmTitle": "變更登入電郵？",
     "profile.field.country": "國家",
     "profile.field.countryId": "國家 ID",
     "profile.field.createdAt": "建立時間",
@@ -2529,6 +2564,7 @@ export const translations: Record<
     "auth.emailConfirmationFailed": "ลิงก์ยืนยันนี้ไม่ถูกต้องหรือหมดอายุแล้ว โปรดเข้าสู่ระบบและส่งอีเมลใหม่จากแดชบอร์ด",
     "auth.emailConfirmationSuccess": "ยืนยันอีเมลแล้ว คุณสามารถใช้งาน LeaseMate ต่อได้",
     "auth.emailConfirmationTitle": "ยืนยันอีเมล",
+    "auth.emailNotVerifiedLogin": "อีเมลของคุณยังไม่ได้รับการยืนยัน โปรดเปิดลิงก์ยืนยันในอีเมลก่อนเข้าสู่ระบบ",
     "auth.forgotPassword": "ลืมรหัสผ่าน?",
     "auth.forgotPasswordBody": "กรอกอีเมลที่ยืนยันแล้ว หากตรงกับบัญชี LeaseMate ที่ใช้งานอยู่ เราจะส่งลิงก์รีเซ็ตรหัสผ่านให้",
     "auth.forgotPasswordSending": "กำลังส่ง...",
@@ -2536,8 +2572,10 @@ export const translations: Record<
     "auth.forgotPasswordSentTitle": "ตรวจสอบอีเมลของคุณ",
     "auth.forgotPasswordSubmit": "ส่งลิงก์รีเซ็ต",
     "auth.forgotPasswordTitle": "ลืมรหัสผ่าน",
+    "auth.emailChangedLogout": "คุณถูกออกจากระบบเนื่องจากมีการเปลี่ยนอีเมล โปรดยืนยันอีเมลใหม่ก่อนเข้าสู่ระบบอีกครั้ง",
     "auth.backToLogin": "กลับไปเข้าสู่ระบบ",
     "auth.initialSetup": "ตั้งค่าเริ่มต้น",
+    "auth.invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
     "auth.loggingIn": "กำลังเข้าสู่ระบบ...",
     "auth.loginSaved": "บันทึกการเข้าสู่ระบบแล้ว",
     "auth.loginTitle": "เข้าสู่ระบบ",
@@ -2581,7 +2619,8 @@ export const translations: Record<
     "bankAccounts.empty": "ไม่พบบัญชีธนาคาร",
     "bankAccounts.loading": "กำลังโหลดบัญชีธนาคาร...",
     "bankAccounts.loadingTransactions": "กำลังโหลดรายการ...",
-    "bankAccounts.legalNameMissingForCountry": "ไม่พบชื่อตามกฎหมายของคุณสำหรับ {country} โปรดไปที่โปรไฟล์เพื่อเพิ่มชื่อตามกฎหมายของประเทศนี้",
+    "bankAccounts.legalNameMissingForCountry": "ไม่พบชื่อตามกฎหมายสำหรับ {country} ที่ใช้กับบัญชีธนาคารที่คุณจัดการได้ เพิ่มชื่อของคุณเองในโปรไฟล์ หรือเพิ่มให้บุคคลที่คุณมีสิทธิ์จัดการชื่อตามกฎหมายในหน้า Individuals",
+    "bankAccounts.legalNameManageablePeople": "คุณสามารถเพิ่มชื่อตามกฎหมายให้: {people}",
     "bankAccounts.noTransactions": "ไม่มีรายการธุรกรรม",
     "bankAccounts.notes": "หมายเหตุ",
     "bankAccounts.referenceNo": "เลขอ้างอิง",
@@ -2783,6 +2822,9 @@ export const translations: Record<
     "profile.deleting": "กำลังลบ...",
     "profile.description": "ข้อมูลบัญชีและข้อมูลผู้ใช้ที่เกี่ยวข้อง",
     "profile.edit": "แก้ไข",
+    "profile.emailChangeConfirmAction": "เปลี่ยนอีเมล",
+    "profile.emailChangeConfirmBody": "คุณจะถูกออกจากระบบทันที LeaseMate จะส่งลิงก์ยืนยันไปยังอีเมลใหม่ และคุณต้องยืนยันก่อนจึงจะใช้งานเว็บไซต์ได้อีกครั้ง",
+    "profile.emailChangeConfirmTitle": "เปลี่ยนอีเมลสำหรับเข้าสู่ระบบ?",
     "profile.field.country": "ประเทศ",
     "profile.field.countryId": "Country ID",
     "profile.field.createdAt": "สร้างเมื่อ",

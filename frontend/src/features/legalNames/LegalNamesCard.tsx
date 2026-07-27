@@ -5,6 +5,7 @@ import { Edit2, Plus, Trash2, X } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { CollapsibleCard } from "../../components/ui/CollapsibleCard";
 import { FormAlert } from "../../components/ui/FormAlert";
+import { IconButton } from "../../components/ui/IconButton";
 import { Modal } from "../../components/ui/Modal";
 import { SearchableSelect } from "../../components/ui/SearchableSelect";
 import type {
@@ -63,13 +64,13 @@ export function LegalNamesCard({
   const [legalNameForm, setLegalNameForm] = useState<LegalNameFormValue>(
     emptyForm,
   );
-  const [formError, setFormError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   function resetLegalNameForm() {
     setEditingLegalNameId(null);
     setLegalNameForm(emptyForm);
-    setFormError(null);
+    setFormErrors([]);
   }
 
   function beginCreateLegalName() {
@@ -87,7 +88,7 @@ export function LegalNamesCard({
         defaultCountry?.default_locale_code || defaultLocaleCode || locale,
       full_name: "",
     });
-    setFormError(null);
+    setFormErrors([]);
   }
 
   function beginEditLegalName(legalName: UserLegalName) {
@@ -97,7 +98,7 @@ export function LegalNamesCard({
       locale_code: legalName.locale_code,
       full_name: legalName.full_name,
     });
-    setFormError(null);
+    setFormErrors([]);
   }
 
   async function submitLegalName() {
@@ -107,13 +108,30 @@ export function LegalNamesCard({
       full_name: legalNameForm.full_name.trim(),
     };
 
-    if (!payload.country_id || !payload.locale_code || !payload.full_name) {
-      setFormError(t("form.requiredMessage"));
+    const nextErrors: string[] = [];
+    if (!payload.country_id) {
+      nextErrors.push(
+        `${t("profile.field.country")}: ${t("form.requiredMessage")}`,
+      );
+    }
+    if (!payload.locale_code) {
+      nextErrors.push(
+        `${t("profile.field.localeCode")}: ${t("form.requiredMessage")}`,
+      );
+    }
+    if (!payload.full_name) {
+      nextErrors.push(
+        `${t("profile.field.fullName")}: ${t("form.requiredMessage")}`,
+      );
+    }
+
+    if (nextErrors.length > 0) {
+      setFormErrors(nextErrors);
       return;
     }
 
     setIsSaving(true);
-    setFormError(null);
+    setFormErrors([]);
     try {
       if (editingLegalNameId === "new") {
         await onCreate(payload);
@@ -122,7 +140,7 @@ export function LegalNamesCard({
       }
       resetLegalNameForm();
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : String(error));
+      setFormErrors([error instanceof Error ? error.message : String(error)]);
     } finally {
       setIsSaving(false);
     }
@@ -141,6 +159,11 @@ export function LegalNamesCard({
       // The parent mutation exposes the translated/server error.
     }
   }
+
+  const summaryMessages = [
+    ...(legalNames.length === 0 ? [t("profile.noLegalNames")] : []),
+    ...(loadError ? [loadError] : []),
+  ];
 
   return (
     <>
@@ -166,12 +189,9 @@ export function LegalNamesCard({
         collapsible={false}
         isOpen
         summary={
-          <>
-            {legalNames.length === 0 && (
-              <FormAlert>{t("profile.noLegalNames")}</FormAlert>
-            )}
-            {loadError && <FormAlert>{loadError}</FormAlert>}
-          </>
+          summaryMessages.length > 0 ? (
+            <FormAlert messages={summaryMessages} />
+          ) : undefined
         }
         title={title ?? t("profile.legalNamesSection")}
         onOpenChange={() => undefined}
@@ -180,13 +200,13 @@ export function LegalNamesCard({
           <LegalNameForm
             countries={countries}
             disabled={isSaving}
-            error={formError}
+            errorMessages={formErrors}
             form={legalNameForm}
             locales={locales}
             submitLabel={isSaving ? t("profile.saving") : t("profile.save")}
             onCancel={resetLegalNameForm}
             onChange={(nextForm) => {
-              setFormError(null);
+              setFormErrors([]);
               setLegalNameForm(nextForm);
             }}
             onSubmit={submitLegalName}
@@ -214,7 +234,7 @@ export function LegalNamesCard({
                   <LegalNameForm
                     countries={countries}
                     disabled={isSaving}
-                    error={formError}
+                    errorMessages={formErrors}
                     form={legalNameForm}
                     locales={locales}
                     submitLabel={
@@ -222,7 +242,7 @@ export function LegalNamesCard({
                     }
                     onCancel={resetLegalNameForm}
                     onChange={(nextForm) => {
-                      setFormError(null);
+                      setFormErrors([]);
                       setLegalNameForm(nextForm);
                     }}
                     onSubmit={submitLegalName}
@@ -261,7 +281,7 @@ export function LegalNamesCard({
                 ]}
               />
             </div>
-            {deleteError && <FormAlert>{deleteError}</FormAlert>}
+            {deleteError && <FormAlert messages={[deleteError]} />}
             <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
               <Button
                 disabled={isDeleting}
@@ -319,23 +339,16 @@ function LegalNamePanel({
         ]}
       />
       <div className="flex justify-end gap-1.5">
-        <button
-          aria-label={t("profile.edit")}
-          className="inline-grid size-8 place-items-center rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-          type="button"
-          onClick={onEdit}
-        >
+        <IconButton label={t("profile.edit")} onClick={onEdit}>
           <Edit2 aria-hidden="true" size={15} />
-        </button>
-        <button
-          aria-label={t("profile.delete")}
-          className="inline-grid size-8 place-items-center rounded-md border border-red-200 bg-white text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+        </IconButton>
+        <IconButton
           disabled={isDeleting}
-          type="button"
+          label={t("profile.delete")}
           onClick={onDelete}
         >
           <Trash2 aria-hidden="true" size={15} />
-        </button>
+        </IconButton>
       </div>
     </article>
   );
@@ -344,7 +357,7 @@ function LegalNamePanel({
 function LegalNameForm({
   countries,
   disabled,
-  error,
+  errorMessages,
   form,
   locales,
   submitLabel,
@@ -354,7 +367,7 @@ function LegalNameForm({
 }: {
   countries: ProfileCountry[];
   disabled?: boolean;
-  error?: string | null;
+  errorMessages?: string[];
   form: LegalNameFormValue;
   locales: BootstrapLocale[];
   submitLabel: string;
@@ -373,7 +386,9 @@ function LegalNameForm({
         onSubmit();
       }}
     >
-      {error && <FormAlert>{error}</FormAlert>}
+      {errorMessages && errorMessages.length > 0 && (
+        <FormAlert messages={errorMessages} />
+      )}
       <div className="grid gap-4 md:grid-cols-3">
         <LegalNameField label={t("profile.field.country")} required>
           <SearchableSelect
@@ -447,9 +462,9 @@ function LegalNameField({
 }) {
   return (
     <label className="grid gap-2 text-sm font-bold text-slate-700">
-      <span>
+      <span className="lm-form-label-line">
         {label}
-        {required && <span className="text-red-600"> *</span>}
+        {required && <span className="lm-form-required"> *</span>}
       </span>
       {children}
     </label>

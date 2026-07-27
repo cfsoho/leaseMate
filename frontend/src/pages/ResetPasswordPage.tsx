@@ -28,6 +28,7 @@ export function ResetPasswordPage() {
     confirmPassword: "",
     newPassword: "",
   });
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const passwordChecks = getPasswordChecks(form.newPassword);
   const passwordIsStrong = isStrongPassword(form.newPassword);
   const passwordsMatch = form.newPassword === form.confirmPassword;
@@ -40,13 +41,12 @@ export function ResetPasswordPage() {
   const resetPasswordMutation = useMutation({
     mutationFn: () => resetPassword(token ?? "", form.newPassword),
   });
-  const canSubmit = Boolean(
-    Boolean(token) &&
-      tokenStatus.data?.valid &&
-      passwordIsStrong &&
-      passwordsMatch &&
-      !resetPasswordMutation.isPending,
-  );
+  const alertMessages = [
+    ...validationErrors,
+    ...(resetPasswordMutation.isError
+      ? [resetPasswordMutation.error.message]
+      : []),
+  ];
 
   if (resetPasswordMutation.isSuccess) {
     return (
@@ -72,7 +72,31 @@ export function ResetPasswordPage() {
       title={t("auth.resetPasswordTitle")}
       onSubmit={(event) => {
         event.preventDefault();
-        if (canSubmit) {
+        const nextErrors: string[] = [];
+
+        if (!token || !tokenStatus.data?.valid) {
+          nextErrors.push(t("auth.resetPasswordInvalid"));
+        }
+        if (!form.newPassword.trim()) {
+          nextErrors.push(
+            `${t("profile.newPassword")}: ${t("form.requiredMessage")}`,
+          );
+        } else if (!passwordIsStrong) {
+          nextErrors.push(`${t("profile.newPassword")}: ${t("form.passwordWeak")}`);
+        }
+        if (!form.confirmPassword.trim()) {
+          nextErrors.push(
+            `${t("form.confirmPassword")}: ${t("form.requiredMessage")}`,
+          );
+        } else if (!passwordsMatch) {
+          nextErrors.push(
+            `${t("form.confirmPassword")}: ${t("form.passwordMismatch")}`,
+          );
+        }
+
+        setValidationErrors(nextErrors);
+
+        if (nextErrors.length === 0) {
           resetPasswordMutation.mutate();
         }
       }}
@@ -84,9 +108,7 @@ export function ResetPasswordPage() {
           t("auth.resetPasswordInvalid")}
       </p>
 
-      {resetPasswordMutation.isError && (
-        <FormAlert>{resetPasswordMutation.error.message}</FormAlert>
-      )}
+      {alertMessages.length > 0 && <FormAlert messages={alertMessages} />}
 
       {tokenStatus.data?.valid && (
         <>
@@ -117,16 +139,19 @@ export function ResetPasswordPage() {
                 }),
             }}
             label={t("profile.newPassword")}
-            required
             strength={{
               checks: buildPasswordStrengthItems(passwordChecks, t),
               labels: getPasswordStrengthLabels(t),
               title: t("form.passwordStrength"),
             }}
             value={form.newPassword}
-            onChange={(newPassword) =>
+            onChange={(newPassword) => {
+              setValidationErrors([]);
+              if (resetPasswordMutation.isError) {
+                resetPasswordMutation.reset();
+              }
               setForm((current) => ({ ...current, newPassword }))
-            }
+            }}
           />
 
           <PasswordInput
@@ -136,14 +161,20 @@ export function ResetPasswordPage() {
                 : undefined
             }
             label={t("form.confirmPassword")}
-            required
             value={form.confirmPassword}
-            onChange={(confirmPassword) =>
+            onChange={(confirmPassword) => {
+              setValidationErrors([]);
+              if (resetPasswordMutation.isError) {
+                resetPasswordMutation.reset();
+              }
               setForm((current) => ({ ...current, confirmPassword }))
-            }
+            }}
           />
 
-          <Button disabled={!canSubmit} type="submit">
+          <Button
+            disabled={resetPasswordMutation.isPending || !tokenStatus.data?.valid}
+            type="submit"
+          >
             {resetPasswordMutation.isPending
               ? t("auth.resetPasswordSaving")
               : t("auth.resetPasswordSubmit")}

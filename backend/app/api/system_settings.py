@@ -1,6 +1,4 @@
-import os
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import require_admin
@@ -19,6 +17,7 @@ from app.services.email_service import send_email
 from app.services.email_templates.system_settings import (
     build_system_email_verification_message,
 )
+from app.services.app_url_service import build_app_url
 from app.services.realtime_manager import realtime_manager
 from app.services.system_settings_service import (
     confirm_system_email_settings_token,
@@ -36,8 +35,6 @@ from app.services.system_settings_service import (
     update_system_storage_settings,
 )
 
-
-APP_PUBLIC_URL = os.getenv("APP_PUBLIC_URL", "http://localhost:3000")
 
 public_router = APIRouter(
     prefix="/system-settings",
@@ -136,6 +133,7 @@ async def verify_email_settings(
 
 @router.post("/email/test", response_model=SystemEmailSettingsTestResponse)
 async def test_email_settings(
+    request: Request,
     current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
@@ -159,13 +157,13 @@ async def test_email_settings(
         )
         raise HTTPException(status_code=500, detail=settings.last_test_error)
 
-    noreply_verification_url = (
-        f"{APP_PUBLIC_URL.rstrip('/')}/settings/email/verify/"
-        f"{noreply_token}"
+    noreply_verification_url = build_app_url(
+        f"/settings/email/verify/{noreply_token}",
+        request,
     )
-    system_verification_url = (
-        f"{APP_PUBLIC_URL.rstrip('/')}/settings/email/verify/"
-        f"{system_token}"
+    system_verification_url = build_app_url(
+        f"/settings/email/verify/{system_token}",
+        request,
     )
     noreply_subject, noreply_text, noreply_html = build_system_email_verification_message(
         account_label="no-reply",

@@ -25,13 +25,16 @@ import {
   SearchableSelect,
   type SearchableSelectOption,
 } from "../components/ui/SearchableSelect";
-import { getCurrentUserLegalNames } from "../features/auth/authApi";
 import {
   createFinancialAccount,
   deleteFinancialAccount,
+  listFinancialAccountLegalNameOwnerOptions,
+  listFinancialAccountLegalNameOptions,
   listFinancialAccounts,
   updateFinancialAccount,
   type FinancialAccount,
+  type FinancialAccountLegalNameOwnerOption,
+  type FinancialAccountLegalNameOption,
   type FinancialAccountPayload,
 } from "../features/financialAccounts/financialAccountsApi";
 import {
@@ -144,8 +147,12 @@ export function BankAccountsPage() {
       listFinancialTransactions(selectedTransactionAccountId ?? undefined),
   });
   const legalNames = useQuery({
-    queryKey: ["current-user", "legal-names"],
-    queryFn: getCurrentUserLegalNames,
+    queryKey: ["financial-accounts", "legal-name-options"],
+    queryFn: listFinancialAccountLegalNameOptions,
+  });
+  const legalNameOwners = useQuery({
+    queryKey: ["financial-accounts", "legal-name-owner-options"],
+    queryFn: listFinancialAccountLegalNameOwnerOptions,
   });
   const banks = useQuery({
     queryKey: ["ref", "financial-institutions", "options"],
@@ -164,16 +171,6 @@ export function BankAccountsPage() {
     queryFn: listFinancialTransactionSourceTypes,
   });
 
-  const legalNameById = useMemo(
-    () =>
-      new Map(
-        (legalNames.data ?? []).map((legalName) => [
-          legalName.id,
-          legalName.full_name,
-        ]),
-      ),
-    [legalNames.data],
-  );
   const bankById = useMemo(
     () => new Map((banks.data ?? []).map((bank) => [bank.id, bank.name])),
     [banks.data],
@@ -189,6 +186,16 @@ export function BankAccountsPage() {
   const countryById = useMemo(
     () => new Map((countries.data ?? []).map((country) => [country.id, country])),
     [countries.data],
+  );
+  const legalNameById = useMemo(
+    () =>
+      new Map(
+        (legalNames.data ?? []).map((legalName) => [
+          legalName.id,
+          formatLegalNameOption(legalName, countryById),
+        ]),
+      ),
+    [countryById, legalNames.data],
   );
   const filteredLegalNameOptions = useMemo(
     () =>
@@ -927,6 +934,7 @@ export function BankAccountsPage() {
           disabled={createMutation.isPending || updateMutation.isPending}
           error={drawerError}
           errors={formErrors}
+          legalNameOwnerOptions={legalNameOwners.data ?? []}
           legalNameOptions={filteredLegalNameOptions}
           mode={drawerMode}
           submitLabel={
@@ -1044,6 +1052,7 @@ function BankAccountForm({
   error,
   errors,
   legalNameOptions,
+  legalNameOwnerOptions,
   mode,
   submitLabel,
   value,
@@ -1063,6 +1072,7 @@ function BankAccountForm({
   disabled: boolean;
   error?: string;
   errors: BankAccountFormErrors;
+  legalNameOwnerOptions: FinancialAccountLegalNameOwnerOption[];
   legalNameOptions: SearchableSelectOption[];
   mode: DrawerMode;
   submitLabel: string;
@@ -1076,7 +1086,7 @@ function BankAccountForm({
   onReset: () => void;
   onSubmit: () => boolean | void;
 }) {
-  const { t } = useTranslation();
+  const { locale, t } = useTranslation();
   const isSearchMode = mode === "search";
   const [isSubmitLocked, setIsSubmitLocked] = useState(false);
   const isFormDisabled = disabled || isSubmitLocked;
@@ -1099,6 +1109,26 @@ function BankAccountForm({
       ?.label ?? value.branch_country_id;
   const isLegalNameMissingForCountry =
     Boolean(value.branch_country_id) && legalNameOptions.length === 0;
+  const missingLegalNameMessages = buildMissingLegalNameMessages(
+    t("bankAccounts.legalNameMissingForCountry").replace(
+      "{country}",
+      selectedCountryLabel,
+    ),
+    legalNameOwnerOptions,
+    locale,
+    t("bankAccounts.legalNameManageablePeople"),
+  );
+  const alertMessages = buildFieldAlertMessages(
+    errors,
+    {
+      account_number: t("bankAccounts.accountNumber"),
+      branch_country_id: t("profile.field.country"),
+      currency_code: t("bankAccounts.currency"),
+      financial_institution_branch_id: t("bankAccounts.branch"),
+      legal_name_id: t("bankAccounts.accountHolder"),
+    },
+    error,
+  );
 
   return (
     <form
@@ -1116,8 +1146,9 @@ function BankAccountForm({
         }
       }}
     >
+      {alertMessages.length > 0 && <FormAlert messages={alertMessages} />}
       <div className="grid items-start gap-4">
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.branch_country_id))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("profile.field.country")}
             {!isSearchMode && <span className="text-red-600"> *</span>}
@@ -1128,21 +1159,11 @@ function BankAccountForm({
             value={value.branch_country_id}
             onChange={onBranchCountryChange}
           />
-          {errors.branch_country_id && (
-            <p className="text-xs font-normal text-red-700">
-              {errors.branch_country_id}
-            </p>
-          )}
         </label>
         {isLegalNameMissingForCountry ? (
-          <FormAlert>
-            {t("bankAccounts.legalNameMissingForCountry").replace(
-              "{country}",
-              selectedCountryLabel,
-            )}
-          </FormAlert>
+          <FormAlert messages={missingLegalNameMessages} />
         ) : (
-          <label className="grid items-start gap-1.5">
+          <label className={formFieldClass(Boolean(errors.legal_name_id))}>
             <span className="text-sm font-semibold text-slate-700">
               {t("bankAccounts.accountHolder")}
               {!isSearchMode && <span className="text-red-600"> *</span>}
@@ -1153,14 +1174,16 @@ function BankAccountForm({
               value={value.legal_name_id}
               onChange={(nextValue) => setField("legal_name_id", nextValue)}
             />
-            {errors.legal_name_id && (
-              <p className="text-xs font-normal text-red-700">
-                {errors.legal_name_id}
-              </p>
-            )}
           </label>
         )}
-        <div className="grid items-start gap-3">
+        <div
+          className={[
+            "grid items-start gap-3",
+            errors.financial_institution_branch_id ? "lm-form-field-invalid" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
           <p className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.bankBranch")}
             {!isSearchMode && <span className="text-red-600"> *</span>}
@@ -1186,16 +1209,11 @@ function BankAccountForm({
               value={value.financial_institution_branch_id}
               onChange={onBranchChange}
             />
-            {errors.financial_institution_branch_id && (
-              <p className="text-xs font-normal text-red-700">
-                {errors.financial_institution_branch_id}
-              </p>
-            )}
           </label>
         </div>
       </div>
       <div className="grid items-start gap-4 md:grid-cols-2">
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.account_number))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.accountNumber")}
             {!isSearchMode && <span className="text-red-600"> *</span>}
@@ -1207,13 +1225,8 @@ function BankAccountForm({
             value={value.account_number}
             onChange={(event) => onAccountNumberChange(event.target.value)}
           />
-          {errors.account_number && (
-            <p className="text-xs font-normal text-red-700">
-              {errors.account_number}
-            </p>
-          )}
         </label>
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.currency_code))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.currency")}
             {!isSearchMode && <span className="text-red-600"> *</span>}
@@ -1224,11 +1237,6 @@ function BankAccountForm({
             value={value.currency_code}
             onChange={(nextValue) => setField("currency_code", nextValue)}
           />
-          {errors.currency_code && (
-            <p className="text-xs font-normal text-red-700">
-              {errors.currency_code}
-            </p>
-          )}
         </label>
       </div>
       <label className="grid items-start gap-1.5">
@@ -1256,7 +1264,6 @@ function BankAccountForm({
           </span>
         </label>
       )}
-      {error && <p className="text-sm font-normal text-red-700">{error}</p>}
       <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
         <Button disabled={isFormDisabled} type="button" variant="secondary" onClick={onCancel}>
           {t("profile.cancel")}
@@ -1371,6 +1378,18 @@ function TransactionForm({
     onChange(next);
   }
 
+  const alertMessages = buildFieldAlertMessages(
+    errors,
+    {
+      amount: t("bankAccounts.deposit"),
+      balance_after: t("bankAccounts.balanceAfter"),
+      currency_code: t("bankAccounts.currency"),
+      source_type: t("bankAccounts.sourceType"),
+      transaction_date: t("bankAccounts.transactionDate"),
+    },
+    error,
+  );
+
   return (
     <form
       className="grid gap-4"
@@ -1387,8 +1406,9 @@ function TransactionForm({
         }
       }}
     >
+      {alertMessages.length > 0 && <FormAlert messages={alertMessages} />}
       <div className="grid items-start gap-4 md:grid-cols-2">
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.transaction_date))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.transactionDate")}
             <span className="text-red-600"> *</span>
@@ -1400,13 +1420,8 @@ function TransactionForm({
             value={value.transaction_date}
             onChange={(event) => setField("transaction_date", event.target.value)}
           />
-          {errors.transaction_date && (
-            <p className="text-xs font-normal text-red-700">
-              {errors.transaction_date}
-            </p>
-          )}
         </label>
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.source_type))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.sourceType")}
             <span className="text-red-600"> *</span>
@@ -1417,15 +1432,10 @@ function TransactionForm({
             value={value.source_type}
             onChange={(nextValue) => setField("source_type", nextValue)}
           />
-          {errors.source_type && (
-            <p className="text-xs font-normal text-red-700">
-              {errors.source_type}
-            </p>
-          )}
         </label>
       </div>
       <div className="grid items-start gap-4 md:grid-cols-2">
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.amount))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.deposit")}
           </span>
@@ -1437,7 +1447,7 @@ function TransactionForm({
             onChange={(event) => setField("deposit_amount", event.target.value)}
           />
         </label>
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.amount))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.withdrawal")}
           </span>
@@ -1450,11 +1460,8 @@ function TransactionForm({
           />
         </label>
       </div>
-      {errors.amount && (
-        <p className="text-xs font-normal text-red-700">{errors.amount}</p>
-      )}
       <div className="grid items-start gap-4 md:grid-cols-2">
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.balance_after))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.balanceAfter")}
             <span className="text-red-600"> *</span>
@@ -1466,13 +1473,8 @@ function TransactionForm({
             value={value.balance_after}
             onChange={(event) => setField("balance_after", event.target.value)}
           />
-          {errors.balance_after && (
-            <p className="text-xs font-normal text-red-700">
-              {errors.balance_after}
-            </p>
-          )}
         </label>
-        <label className="grid items-start gap-1.5">
+        <label className={formFieldClass(Boolean(errors.currency_code))}>
           <span className="text-sm font-semibold text-slate-700">
             {t("bankAccounts.currency")}
             <span className="text-red-600"> *</span>
@@ -1486,11 +1488,6 @@ function TransactionForm({
               setField("currency_code", event.target.value.toUpperCase())
             }
           />
-          {errors.currency_code && (
-            <p className="text-xs font-normal text-red-700">
-              {errors.currency_code}
-            </p>
-          )}
         </label>
       </div>
       <div className="grid items-start gap-4 md:grid-cols-2">
@@ -1531,7 +1528,6 @@ function TransactionForm({
           onChange={(event) => setField("notes", event.target.value)}
         />
       </label>
-      {error && <p className="text-sm font-normal text-red-700">{error}</p>}
       <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
         <Button disabled={isFormDisabled} type="button" variant="secondary" onClick={onCancel}>
           {t("profile.cancel")}
@@ -1700,6 +1696,18 @@ function clearResolvedTransactionErrors(
   return next;
 }
 
+function buildFieldAlertMessages<Field extends string>(
+  errors: Partial<Record<Field, string>>,
+  labels: Partial<Record<Field, string>>,
+  serverError?: string | null,
+) {
+  const fieldMessages = (Object.entries(errors) as [Field, string | undefined][])
+    .filter(([, message]) => Boolean(message))
+    .map(([field, message]) => `${labels[field] ?? field}: ${message}`);
+
+  return [...fieldMessages, ...(serverError ? [serverError] : [])];
+}
+
 function filterAccounts(
   accounts: FinancialAccount[],
   criteria: BankAccountFormValue,
@@ -1815,7 +1823,7 @@ function normalizeAccountNumber(accountNumber: string) {
 
 function formatLegalNameById(
   legalNameId: string,
-  legalNames: { country_id: string; full_name: string; id: string }[],
+  legalNames: FinancialAccountLegalNameOption[],
   countryById: Map<string, ReferenceRecord>,
 ) {
   const legalName = legalNames.find((candidate) => candidate.id === legalNameId);
@@ -1823,17 +1831,24 @@ function formatLegalNameById(
 }
 
 function formatLegalNameOption(
-  legalName: { country_id: string; full_name: string },
+  legalName: Pick<
+    FinancialAccountLegalNameOption,
+    "country_id" | "full_name" | "user_family_name" | "user_given_name"
+  >,
   countryById: Map<string, ReferenceRecord>,
 ) {
   const countryName = getCountryName(countryById.get(legalName.country_id));
-  return countryName
+  const ownerName = [legalName.user_given_name, legalName.user_family_name]
+    .filter(Boolean)
+    .join(" ");
+  const legalNameLabel = countryName
     ? `${legalName.full_name} (${countryName})`
     : legalName.full_name;
+  return ownerName ? `${legalNameLabel} - ${ownerName}` : legalNameLabel;
 }
 
 function buildLegalNameOptions(
-  legalNames: { country_id: string; full_name: string; id: string }[],
+  legalNames: FinancialAccountLegalNameOption[],
   countryById: Map<string, ReferenceRecord>,
   countryId = "",
 ): SearchableSelectOption[] {
@@ -1841,11 +1856,46 @@ function buildLegalNameOptions(
     .filter((legalName) => !countryId || legalName.country_id === countryId)
     .map((legalName) => ({
       label: formatLegalNameOption(legalName, countryById),
-      searchText: `${legalName.full_name} ${getCountryName(
+      searchText: `${legalName.full_name} ${legalName.user_given_name} ${legalName.user_family_name} ${getCountryName(
         countryById.get(legalName.country_id),
       )}`,
       value: legalName.id,
     }));
+}
+
+function buildMissingLegalNameMessages(
+  missingMessage: string,
+  legalNameOwnerOptions: FinancialAccountLegalNameOwnerOption[],
+  locale: string,
+  ownerListTemplate: string,
+) {
+  if (legalNameOwnerOptions.length === 0) {
+    return [missingMessage];
+  }
+
+  const ownerNames = legalNameOwnerOptions
+    .map((owner) => formatPersonNameForLocale(owner.family_name, owner.given_name, locale))
+    .filter(Boolean)
+    .join(", ");
+
+  return ownerNames
+    ? [
+        missingMessage,
+        ownerListTemplate.replace("{people}", ownerNames),
+      ]
+    : [missingMessage];
+}
+
+function formatPersonNameForLocale(
+  familyName: string,
+  givenName: string,
+  locale: string,
+) {
+  if (locale.startsWith("ja") || locale.startsWith("zh")) {
+    return `${familyName}${givenName}`.trim();
+  }
+
+  return [givenName, familyName].filter(Boolean).join(" ").trim();
 }
 
 function getCountryName(country?: ReferenceRecord) {
@@ -2196,3 +2246,9 @@ function calculateBalanceAfter(
 
 const inputClassName =
   "min-h-[42px] w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-normal text-slate-950 outline-none focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10 disabled:bg-slate-50";
+
+function formFieldClass(isInvalid: boolean) {
+  return ["lm-form-label", isInvalid ? "lm-form-field-invalid" : ""]
+    .filter(Boolean)
+    .join(" ");
+}

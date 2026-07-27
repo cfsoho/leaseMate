@@ -26,6 +26,8 @@ type DataGridProps<TRecord extends { id: string }> = {
   isRecordInactive?: (record: TRecord) => boolean;
   onSelect?: (record: TRecord) => void;
   emptyMessage?: string;
+  filteredEmptyMessage?: string;
+  hasActiveFilters?: boolean;
   paginationLabels?: Partial<DataGridPaginationLabels>;
   pageSize?: number;
   pageIndex?: number;
@@ -73,6 +75,8 @@ export function DataGrid<TRecord extends { id: string }>({
   isRecordInactive,
   onSelect,
   emptyMessage = "No records found.",
+  filteredEmptyMessage,
+  hasActiveFilters = false,
   paginationLabels,
   pageSize,
   pageIndex,
@@ -412,7 +416,12 @@ export function DataGrid<TRecord extends { id: string }>({
         </table>
         {records.length === 0 && (
           <div className="data-grid-empty">
-            {emptyMessage}
+            <span>{emptyMessage}</span>
+            {hasActiveFilters && filteredEmptyMessage && (
+              <span className="data-grid-empty-hint">
+                {filteredEmptyMessage}
+              </span>
+            )}
           </div>
         )}
       </div>

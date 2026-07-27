@@ -375,7 +375,9 @@ export function DashboardPage() {
 
             {addPasskey.isError && (
               <p className="m-0 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-normal text-red-700">
-                {addPasskey.error.message}
+                {addPasskey.error.message === "PASSKEY_UNSUPPORTED"
+                  ? t("auth.passkeyUnsupported")
+                  : addPasskey.error.message}
               </p>
             )}
 

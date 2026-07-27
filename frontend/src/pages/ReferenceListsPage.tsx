@@ -18,6 +18,7 @@ import { useUrlDataGridState } from "../components/data/useUrlDataGridState";
 import { referenceNavItems } from "../components/layout/navigation";
 import { Button } from "../components/ui/Button";
 import { Drawer } from "../components/ui/Drawer";
+import { FormAlert } from "../components/ui/FormAlert";
 import { IconButton } from "../components/ui/IconButton";
 import { Modal } from "../components/ui/Modal";
 import { formatPhoneForCountry } from "../components/ui/phoneInputUtils";
@@ -1650,11 +1651,11 @@ function ReferenceRecordForm({
 }) {
   const { t } = useTranslation();
   const [value, setValue] = useState<ReferenceFormValue>({});
-  const [formError, setFormError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<string[]>([]);
 
   useEffect(() => {
     setValue(initialValue ?? buildInitialReferenceFormValue(fields, record));
-    setFormError(null);
+    setFormErrors([]);
   }, [fields, initialValue, record]);
 
   const getOptionsForField = (field: ReferenceFormField) => {
@@ -1697,16 +1698,24 @@ function ReferenceRecordForm({
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
-        const validationError = validateReferenceForm(value, fields, mode, t);
-        if (validationError) {
-          setFormError(validationError);
+        const validationErrors = validateReferenceForm(value, fields, mode, t);
+        if (validationErrors.length > 0) {
+          setFormErrors(validationErrors);
           return;
         }
 
-        setFormError(null);
+        setFormErrors([]);
         onSubmit(value);
       }}
     >
+      {(formErrors.length > 0 || errorMessage) && (
+        <FormAlert
+          messages={[
+            ...formErrors,
+            ...(errorMessage ? [errorMessage] : []),
+          ]}
+        />
+      )}
       <div className="grid items-start gap-3 md:grid-cols-2">
         {fields.map((field) => {
           if (field.type === "hidden") {
@@ -1785,7 +1794,7 @@ function ReferenceRecordForm({
                   value={String(value[field.name] ?? "")}
                   onChange={(nextValue) =>
                     setValue((currentValue) => {
-                      setFormError(null);
+                      setFormErrors([]);
                       if (field.name === "__locale_country_filter") {
                         const countryOption = field.options?.find(
                           (option) => option.value === nextValue,
@@ -1867,7 +1876,7 @@ function ReferenceRecordForm({
                   value={String(value[field.name] ?? "")}
                   onChange={(event) =>
                     setValue((currentValue) => {
-                      setFormError(null);
+                      setFormErrors([]);
                       return {
                         ...currentValue,
                         [field.name]: event.target.value,
@@ -1898,7 +1907,7 @@ function ReferenceRecordForm({
                         field.textTransform === "upper-snake"
                           ? toUpperSnakeInput(event.target.value)
                           : event.target.value;
-                      setFormError(null);
+                      setFormErrors([]);
                       return {
                         ...currentValue,
                         [field.name]: nextValue,
@@ -1922,11 +1931,6 @@ function ReferenceRecordForm({
       </div>
 
       <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
-        {(formError || errorMessage) && (
-          <p className="mr-auto text-sm font-normal text-red-600">
-            {formError || errorMessage}
-          </p>
-        )}
         <Button variant="secondary" onClick={onCancel}>
           {t("profile.cancel")}
         </Button>
@@ -2056,6 +2060,8 @@ function validateReferenceForm(
   mode: ReferenceDrawerMode,
   t: (key: TranslationKey) => string,
 ) {
+  const errors: string[] = [];
+
   for (const field of fields) {
     if (field.type === "hidden" || field.type === "checkbox") {
       continue;
@@ -2063,15 +2069,16 @@ function validateReferenceForm(
 
     const fieldValue = String(value[field.name] ?? "").trim();
     if (mode !== "search" && field.required && !fieldValue) {
-      return `${field.label}: ${t("form.requiredMessage")}`;
+      errors.push(`${field.label}: ${t("form.requiredMessage")}`);
+      continue;
     }
 
     if (fieldValue && field.pattern && !field.pattern.test(fieldValue)) {
-      return `${field.label}: ${t("refLists.upperSnakeValidation")}`;
+      errors.push(`${field.label}: ${t("refLists.upperSnakeValidation")}`);
     }
   }
 
-  return null;
+  return errors;
 }
 
 function toUpperSnakeInput(value: string) {

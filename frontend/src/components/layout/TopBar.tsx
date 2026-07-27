@@ -34,9 +34,13 @@ import { NavigationSections } from "./NavigationSections";
 
 type TopBarProps = {
   adminSetupOnly?: boolean;
+  dashboardOnly?: boolean;
 };
 
-export function TopBar({ adminSetupOnly = false }: TopBarProps) {
+export function TopBar({
+  adminSetupOnly = false,
+  dashboardOnly = false,
+}: TopBarProps) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false);
@@ -355,6 +359,7 @@ export function TopBar({ adminSetupOnly = false }: TopBarProps) {
         <div className="grid gap-6">
           <NavigationSections
             adminSetupOnly={adminSetupOnly}
+            dashboardOnly={dashboardOnly}
             onNavigate={() => setIsMobileNavOpen(false)}
           />
         </div>

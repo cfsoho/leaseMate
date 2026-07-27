@@ -40,6 +40,11 @@ from app.db.models.property import Property
 from app.db.models.user_legal_name import UserLegalName
 from app.db.schemas.ref.country import CountryRead
 from app.db.schemas.user import UserPasswordChange, UserProfileUpdate, UserRead
+from app.db.schemas.user_delegation import (
+    UserDelegationCreate,
+    UserDelegationRead,
+    UserDelegationUpdate,
+)
 from app.db.schemas.user_legal_name import UserLegalNameCreate, UserLegalNameRead, UserLegalNameUpdate
 from app.services.email_service import (
     send_email_confirmation,
@@ -55,16 +60,21 @@ from app.services.user_legal_name_service import (
     get_user_legal_names_for_user,
     update_user_legal_name,
 )
-from app.services.user_service import get_user, get_user_by_email, update_user
+from app.services.user_delegation_service import (
+    create_user_delegation,
+    delete_user_delegation,
+    list_user_delegations,
+    update_user_delegation,
+)
+from app.services.user_service import get_user, get_user_by_email, get_users, update_user
 
 from app.services.user_auth_service import (
-    authenticate_user,
+    authenticate_user_with_reason,
     bootstrap_admin_user,
     build_email_confirmation_url,
     build_password_reset_url,
     change_user_password,
     create_access_token_from_refresh_token,
-    create_email_confirmation_token_record,
     create_passkey_authentication_options,
     create_passkey_registration_options,
     create_password_reset_for_verified_email,
@@ -137,6 +147,49 @@ def _login_context(request: Request) -> dict[str, str | None]:
             request,
             ("x-geo-city", "x-vercel-ip-city", "x-city"),
         ),
+    }
+
+
+def _send_email_confirmation_response(
+    db: Session,
+    target_user,
+    request: Request | None = None,
+) -> dict:
+    if target_user.email_verified_at is not None:
+        return {
+            "already_verified": True,
+            "email_sent": False,
+            "verification_token_expires_at": None,
+            "verification_url": None,
+        }
+
+    token_record, raw_token = create_replacement_email_confirmation_token_record(
+        db,
+        target_user,
+        EMAIL_CONFIRMATION_EXPIRE_HOURS,
+    )
+    verification_url = build_email_confirmation_url(raw_token, request)
+    email_sent = (
+        send_user_invitation(
+            target_user.email,
+            verification_url,
+            target_user.preferred_locale_code,
+            db=db,
+        )
+        if target_user.password_must_change
+        else send_email_confirmation(
+            target_user.email,
+            verification_url,
+            target_user.preferred_locale_code,
+            db=db,
+        )
+    )
+
+    return {
+        "already_verified": False,
+        "email_sent": email_sent,
+        "verification_token_expires_at": token_record.expires_at,
+        "verification_url": verification_url,
     }
 
 
@@ -228,9 +281,14 @@ async def login(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    user = authenticate_user(db, payload)
+    user, error_code = authenticate_user_with_reason(db, payload)
 
     if not user:
+        if error_code == "email_not_verified":
+            raise HTTPException(
+                status_code=403,
+                detail="EMAIL_NOT_VERIFIED",
+            )
         raise HTTPException(
             status_code=401,
             detail="Invalid credentials or inactive user"
@@ -346,6 +404,7 @@ async def passkey_authentication_verify(
 @router.post("/forgot-password", response_model=ForgotPasswordResponse)
 def forgot_password(
     payload: ForgotPasswordRequest,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     user, token_record, raw_token = create_password_reset_for_verified_email(
@@ -364,7 +423,7 @@ def forgot_password(
             ),
         }
 
-    reset_url = build_password_reset_url(raw_token)
+    reset_url = build_password_reset_url(raw_token, request)
     email_sent = send_password_reset(
         user.email,
         reset_url,
@@ -478,6 +537,84 @@ async def logout(
 @router.get("/me", response_model=UserRead)
 def me(current_user=Depends(require_current_user)):
     return current_user
+
+
+@router.get("/me/delegation-options", response_model=list[UserRead])
+def my_delegation_options(
+    current_user=Depends(require_current_user),
+    db: Session = Depends(get_db),
+):
+    return get_users(
+        db,
+        skip=0,
+        limit=1000,
+        created_by_user_id=current_user.id,
+        include_user_id=current_user.id,
+    )
+
+
+@router.get("/me/delegations", response_model=list[UserDelegationRead])
+def my_delegations(
+    current_user=Depends(require_current_user),
+    db: Session = Depends(get_db),
+):
+    return list_user_delegations(db, current_user.id)
+
+
+@router.post("/me/delegations", response_model=UserDelegationRead)
+def create_my_delegation(
+    payload: UserDelegationCreate,
+    current_user=Depends(require_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        return create_user_delegation(
+            db,
+            current_user.id,
+            payload,
+            delegate_created_by_user_id=current_user.id,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+
+
+@router.put("/me/delegations/{delegation_id}", response_model=UserDelegationRead)
+def update_my_delegation(
+    delegation_id: UUID,
+    payload: UserDelegationUpdate,
+    current_user=Depends(require_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        delegation = update_user_delegation(
+            db,
+            current_user.id,
+            delegation_id,
+            payload,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+
+    if not delegation:
+        raise HTTPException(status_code=404, detail="Relationship not found")
+
+    return delegation
+
+
+@router.delete("/me/delegations/{delegation_id}")
+def delete_my_delegation(
+    delegation_id: UUID,
+    current_user=Depends(require_current_user),
+    db: Session = Depends(get_db),
+):
+    deleted = delete_user_delegation(db, current_user.id, delegation_id)
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Relationship not found")
+
+    return {
+        "message": "Relationship deleted successfully",
+    }
 
 
 @router.get("/me/sessions", response_model=list[UserLoginSessionResponse])
@@ -665,6 +802,7 @@ def my_readiness(
     response_model=EmailVerificationResendResponse,
 )
 def resend_email_confirmation(
+    request: Request,
     payload: EmailVerificationResendRequest | None = None,
     current_user=Depends(require_current_user),
     db: Session = Depends(get_db),
@@ -689,42 +827,7 @@ def resend_email_confirmation(
                 raise HTTPException(status_code=404, detail="User not found")
             target_user = user
 
-    if target_user.email_verified_at is not None:
-        return {
-            "already_verified": True,
-            "email_sent": False,
-            "verification_token_expires_at": None,
-            "verification_url": None,
-        }
-
-    token_record, raw_token = create_replacement_email_confirmation_token_record(
-        db,
-        target_user,
-        EMAIL_CONFIRMATION_EXPIRE_HOURS,
-    )
-    verification_url = build_email_confirmation_url(raw_token)
-    email_sent = (
-        send_user_invitation(
-            target_user.email,
-            verification_url,
-            target_user.preferred_locale_code,
-            db=db,
-        )
-        if target_user.password_must_change
-        else send_email_confirmation(
-            target_user.email,
-            verification_url,
-            target_user.preferred_locale_code,
-            db=db,
-        )
-    )
-
-    return {
-        "already_verified": False,
-        "email_sent": email_sent,
-        "verification_token_expires_at": token_record.expires_at,
-        "verification_url": verification_url,
-    }
+    return _send_email_confirmation_response(db, target_user, request)
 
 
 @router.post(
@@ -732,19 +835,23 @@ def resend_email_confirmation(
     response_model=EmailVerificationResendResponse,
 )
 def resend_my_email_confirmation(
+    request: Request,
     current_user=Depends(require_current_user),
     db: Session = Depends(get_db),
 ):
-    return resend_email_confirmation(None, current_user, db)
+    return _send_email_confirmation_response(db, current_user, request)
 
 
 @router.patch("/me", response_model=UserRead)
 def update_me(
     payload: UserProfileUpdate,
+    request: Request,
     current_user=Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    if payload.email and payload.email != current_user.email:
+    email_changed = bool(payload.email and payload.email != current_user.email)
+
+    if email_changed:
         existing_user = get_user_by_email(db, payload.email)
         if existing_user and existing_user.id != current_user.id:
             raise HTTPException(status_code=400, detail="User email already exists")
@@ -755,6 +862,9 @@ def update_me(
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
+    if email_changed:
+        _send_email_confirmation_response(db, user, request)
 
     return user
 

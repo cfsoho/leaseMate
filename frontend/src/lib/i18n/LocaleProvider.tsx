@@ -9,9 +9,14 @@ import {
 
 export const LOCALE_STORAGE_KEY = "leasemate.lastPreferredLocale";
 
-function getStoredLocale(): SupportedLocale {
+export function getStoredLocale(): SupportedLocale {
   const storedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
   return storedLocale && isSupportedLocale(storedLocale) ? storedLocale : "en";
+}
+
+export function hasStoredLocale() {
+  const storedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
+  return Boolean(storedLocale && isSupportedLocale(storedLocale));
 }
 
 export function LocaleProvider({ children }: PropsWithChildren) {

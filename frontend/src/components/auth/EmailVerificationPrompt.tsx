@@ -154,10 +154,10 @@ export function EmailVerificationPrompt({
       </div>
       <button
         className={[
-          "inline-flex min-h-8 shrink-0 items-center justify-center rounded-md border px-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60",
+          "lm-button shrink-0",
           compact
             ? "lm-button-primary"
-            : "border-rose-600 bg-rose-600 hover:border-rose-700 hover:bg-rose-700",
+            : "lm-button-warning",
         ].join(" ")}
         disabled={sendVerification.isPending}
         type="button"

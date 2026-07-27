@@ -1,5 +1,23 @@
 import { apiRequest } from "../../lib/api/client";
 
+export type FinancialAccountLegalNameOption = {
+  id: string;
+  user_id: string;
+  user_family_name: string;
+  user_given_name: string;
+  user_preferred_locale_code?: string | null;
+  country_id: string;
+  locale_code: string;
+  full_name: string;
+};
+
+export type FinancialAccountLegalNameOwnerOption = {
+  id: string;
+  family_name: string;
+  given_name: string;
+  preferred_locale_code?: string | null;
+};
+
 export type FinancialAccount = {
   id: string;
   user_id: string;
@@ -30,6 +48,24 @@ export function listFinancialAccounts() {
   return apiRequest<FinancialAccount[]>("/financial-accounts?skip=0&limit=1000", {
     auth: true,
   });
+}
+
+export function listFinancialAccountLegalNameOptions() {
+  return apiRequest<FinancialAccountLegalNameOption[]>(
+    "/financial-accounts/legal-name-options",
+    {
+      auth: true,
+    },
+  );
+}
+
+export function listFinancialAccountLegalNameOwnerOptions() {
+  return apiRequest<FinancialAccountLegalNameOwnerOption[]>(
+    "/financial-accounts/legal-name-owner-options",
+    {
+      auth: true,
+    },
+  );
 }
 
 export function createFinancialAccount(payload: FinancialAccountPayload) {

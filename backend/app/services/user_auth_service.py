@@ -37,6 +37,7 @@ from app.db.models.user_verification_token import UserVerificationToken
 from app.db.models.user_webauthn_challenge import UserWebAuthnChallenge
 from app.db.schemas.user_auth import BootstrapAdminRequest, LoginRequest
 from app.db.schemas.user import UserPasswordChange
+from app.services.app_url_service import build_app_url
 
 
 USER_STATUS_ACTIVE = "ACTIVE"
@@ -209,6 +210,19 @@ def get_session_id_from_access_token(token: str) -> Optional[UUID]:
         return None
 
 
+def _can_user_authenticate(user: User) -> bool:
+    if user.status == USER_STATUS_INACTIVE:
+        return False
+
+    # Admin users must be able to log in after changing their email address so
+    # they can complete SMTP/email verification and unlock system setup. Regular
+    # users remain blocked until their email is verified.
+    if user.status == USER_STATUS_NEEDS_EMAIL_VERIFICATION:
+        return bool(user.role and user.role.code == "ADMIN")
+
+    return user.status == USER_STATUS_ACTIVE
+
+
 def get_user_from_access_token(db: Session, token: str) -> Optional[User]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
@@ -223,13 +237,9 @@ def get_user_from_access_token(db: Session, token: str) -> Optional[User]:
     if not user_id:
         return None
 
-    user = (
-        db.query(User)
-        .filter(User.id == UUID(user_id), User.status == USER_STATUS_ACTIVE)
-        .first()
-    )
+    user = db.query(User).filter(User.id == UUID(user_id)).first()
 
-    if not user:
+    if not user or not _can_user_authenticate(user):
         return None
 
     if token_version != (user.token_version or 0):
@@ -268,12 +278,12 @@ def get_user_from_access_token(db: Session, token: str) -> Optional[User]:
     return user
 
 
-def build_email_confirmation_url(token: str) -> str:
-    return f"{APP_PUBLIC_URL.rstrip('/')}/confirm-email/{token}"
+def build_email_confirmation_url(token: str, request=None) -> str:
+    return build_app_url(f"/confirm-email/{token}", request)
 
 
-def build_password_reset_url(token: str) -> str:
-    return f"{APP_PUBLIC_URL.rstrip('/')}/reset-password/{token}"
+def build_password_reset_url(token: str, request=None) -> str:
+    return build_app_url(f"/reset-password/{token}", request)
 
 
 def invalidate_user_sessions(db: Session, user: User) -> None:
@@ -340,21 +350,38 @@ def bootstrap_admin_user(
     return user
 
 
+def authenticate_user_with_reason(
+    db: Session,
+    payload: LoginRequest
+) -> tuple[Optional[User], Optional[str]]:
+    user = db.query(User).filter(User.email == payload.email).first()
+
+    if not user:
+        return None, None
+
+    if not verify_password(payload.password, user.password_hash):
+        return None, None
+
+    if user.status == USER_STATUS_INACTIVE:
+        return None, "inactive"
+
+    if (
+        user.status == USER_STATUS_NEEDS_EMAIL_VERIFICATION
+        and (not user.role or user.role.code != "ADMIN")
+    ):
+        return None, "email_not_verified"
+
+    if not _can_user_authenticate(user):
+        return None, None
+
+    return user, None
+
+
 def authenticate_user(
     db: Session,
     payload: LoginRequest
 ) -> Optional[User]:
-    user = db.query(User).filter(User.email == payload.email).first()
-
-    if not user:
-        return None
-
-    if not verify_password(payload.password, user.password_hash):
-        return None
-
-    if user.status != USER_STATUS_ACTIVE:
-        return None
-
+    user, _reason = authenticate_user_with_reason(db, payload)
     return user
 
 
@@ -1207,7 +1234,7 @@ def create_access_token_from_refresh_token(
     if refresh_token.expires_at < now_utc():
         return None
 
-    if refresh_token.user.status != USER_STATUS_ACTIVE:
+    if not _can_user_authenticate(refresh_token.user):
         return None
 
     refresh_token.last_used_at = now_utc()

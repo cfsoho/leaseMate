@@ -34,6 +34,7 @@ import {
   listUserSelectOptions,
   sendUserVerificationEmail,
   updateUser,
+  updateUserDelegation,
 } from "../features/users/usersApi";
 import { formatPersonName } from "../lib/i18n/nameFormat";
 import { useTranslation } from "../lib/i18n/useTranslation";
@@ -212,6 +213,20 @@ export function UserDetailPage() {
       });
     },
   });
+  const updateDelegationMutation = useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Parameters<typeof updateUserDelegation>[2];
+    }) => updateUserDelegation(userId!, id, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["users", userId, "delegations"],
+      });
+    },
+  });
   const deleteDelegationMutation = useMutation({
     mutationFn: (delegationId: string) => deleteUserDelegation(userId!, delegationId),
     onSuccess: async () => {
@@ -261,6 +276,8 @@ export function UserDetailPage() {
 
   return (
     <CollapsibleCardContainer
+      className="lm-card-page-compact"
+      layout="masonry"
       header={
         <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div className="grid min-w-0 gap-2">
@@ -318,6 +335,7 @@ export function UserDetailPage() {
             disabled={
               createUserMutation.isPending || updateUserMutation.isPending
             }
+            emailEditable={!isCreateMode}
             emailRequired={isCreateMode}
             localeCode={locale}
             locales={locales.data ?? []}
@@ -374,7 +392,7 @@ export function UserDetailPage() {
       </CollapsibleCard>
 
       {showManagementCards && (
-        <div className="contents lm-fade-in">
+        <>
           <LegalNamesCard
             countries={countries.data ?? []}
             defaultLocaleCode={user.data!.preferred_locale_code || locale}
@@ -395,11 +413,13 @@ export function UserDetailPage() {
           <UserDelegationsCard
             delegations={delegations.data ?? []}
             isLoading={delegations.isLoading}
-            locale={selectedLocale}
-            locales={locales.data ?? []}
+            locale={localeByCode.get(locale)}
             subjectUser={user.data!}
             users={users.data ?? []}
             onCreate={(payload) => createDelegationMutation.mutateAsync(payload)}
+            onUpdate={(id, payload) =>
+              updateDelegationMutation.mutateAsync({ id, payload })
+            }
             onDelete={(id) => deleteDelegationMutation.mutateAsync(id)}
           />
 
@@ -444,7 +464,7 @@ export function UserDetailPage() {
               </Button>
             </div>
           </CollapsibleCard>
-        </div>
+        </>
       )}
     </CollapsibleCardContainer>
   );

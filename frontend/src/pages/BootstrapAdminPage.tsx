@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { AuthLanguageSelector } from "../components/auth/AuthLanguageSelector";
 import { bootstrapAdmin, getBootstrapDefaultLocale } from "../features/auth/authApi";
 import { UserForm } from "../features/users/UserForm";
 import { defaultBootstrapAdminUserForm } from "../features/users/userFormTypes";
@@ -85,43 +86,46 @@ export function BootstrapAdminPage() {
   });
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
-      <section className="mx-auto grid max-w-5xl gap-6">
-        <header className="rounded-lg border border-slate-200 bg-white p-6">
-          <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-slate-500">
-            {t("auth.initialSetup")}
-          </p>
-          <h1 className="text-3xl font-bold leading-tight text-slate-950">
-            {t("auth.createAdmin")}
-          </h1>
-          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-500">
-            {t("auth.createAdminDescription")}
-          </p>
-        </header>
-
-        <section className="rounded-lg border border-slate-200 bg-white p-6">
-          <UserForm
-            disabled={createAdmin.isPending}
-            showPhone={false}
-            submitError={
-              createAdmin.isError ? createAdmin.error.message : undefined
-            }
-            submitLabel={
-              createAdmin.isPending ? t("auth.creating") : t("auth.createAdmin")
-            }
-            value={form}
-            onChange={setForm}
-            onSubmit={() => createAdmin.mutate()}
-          />
-
-          {createAdmin.isSuccess && (
-            <p className="mt-4 font-bold text-emerald-700">
-              {t("auth.adminCreated")}
+    <>
+      <AuthLanguageSelector />
+      <main className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
+        <section className="mx-auto grid max-w-5xl gap-6">
+          <header className="rounded-lg border border-slate-200 bg-white p-6">
+            <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-slate-500">
+              {t("auth.initialSetup")}
             </p>
-          )}
+            <h1 className="text-3xl font-bold leading-tight text-slate-950">
+              {t("auth.createAdmin")}
+            </h1>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-500">
+              {t("auth.createAdminDescription")}
+            </p>
+          </header>
+
+          <section className="rounded-lg border border-slate-200 bg-white p-6">
+            <UserForm
+              disabled={createAdmin.isPending}
+              showPhone={false}
+              submitError={
+                createAdmin.isError ? createAdmin.error.message : undefined
+              }
+              submitLabel={
+                createAdmin.isPending ? t("auth.creating") : t("auth.createAdmin")
+              }
+              value={form}
+              onChange={setForm}
+              onSubmit={() => createAdmin.mutate()}
+            />
+
+            {createAdmin.isSuccess && (
+              <p className="mt-4 font-bold text-emerald-700">
+                {t("auth.adminCreated")}
+              </p>
+            )}
+          </section>
         </section>
-      </section>
-    </main>
+      </main>
+    </>
   );
 }
 

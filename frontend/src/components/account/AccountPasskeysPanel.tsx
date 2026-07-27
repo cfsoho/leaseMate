@@ -70,7 +70,14 @@ export function AccountPasskeysPanel() {
       title={t("security.passkeysTitle")}
     >
       {addPasskey.isError && (
-        <PasskeyNotice message={addPasskey.error.message} tone="error" />
+        <PasskeyNotice
+          message={
+            addPasskey.error.message === "PASSKEY_UNSUPPORTED"
+              ? t("auth.passkeyUnsupported")
+              : addPasskey.error.message
+          }
+          tone="error"
+        />
       )}
       {!passkeySupported && (
         <PasskeyNotice message={t("auth.passkeyUnsupported")} />

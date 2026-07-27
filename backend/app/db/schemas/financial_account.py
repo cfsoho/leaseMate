@@ -45,3 +45,27 @@ class FinancialAccountRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class FinancialAccountLegalNameOptionRead(BaseModel):
+    id: UUID
+    user_id: UUID
+    user_family_name: str
+    user_given_name: str
+    user_preferred_locale_code: Optional[str] = None
+    country_id: UUID
+    locale_code: str
+    full_name: str
+
+    class Config:
+        from_attributes = True
+
+
+class FinancialAccountLegalNameOwnerOptionRead(BaseModel):
+    id: UUID
+    family_name: str
+    given_name: str
+    preferred_locale_code: Optional[str] = None
+
+    class Config:
+        from_attributes = True

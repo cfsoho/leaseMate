@@ -5,7 +5,10 @@ export const APP_LOGOUT_EXIT_MS = 950;
 
 const AUTH_REDIRECT_REASON_KEY = "leasemate.authRedirectReason";
 
-export type AuthRedirectReason = "session_revoked" | "session_expired";
+export type AuthRedirectReason =
+  | "email_changed"
+  | "session_revoked"
+  | "session_expired";
 
 export function consumeTransitionFlag(key: string) {
   const shouldAnimate = sessionStorage.getItem(key) === "true";
@@ -21,7 +24,9 @@ export function consumeAuthRedirectReason(): AuthRedirectReason | null {
   const reason = sessionStorage.getItem(AUTH_REDIRECT_REASON_KEY);
   sessionStorage.removeItem(AUTH_REDIRECT_REASON_KEY);
 
-  return reason === "session_revoked" || reason === "session_expired"
+  return reason === "email_changed" ||
+    reason === "session_revoked" ||
+    reason === "session_expired"
     ? reason
     : null;
 }

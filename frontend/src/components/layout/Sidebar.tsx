@@ -8,6 +8,7 @@ import { NavigationSections } from "./NavigationSections";
 
 type SidebarProps = {
   adminSetupOnly?: boolean;
+  dashboardOnly?: boolean;
   isCollapsed: boolean;
   onExpandCollapsed: () => void;
   onToggleCollapsed: () => void;
@@ -15,6 +16,7 @@ type SidebarProps = {
 
 export function Sidebar({
   adminSetupOnly = false,
+  dashboardOnly = false,
   isCollapsed,
   onExpandCollapsed,
   onToggleCollapsed,
@@ -60,6 +62,7 @@ export function Sidebar({
       >
         <NavigationSections
           adminSetupOnly={adminSetupOnly}
+          dashboardOnly={dashboardOnly}
           isCollapsed={isCollapsed}
           onExpandCollapsed={onExpandCollapsed}
         />

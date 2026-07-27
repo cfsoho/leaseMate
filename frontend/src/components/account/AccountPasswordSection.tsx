@@ -5,6 +5,7 @@ import { changeCurrentUserPassword, getCurrentUser } from "../../features/auth/a
 import { useTranslation } from "../../lib/i18n/useTranslation";
 import { Button } from "../ui/Button";
 import { CollapsibleCard } from "../ui/CollapsibleCard";
+import { FormAlert } from "../ui/FormAlert";
 import { getPasswordGenerationLabels } from "../ui/GeneratePasswordButton";
 import { Modal } from "../ui/Modal";
 import { PasswordInput } from "../ui/PasswordInput";
@@ -42,6 +43,18 @@ export function AccountPasswordSection() {
   const passwordGenerationLabels = getPasswordGenerationLabels(t);
   const passwordStrengthItems = buildPasswordStrengthItems(newPasswordChecks, t);
   const passwordStrengthLabels = getPasswordStrengthLabels(t);
+  const passwordErrorLabels: Record<keyof typeof passwordForm, string> = {
+    confirm_password: t("form.confirmPassword"),
+    new_password: t("profile.newPassword"),
+    old_password: t("profile.oldPassword"),
+  };
+  const passwordAlertMessages = [
+    ...(passwordMessage ? [passwordMessage] : []),
+    ...Object.entries(passwordErrors).map(
+      ([field, message]) =>
+        `${passwordErrorLabels[field as keyof typeof passwordForm]}: ${message}`,
+    ),
+  ];
   const changePassword = useMutation({
     mutationFn: () => {
       if (!user) {
@@ -94,10 +107,8 @@ export function AccountPasswordSection() {
           {currentUser.isError && (
             <PasswordNotice message={t("profile.loadError")} tone="error" />
           )}
-          {passwordMessage && (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-normal leading-relaxed text-red-700">
-              {passwordMessage}
-            </p>
+          {passwordAlertMessages.length > 0 && (
+            <FormAlert messages={passwordAlertMessages} />
           )}
           {user?.password_must_change && (
             <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-normal text-amber-900">
